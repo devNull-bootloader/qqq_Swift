@@ -401,6 +401,44 @@
       color: var(--dim); font-size: 11px; font-weight: 700; padding: 3px 9px; cursor: pointer;
       font-family: inherit; line-height: 1.4; letter-spacing: .5px; }
     #sciToggleBtn.active { background: rgba(204,0,0,.1); border-color: var(--acc); color: var(--acc); }
+    /* ─── Image Scanner Panel ─── */
+    #tabBild { overflow-y: auto; }
+    .iu-dropzone { border: 2px dashed var(--bdr); border-radius: var(--r); margin: 14px; padding: 28px 16px;
+      text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+    .iu-dropzone.drag-over { border-color: var(--acc); background: rgba(204,0,0,.06); }
+    .iu-dropzone .iu-icon { font-size: 40px; margin-bottom: 8px; }
+    .iu-dropzone .iu-title { font-size: 15px; font-weight: 600; color: var(--txt); margin-bottom: 4px; }
+    .iu-dropzone .iu-sub { font-size: 13px; color: var(--dim); }
+    #bildPreviewWrap { margin: 0 14px 10px; border-radius: var(--r); overflow: hidden;
+      background: var(--bg2); border: 1px solid var(--bdr); display: none; position: relative; }
+    #bildPreview { width: 100%; max-height: 260px; object-fit: contain; display: block; }
+    #bildClearBtn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,.6); color: white;
+      border: none; border-radius: 6px; padding: 4px 9px; cursor: pointer; font-size: 13px; }
+    .bild-status { margin: 0 14px 10px; padding: 10px 14px; background: var(--bg2);
+      border-radius: var(--r); font-size: 13px; color: var(--dim); display: none; }
+    .bild-status.vis { display: block; }
+    .bild-progress { height: 4px; background: var(--bdr); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .bild-progress-bar { height: 100%; background: var(--acc); border-radius: 2px; transition: width .3s; }
+    #bildResults { margin: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .bild-sec-title { font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 4px; }
+    .bild-eq-item { background: var(--card); border-radius: var(--r); padding: 12px;
+      border-left: 4px solid var(--acc); }
+    .bild-pt-item { background: var(--card); border-radius: var(--r); padding: 12px;
+      border-left: 4px solid #0055cc; }
+    .bild-item-text { font-size: 14px; color: var(--txt); font-family: 'Courier New', monospace;
+      margin-bottom: 6px; word-break: break-all; }
+    .bild-item-sol { font-size: 13px; color: var(--dim); margin-bottom: 8px; }
+    .bild-item-sol strong { color: var(--acc3); }
+    .bild-item-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .bi-btn { padding: 6px 12px; background: var(--btn); border: none; border-radius: 8px;
+      color: var(--txt); font-size: 12px; font-family: inherit; cursor: pointer; transition: background .15s; }
+    .bi-btn:active { background: var(--acc); color: white; }
+    .bild-empty { text-align: center; padding: 24px 14px; color: var(--dim); font-size: 14px; }
+    .bild-raw { margin: 0 14px 14px; background: var(--bg2); border-radius: var(--r); padding: 10px 12px;
+      font-size: 12px; color: var(--dim); white-space: pre-wrap; word-break: break-all;
+      max-height: 140px; overflow-y: auto; border: 1px solid var(--bdr); }
+
     /* ─── Unit Converter ─── */
     .urow { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
     .usel { width: 100%; background: var(--card); border: 1px solid var(--bdr); border-radius: 8px;
@@ -983,6 +1021,31 @@
       </div>
     </div><!-- end tabKlasse -->
 
+    <!-- ════════ TAB: BILD-SCANNER ════════ -->
+    <div id="tabBild" class="panel">
+      <!-- Drop zone / upload area -->
+      <div class="iu-dropzone" id="bildDropZone">
+        <div class="iu-icon">📷</div>
+        <div class="iu-title">Bild hochladen</div>
+        <div class="iu-sub">Tippe hier oder ziehe ein Foto rein</div>
+        <input type="file" id="bildFileInput" accept="image/*" style="display:none">
+      </div>
+      <!-- Image preview -->
+      <div id="bildPreviewWrap">
+        <img id="bildPreview" alt="Vorschau">
+        <button id="bildClearBtn" onclick="bildClear()">✕</button>
+      </div>
+      <!-- Scan button -->
+      <button class="sbtn" id="bildScanBtn" onclick="bildScan()" style="margin:0 14px 10px;display:none">🔍 Fragen &amp; Koordinaten erkennen</button>
+      <!-- Status / progress -->
+      <div class="bild-status" id="bildStatus">
+        <span id="bildStatusText">Bereit</span>
+        <div class="bild-progress"><div class="bild-progress-bar" id="bildProgressBar" style="width:0%"></div></div>
+      </div>
+      <!-- Results -->
+      <div id="bildResults"></div>
+    </div><!-- end tabBild -->
+
   </div><!-- content -->
 
   <nav id="nav">
@@ -997,6 +1060,9 @@
     </button>
     <button class="nb" id="nbKlasse" onclick="switchTab('klasse')">
       <span class="ni">🎓</span>Klasse
+    </button>
+    <button class="nb" id="nbBild" onclick="switchTab('bild')">
+      <span class="ni">📷</span>Bild
     </button>
   </nav>
 </div><!-- app -->
@@ -1048,6 +1114,7 @@ function launchApp() {
   }
   initCoordCanvas();
   initLcColorRow();
+  bildSetupDropZone();
 }
 
 window.addEventListener('load', () => {
@@ -1085,10 +1152,12 @@ function switchTab(tab) {
   document.getElementById('tabKoord').classList.toggle('active', tab === 'koordinaten');
   document.getElementById('tabNotizen').classList.toggle('active', tab === 'notizen');
   document.getElementById('tabKlasse').classList.toggle('active', tab === 'klasse');
+  document.getElementById('tabBild').classList.toggle('active', tab === 'bild');
   document.getElementById('nbRechner').classList.toggle('active', tab === 'rechner');
   document.getElementById('nbKoord').classList.toggle('active', tab === 'koordinaten');
   document.getElementById('nbNotizen').classList.toggle('active', tab === 'notizen');
   document.getElementById('nbKlasse').classList.toggle('active', tab === 'klasse');
+  document.getElementById('nbBild').classList.toggle('active', tab === 'bild');
   if (tab === 'koordinaten') { resizeCanvas(); applyRangeSettings(); }
   if (tab === 'klasse') { initKlasse(); }
 }
@@ -2795,6 +2864,274 @@ function calcPhys() {
   }
   if (res) { sol.innerHTML = res; sol.classList.add('vis'); }
   else { sol.classList.add('vis'); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   IMAGE SCANNER  (Tesseract.js – client-side OCR, no API)
+══════════════════════════════════════════════════════════ */
+let bildFile = null;
+
+function bildSetupDropZone() {
+  const zone   = document.getElementById('bildDropZone');
+  const fileIn = document.getElementById('bildFileInput');
+
+  zone.addEventListener('click', () => fileIn.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) bildLoadFile(file);
+  });
+  fileIn.addEventListener('change', e => {
+    if (e.target.files[0]) bildLoadFile(e.target.files[0]);
+  });
+}
+
+function bildLoadFile(file) {
+  bildFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('bildPreview').src = ev.target.result;
+    document.getElementById('bildPreviewWrap').style.display = 'block';
+    document.getElementById('bildScanBtn').style.display = '';
+    document.getElementById('bildResults').innerHTML = '';
+    document.getElementById('bildStatus').classList.remove('vis');
+  };
+  reader.readAsDataURL(file);
+}
+
+function bildClear() {
+  bildFile = null;
+  document.getElementById('bildPreview').src = '';
+  document.getElementById('bildPreviewWrap').style.display = 'none';
+  document.getElementById('bildScanBtn').style.display = 'none';
+  document.getElementById('bildResults').innerHTML = '';
+  document.getElementById('bildStatus').classList.remove('vis');
+  document.getElementById('bildFileInput').value = '';
+}
+
+async function bildScan() {
+  if (!bildFile) return;
+
+  const statusEl = document.getElementById('bildStatus');
+  const statusTxt = document.getElementById('bildStatusText');
+  const bar = document.getElementById('bildProgressBar');
+  const resultsEl = document.getElementById('bildResults');
+
+  statusEl.classList.add('vis');
+  statusTxt.textContent = 'Lade OCR-Engine…';
+  bar.style.width = '5%';
+  resultsEl.innerHTML = '';
+
+  try {
+    // Lazily load Tesseract.js from CDN (free, runs 100% in the browser, no API key needed)
+    if (typeof Tesseract === 'undefined') {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('OCR-Engine konnte nicht geladen werden. Bitte Internetverbindung prüfen.'));
+        document.head.appendChild(s);
+      });
+    }
+
+    statusTxt.textContent = 'Starte Texterkennung…';
+    bar.style.width = '15%';
+
+    const worker = await Tesseract.createWorker(['deu', 'eng'], 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          bar.style.width = Math.round(15 + m.progress * 75) + '%';
+          statusTxt.textContent = 'Texterkennung… ' + Math.round(m.progress * 100) + '%';
+        }
+      }
+    });
+
+    const { data: { text } } = await worker.recognize(document.getElementById('bildPreview'));
+    await worker.terminate();
+
+    bar.style.width = '100%';
+    statusTxt.textContent = '✅ Fertig!';
+
+    bildParseAndShow(text);
+  } catch (err) {
+    statusTxt.textContent = '⚠️ ' + err.message;
+    bar.style.width = '0%';
+  }
+}
+
+/* ─ Parse OCR text for equations and coordinates ─ */
+// Module-level storage so onclick handlers can safely reference items by index
+let bildDetectedEqs = [];
+let bildDetectedPts = [];
+
+function bildParseAndShow(rawText) {
+  const resultsEl = document.getElementById('bildResults');
+
+  // Normalise common OCR substitutions
+  const text = rawText
+    .replace(/[—–]/g, '-').replace(/×/g, '*').replace(/÷/g, '/')
+    .replace(/['']/g, "'").replace(/[""]/g, '"')
+    .replace(/\bx2\b/g, 'x^2').replace(/²/g, '^2');
+
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 1);
+
+  const equations  = [];
+  const coordPoints = [];
+
+  for (const line of lines) {
+    // Coordinates first (so e.g. "A(1,2)" is not also treated as an equation)
+    const pts = bildExtractCoords(line);
+    coordPoints.push(...pts);
+    // Equations
+    if (bildIsEquation(line)) equations.push(line);
+  }
+
+  // De-duplicate coordinates by (x,y) value
+  const seen = new Set();
+  const uniquePts = coordPoints.filter(p => {
+    const key = p.x + ',' + p.y;
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+
+  // Store in module-level arrays so onclick indices are safe (no user text in HTML attributes)
+  bildDetectedEqs = equations;
+  bildDetectedPts = uniquePts;
+
+  let html = '';
+
+  if (equations.length === 0 && uniquePts.length === 0) {
+    html = `<div class="bild-empty">
+      <div style="font-size:32px;margin-bottom:8px">🔍</div>
+      <div>Keine Gleichungen oder Koordinaten erkannt.</div>
+      <div style="font-size:12px;margin-top:4px;color:var(--dim)">Tipp: Verwende ein scharfes, kontrastreiches Bild.</div>
+    </div>`;
+    if (rawText.trim()) {
+      html += `<div class="bild-sec-title" style="margin:0 14px 4px">Erkannter Rohtext</div>
+        <div class="bild-raw">${escHtml(rawText.trim())}</div>`;
+    }
+    resultsEl.innerHTML = html;
+    return;
+  }
+
+  if (equations.length > 0) {
+    html += `<div class="bild-sec-title">Erkannte Gleichungen (${equations.length})</div>`;
+    equations.forEach((eq, idx) => {
+      let solHtml = '';
+      try {
+        const steps = parseAndSolve(eq);
+        const res = steps.find(s => s.result);
+        if (res) solHtml = `<div class="bild-item-sol">Lösung: <strong>${escHtml(res.math)}</strong></div>`;
+      } catch { /* unsolvable – still show it */ }
+
+      html += `<div class="bild-eq-item">
+        <div class="bild-item-text">${escHtml(eq)}</div>
+        ${solHtml}
+        <div class="bild-item-actions">
+          <button class="bi-btn" onclick="bildSendToSolver(${idx})">→ Gleichungslöser</button>
+          <button class="bi-btn" onclick="bildSendToCalc(${idx})">→ Rechner</button>
+          <button class="bi-btn" onclick="bildCopyEq(${idx})">📋 Kopieren</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  if (uniquePts.length > 0) {
+    html += `<div class="bild-sec-title" style="margin-top:${equations.length ? '10px' : '0'}">Erkannte Koordinaten (${uniquePts.length})</div>`;
+    uniquePts.forEach((pt, idx) => {
+      const disp = (pt.label ? pt.label + ' = ' : '') + '(' + pt.x + ', ' + pt.y + ')';
+      html += `<div class="bild-pt-item">
+        <div class="bild-item-text">${escHtml(disp)}</div>
+        <div class="bild-item-actions">
+          <button class="bi-btn" onclick="bildAddPoint(${idx})">→ Koordinatensystem</button>
+          <button class="bi-btn" onclick="bildCopyPt(${idx})">📋 Kopieren</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  resultsEl.innerHTML = html;
+}
+
+/* ─ Helpers ─ */
+function bildIsEquation(line) {
+  if (!line.includes('=')) return false;
+  if (line.length > 80) return false;
+  if (/https?:|www\.|\.com|\.de/.test(line)) return false;
+  // Require at least one digit or lowercase letter (variable)
+  if (!/\d/.test(line) && !/[a-z]/i.test(line)) return false;
+  // Ratio of math characters must be high enough
+  const mathLen = (line.match(/[0-9a-zA-Z+\-*/=().^²]/g) || []).length;
+  return mathLen / line.length >= 0.4;
+}
+
+function bildExtractCoords(line) {
+  const results = [];
+  // Labeled: A(1, 2)  B(-3, 4.5)  P(0, -7)
+  const labeled = /\b([A-Z])\s*\(\s*(-?\d+(?:[.,]\d+)?)\s*[,;]\s*(-?\d+(?:[.,]\d+)?)\s*\)/g;
+  let m;
+  while ((m = labeled.exec(line)) !== null) {
+    results.push({ label: m[1], x: parseFloat(m[2].replace(',', '.')), y: parseFloat(m[3].replace(',', '.')) });
+  }
+  // Unlabeled: (1, 2)  (-3.5, 4)  – avoid re-matching already labeled ones
+  const unlabeled = /(?<![A-Za-z])\(\s*(-?\d+(?:[.,]\d+)?)\s*[,;]\s*(-?\d+(?:[.,]\d+)?)\s*\)/g;
+  while ((m = unlabeled.exec(line)) !== null) {
+    const x = parseFloat(m[1].replace(',', '.'));
+    const y = parseFloat(m[2].replace(',', '.'));
+    // Skip if already captured as labeled at same position
+    const already = results.some(r => r.x === x && r.y === y);
+    if (!already) results.push({ x, y });
+  }
+  return results;
+}
+
+function bildSendToSolver(idx) {
+  const eq = bildDetectedEqs[idx];
+  if (!eq) return;
+  document.getElementById('eqInput').value = eq;
+  switchTab('rechner');
+  switchSub('gleichungen');
+  setTimeout(solveEquation, 120); // short delay to let panel switch complete
+}
+
+function bildSendToCalc(idx) {
+  const eq = bildDetectedEqs[idx];
+  if (!eq) return;
+  // Strip the "= rhs" part so it goes into the expression field
+  const lhs = eq.split('=')[0].trim();
+  calc.expr = lhs;
+  try { calc.result = String(evalSafe(lhs)); } catch { calc.result = '...'; }
+  updateCalcDisplay();
+  switchTab('rechner');
+  switchSub('grundrechner');
+}
+
+function bildAddPoint(idx) {
+  const pt = bildDetectedPts[idx];
+  if (!pt) return;
+  const name = pt.label || ('P' + coord.nextId);
+  coord.points.push({ x: pt.x, y: pt.y, name, id: coord.nextId++ });
+  switchTab('koordinaten');
+  setTimeout(() => { resizeCanvas(); drawCoord(); }, 120); // short delay to let panel switch complete
+}
+
+function bildCopyEq(idx) {
+  const eq = bildDetectedEqs[idx];
+  if (eq && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(eq).catch(() => {});
+  }
+}
+
+function bildCopyPt(idx) {
+  const pt = bildDetectedPts[idx];
+  if (!pt) return;
+  const text = '(' + pt.x + ', ' + pt.y + ')';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
 }
 
 /* ─ Statistics calculator ─ */
