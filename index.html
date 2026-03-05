@@ -1661,11 +1661,14 @@ function resizeCanvas() {
   const cvs = document.getElementById('cvs');
   const container = document.getElementById('tabKoord');
   const rect = container.getBoundingClientRect();
-  cvs.width = rect.width;
-  cvs.height = rect.height;
-  // Keep origin centered
-  coord.ox = cvs.width / 2;
-  coord.oy = cvs.height / 2;
+  const dpr = window.devicePixelRatio || 1;
+  cvs.width = rect.width * dpr;
+  cvs.height = rect.height * dpr;
+  cvs.style.width = rect.width + 'px';
+  cvs.style.height = rect.height + 'px';
+  // Keep origin centered (in CSS pixels)
+  coord.ox = cvs.width / dpr / 2;
+  coord.oy = cvs.height / dpr / 2;
 }
 
 /* ─ Math ↔ Canvas transforms ─ */
@@ -1683,7 +1686,8 @@ function snapToGrid(mx, my) {
 /* ─ Draw Canvas ─ */
 function applyRangeSettings() {
   const cvs = document.getElementById('cvs');
-  const W = cvs.width, H = cvs.height;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cvs.width / dpr, H = cvs.height / dpr;
   if (!W || !H) return;
   const xMin = parseFloat(document.getElementById('xMin').value) || -10;
   const xMax = parseFloat(document.getElementById('xMax').value) || 10;
@@ -1703,8 +1707,12 @@ function drawCanvas() {
   const cvs = document.getElementById('cvs');
   if (!cvs) return;
   const ctx = cvs.getContext('2d');
-  const W = cvs.width, H = cvs.height;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cvs.width / dpr, H = cvs.height / dpr;
   if (!W || !H) return;  // Guard: skip render on zero-size canvas
+
+  ctx.save();
+  ctx.scale(dpr, dpr);
 
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = '#ffffff';
@@ -1790,6 +1798,8 @@ function drawCanvas() {
   if (coord.currentConnector && coord.currentConnector.pts.length >= 1) {
     drawConnector(ctx, coord.currentConnector.pts, coord.currentConnector.color, true);
   }
+
+  ctx.restore();
 }
 
 function drawArrow(ctx, x, y, size, halfW, dir) {
@@ -1804,7 +1814,8 @@ function drawArrow(ctx, x, y, size, halfW, dir) {
 
 function plotFunction(ctx, exprRaw, color) {
   const cvs = document.getElementById('cvs');
-  const W = cvs.width;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cvs.width / dpr;
   const steps = W * 2;
   const xLeft = c2m(0, 0).mx;
   const xRight = c2m(W, 0).mx;
@@ -1823,7 +1834,7 @@ function plotFunction(ctx, exprRaw, color) {
     const my = evalFn(exprRaw, mx);
     if (!isFinite(my) || isNaN(my)) { started = false; prevY = null; continue; }
     // Discontinuity detection
-    if (prevY !== null && Math.abs(my - prevY) > Math.abs(c2m(0, 0).my - c2m(0, cvs.height).my) * 2) {
+    if (prevY !== null && Math.abs(my - prevY) > Math.abs(c2m(0, 0).my - c2m(0, cvs.height / dpr).my) * 2) {
       started = false;
     }
     const {cx, cy} = m2c(mx, my);
@@ -2087,7 +2098,8 @@ function zoomAt(factor, cx, cy) {
 
 function zoomBy(factor) {
   const cvs = document.getElementById('cvs');
-  zoomAt(factor, cvs.width / 2, cvs.height / 2);
+  const dpr = window.devicePixelRatio || 1;
+  zoomAt(factor, cvs.width / 2 / dpr, cvs.height / 2 / dpr);
 }
 
 function resetView() {
@@ -2102,9 +2114,10 @@ function applyScaleInput() {
   const s = parseFloat(document.getElementById('scaleInput').value);
   if (s >= 5) {
     const cvs = document.getElementById('cvs');
+    const dpr = window.devicePixelRatio || 1;
     coord.scale = s;
-    coord.ox = cvs.width / 2;
-    coord.oy = cvs.height / 2;
+    coord.ox = cvs.width / 2 / dpr;
+    coord.oy = cvs.height / 2 / dpr;
     drawCanvas();
   }
 }
@@ -2586,14 +2599,24 @@ function drawRulers() {
   const rulerV = document.getElementById('rulerV');
   const container = document.getElementById('tabKoord');
   const rect = container.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
   const W = rect.width - 20;
   const H = rect.height - 20;
 
-  rulerH.width = W; rulerH.height = 20;
-  rulerV.width = 20; rulerV.height = H;
+  rulerH.width = W * dpr;
+  rulerH.height = 20 * dpr;
+  rulerH.style.width = W + 'px';
+  rulerH.style.height = '20px';
+  rulerV.width = 20 * dpr;
+  rulerV.height = H * dpr;
+  rulerV.style.width = '20px';
+  rulerV.style.height = H + 'px';
 
   const ctxH = rulerH.getContext('2d');
   const ctxV = rulerV.getContext('2d');
+
+  ctxH.save(); ctxH.scale(dpr, dpr);
+  ctxV.save(); ctxV.scale(dpr, dpr);
 
   // H ruler background
   ctxH.fillStyle = 'rgba(245,245,245,0.97)';
@@ -2653,6 +2676,9 @@ function drawRulers() {
       ctxV.restore();
     }
   }
+
+  ctxH.restore();
+  ctxV.restore();
 }
 
 /* ══════════════════════════════════════════════
@@ -2684,7 +2710,8 @@ function applyQuadrant() {
   const q = coord.quadrant;
   if (q === 0) return; // no restriction
   const cvs = document.getElementById('cvs');
-  const W = cvs.width, H = cvs.height;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cvs.width / dpr, H = cvs.height / dpr;
   const margin = 0.5; // small extra units visible
   const range = Math.max(W, H) / coord.scale / 2 + margin;
   // Place origin at corner based on quadrant
