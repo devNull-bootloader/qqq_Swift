@@ -1,13 +1,13 @@
 {
-  "name": "Rechner +",
-  "short_name": "Rechner +",
-  "description": "Professioneller Taschenrechner mit Koordinatensystem, Gleichungslöser und Bruchrechnung",
+  "name": "MathSpaces",
+  "short_name": "MathSpaces",
+  "description": "MathSpaces – Math keyboard, coordinate system, equation solver, OCR scanner and fraction calculator",
   "start_url": ".",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a1a",
   "theme_color": "#0a0a1a",
-  "lang": "de",
+  "lang": "en",
   "icons": [
     {
       "src": "icons/icon-192.png",
