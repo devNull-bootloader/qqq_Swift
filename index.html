@@ -2047,7 +2047,13 @@ function applyRangeSettings() {
   drawCanvas();
 }
 
+let _rafPending = false;
 function drawCanvas() {
+  if (_rafPending) return;
+  _rafPending = true;
+  requestAnimationFrame(() => { _rafPending = false; _drawCanvasNow(); });
+}
+function _drawCanvasNow() {
   const cvs = document.getElementById('cvs');
   if (!cvs) return;
   const ctx = cvs.getContext('2d');
@@ -2189,22 +2195,32 @@ function plotFunction(ctx, exprRaw, color) {
   ctx.stroke();
 }
 
+const _evalCache = new Map();
 function evalFn(expr, x) {
-  // Sanitize: only allow math-safe chars
+  // Sanitize: only allow math-safe chars ('e' permits scientific notation like 1e3)
   if (!/^[0-9x\s\+\-\*\/\^\.\(\)πe]+$/i.test(expr.replace(/sqrt|sin|cos|tan|abs|log|exp|pi/gi, ''))) return NaN;
-  try {
-    let e = expr
-      .replace(/²/g, '**2').replace(/\^/g, '**')
-      .replace(/\bpi\b/gi, Math.PI).replace(/π/g, Math.PI)
-      .replace(/\bsqrt\b/gi, 'Math.sqrt').replace(/\bsin\b/gi, 'Math.sin')
-      .replace(/\bcos\b/gi, 'Math.cos').replace(/\btan\b/gi, 'Math.tan')
-      .replace(/\babs\b/gi, 'Math.abs').replace(/\blog\b/gi, 'Math.log10')
-      .replace(/\bexp\b/gi, 'Math.exp')
-      .replace(/([0-9πe\)])\s*x/g, '$1*x')  // implicit multiply
-      .replace(/x/g, `(${x})`);
-    // eslint-disable-next-line no-new-func
-    return Function('"use strict"; return (' + e + ')')();
-  } catch { return NaN; }
+  let fn = _evalCache.get(expr);
+  if (fn === undefined) {
+    try {
+      let e = expr
+        .replace(/²/g, '**2').replace(/\^/g, '**')
+        .replace(/\bpi\b/gi, Math.PI).replace(/π/g, Math.PI)
+        .replace(/\bsqrt\b/gi, 'Math.sqrt').replace(/\bsin\b/gi, 'Math.sin')
+        .replace(/\bcos\b/gi, 'Math.cos').replace(/\btan\b/gi, 'Math.tan')
+        .replace(/\babs\b/gi, 'Math.abs').replace(/\blog\b/gi, 'Math.log10')
+        .replace(/\bexp\b/gi, 'Math.exp')
+        .replace(/([0-9π\)])\s*x/g, '$1*x');  // implicit multiply
+      // Fix unary minus directly before exponentiation (JS syntax error: can't write -x**n)
+      e = e.replace(/(^|\()-([^+\-*/^()\s]+)\*\*/g, '$10-$2**');
+      // eslint-disable-next-line no-new-func
+      fn = new Function('x', '"use strict"; return (' + e + ')');
+      _evalCache.set(expr, fn);
+    } catch {
+      return NaN;  // don't cache compile failures (likely a transient/partial expression)
+    }
+  }
+  if (!fn) return NaN;
+  try { return fn(x); } catch { return NaN; }
 }
 
 function drawPoint(ctx, pt) {
