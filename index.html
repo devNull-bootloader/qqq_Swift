@@ -373,6 +373,11 @@
       display: flex; flex-direction: column; align-items: center; gap: 4px; line-height: 1.2; font-family: inherit; }
     #fsMenu .fsmodes button.active { border-color: var(--acc); color: var(--acc); }
     #fsMenu .fsmodes button span { font-size: 22px; }
+    #fsMenu .quick-access-btn { flex: 1; min-width: 120px; padding: 10px 8px; background: var(--bg2);
+      border: 1px solid var(--bdr); border-radius: var(--r); color: var(--txt); font-size: 13px;
+      font-weight: 600; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; justify-content: center; }
+    #fsMenu .quick-access-btn:active { background: var(--btn2); }
     #fsMenu .fsExit { background: var(--bg2); border: none; border-radius: var(--r); color: var(--txt);
       font-size: 15px; font-weight: 600; padding: 13px; width: 100%; cursor: pointer; font-family: inherit; }
     #fsMenu .fsExit:active { opacity: .7; }
@@ -643,6 +648,78 @@
 
     /* ─── Straight line drawing mode ─── */
     #cvs.ruler-draw { cursor: crosshair; }
+
+    /* ─── Timer Widget ─── */
+    .timer-display { font-size: 48px; font-weight: 300; text-align: center; font-family: 'Courier New', monospace;
+      color: var(--txt); letter-spacing: 2px; padding: 16px 0 8px; }
+    .timer-display.running { color: var(--acc3); }
+    .timer-display.warning { color: #e65100; }
+    .timer-display.done { color: var(--acc); }
+    .timer-label { text-align: center; font-size: 12px; color: var(--dim); margin-bottom: 12px; }
+    .timer-btns { display: flex; gap: 6px; padding: 0 10px 10px; }
+    .timer-btn { flex: 1; padding: 10px 6px; border: none; border-radius: var(--r); font-size: 13px;
+      font-weight: 600; font-family: inherit; cursor: pointer; transition: all .15s; }
+    .timer-btn.start { background: #2e7d32; color: white; }
+    .timer-btn.start:active { background: #1b5e20; }
+    .timer-btn.pause { background: #e65100; color: white; }
+    .timer-btn.pause:active { background: #bf360c; }
+    .timer-btn.reset { background: var(--btn); color: var(--txt); }
+    .timer-btn.reset:active { background: var(--btn2); }
+    .timer-presets { display: flex; flex-wrap: wrap; gap: 5px; padding: 0 10px 10px; }
+    .timer-preset { padding: 5px 10px; border: 1px solid var(--bdr); border-radius: 20px; background: var(--bg2);
+      color: var(--txt); font-size: 12px; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .timer-preset:active, .timer-preset.active { background: var(--acc); color: white; border-color: var(--acc); }
+    .timer-custom-row { display: flex; gap: 5px; padding: 0 10px 8px; align-items: center; }
+    .timer-custom-row span { font-size: 12px; color: var(--dim); white-space: nowrap; }
+    .timer-custom-in { flex: 1; background: var(--card); border: 1px solid var(--bdr); border-radius: 8px;
+      color: var(--txt); font-size: 14px; padding: 7px 9px; text-align: center; font-family: 'Courier New', monospace;
+      outline: none; -webkit-user-select: text; user-select: text; width: 50px; }
+    .timer-custom-in:focus { border-color: var(--acc); }
+    .timer-progress-track { margin: 0 10px 8px; height: 5px; background: var(--bdr); border-radius: 3px; overflow: hidden; }
+    .timer-progress-fill { height: 100%; background: var(--acc3); border-radius: 3px; transition: width .5s linear; }
+
+    /* ─── Floating movable widgets ─── */
+    .floating-widget { position: fixed; background: var(--card); border: 1px solid var(--bdr);
+      border-radius: 14px; box-shadow: 0 4px 24px rgba(0,0,0,.18); z-index: 800;
+      min-width: 200px; min-height: 120px; overflow: hidden; display: none; resize: both; }
+    .floating-widget.visible { display: block; }
+    .fw-handle { background: var(--bg2); border-bottom: 1px solid var(--bdr); padding: 8px 12px;
+      display: flex; align-items: center; gap: 8px; cursor: move; user-select: none; -webkit-user-select: none; }
+    .fw-handle-title { flex: 1; font-size: 13px; font-weight: 700; color: var(--txt); }
+    .fw-close { background: none; border: none; color: var(--dim); font-size: 16px; cursor: pointer; padding: 2px 6px; line-height: 1; }
+    .fw-close:active { color: var(--acc); }
+    .fw-body { overflow: auto; height: calc(100% - 37px); }
+
+    /* ─── Handbuch (Handbook) Panel ─── */
+    #tabHandbuch { overflow-y: auto; padding-bottom: 20px; }
+    .hb-section { padding: 14px; border-bottom: 1px solid var(--bdr); }
+    .hb-section:last-child { border-bottom: none; }
+    .hb-section-title { font-size: 18px; font-weight: 700; color: var(--txt); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px; }
+    .hb-section-sub { font-size: 13px; color: var(--dim); margin-bottom: 12px; line-height: 1.5; }
+    .hb-fn { background: var(--bg2); border-radius: var(--r); padding: 12px 14px; margin-bottom: 8px; }
+    .hb-fn-name { font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .hb-fn-desc { font-size: 13px; color: var(--dim); line-height: 1.6; }
+    .hb-fn-example { margin-top: 6px; padding: 6px 10px; background: var(--card); border-radius: 6px;
+      font-size: 12px; font-family: 'Courier New', monospace; color: var(--acc3); }
+    .hb-search { width: 100%; background: var(--card); border: 1px solid var(--bdr); border-radius: var(--r);
+      color: var(--txt); font-size: 15px; padding: 11px 14px; outline: none; font-family: inherit;
+      -webkit-user-select: text; user-select: text; margin-bottom: 14px; }
+    .hb-search:focus { border-color: var(--acc); }
+    .hb-toc { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .hb-toc-btn { padding: 6px 12px; background: var(--bg2); border: 1px solid var(--bdr); border-radius: 20px;
+      color: var(--dim); font-size: 12px; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .hb-toc-btn:active { background: var(--acc); color: white; border-color: var(--acc); }
+
+    /* ─── Glossary / Hard words ─── */
+    .hw { color: #0055cc; text-decoration: underline dotted; cursor: pointer; font-weight: 500; }
+    .hw:hover { color: #003d99; }
+    #glossaryTooltip { position: fixed; background: #1a2a4a; color: white; border-radius: 10px;
+      padding: 12px 16px; font-size: 13px; line-height: 1.6; max-width: 280px; z-index: 9999;
+      box-shadow: 0 4px 20px rgba(0,0,0,.3); pointer-events: none; display: none; }
+    #glossaryTooltip .gt-term { font-size: 11px; font-weight: 700; color: #7ab3f0; text-transform: uppercase;
+      letter-spacing: .5px; margin-bottom: 4px; }
+    #glossaryTooltip .gt-def { font-size: 13px; color: #e0e0e0; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -667,49 +744,59 @@
   <div class="ic">∑</div>
   <h1>MathSpaces</h1>
 
-  <p class="sub">Math keyboard, coordinate system &amp; equation solver</p>
+  <p class="sub">Mathekeyboard, Koordinatensystem &amp; Gleichungslöser</p>
 
   <!-- Features -->
   <div class="feat-grid">
     <div class="feat-card">
       <div class="fi">⌨️</div>
-      <div class="ft">Math Keyboard</div>
-      <div class="fd">Custom keyboard with numbers &amp; math symbols only</div>
+      <div class="ft">Mathe-Tastatur</div>
+      <div class="fd">Eigene Tastatur mit Zahlen &amp; Mathesymbolen</div>
     </div>
     <div class="feat-card">
       <div class="fi">📷</div>
-      <div class="ft">Math OCR</div>
-      <div class="fd">Scan numbers &amp; equations from photos</div>
+      <div class="ft">Mathe-OCR</div>
+      <div class="fd">Zahlen &amp; Gleichungen aus Fotos scannen</div>
     </div>
     <div class="feat-card">
       <div class="fi">📐</div>
-      <div class="ft">Coordinate System</div>
-      <div class="fd">Plot functions, set points &amp; more</div>
+      <div class="ft">Koordinatensystem</div>
+      <div class="fd">Funktionen zeichnen, Punkte setzen &amp; mehr</div>
     </div>
     <div class="feat-card">
       <div class="fi">🔢</div>
-      <div class="ft">Equation Solver</div>
-      <div class="fd">Solve linear &amp; quadratic equations</div>
+      <div class="ft">Gleichungslöser</div>
+      <div class="fd">Lineare &amp; quadratische Gleichungen lösen</div>
     </div>
     <div class="feat-card">
       <div class="fi">½</div>
-      <div class="ft">Fractions</div>
-      <div class="fd">Add, subtract, multiply fractions</div>
+      <div class="ft">Bruchrechnung</div>
+      <div class="fd">Brüche addieren, subtrahieren, multiplizieren</div>
     </div>
     <div class="feat-card">
       <div class="fi">📏</div>
-      <div class="ft">Physical Ruler</div>
-      <div class="fd">Draw straight lines with a draggable ruler</div>
+      <div class="ft">Lineal</div>
+      <div class="fd">Geraden mit verschiebbarem Lineal zeichnen</div>
     </div>
     <div class="feat-card">
       <div class="fi">📝</div>
-      <div class="ft">Notes</div>
-      <div class="fd">Quick notes saved in the app</div>
+      <div class="ft">Notizen</div>
+      <div class="fd">Schnellnotizen in der App speichern</div>
     </div>
     <div class="feat-card">
       <div class="fi">🎓</div>
-      <div class="ft">Formulas +</div>
-      <div class="fd">Formulas, geometry &amp; physics calculators</div>
+      <div class="ft">Formeln +</div>
+      <div class="fd">Formeln, Geometrie &amp; Physikrechner</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">⏱️</div>
+      <div class="ft">Klassentimer</div>
+      <div class="fd">Countdown für Unterrichtsstunden &amp; Pausen</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">📖</div>
+      <div class="ft">Handbuch</div>
+      <div class="fd">Erklärungen zu allen Funktionen mit Glossar</div>
     </div>
   </div>
 
@@ -721,43 +808,43 @@
     <div class="inst-option disabled">
       <div class="io-icon">🍎</div>
       <div class="io-body">
-        <div class="io-title">Download from App Store</div>
-        <div class="io-sub">Not available</div>
+        <div class="io-title">Im App Store herunterladen</div>
+        <div class="io-sub">Nicht verfügbar</div>
       </div>
-      <div class="io-badge">Not available</div>
+      <div class="io-badge">Nicht verfügbar</div>
     </div>
 
     <!-- Web App – available -->
     <div class="inst-option available" onclick="document.getElementById('webAppTutorial').scrollIntoView({behavior:'smooth'})">
       <div class="io-icon">🌐</div>
       <div class="io-body">
-        <div class="io-title">Install as Web App</div>
-        <div class="io-sub">Free – install as a progressive web app</div>
+        <div class="io-title">Als Web-App installieren</div>
+        <div class="io-sub">Kostenlos – als Progressive Web App installieren</div>
       </div>
-      <div class="io-badge">Available</div>
+      <div class="io-badge">Verfügbar</div>
     </div>
   </div>
 
   <!-- Tutorial -->
   <div class="box" id="webAppTutorial">
-    <h2 id="tutTitle">📲 Install Web App</h2>
+    <h2 id="tutTitle">📲 Web-App installieren</h2>
     <div id="iosInstr">
-      <div class="istep"><div class="isn">1</div><div class="ist">Tap the <strong>Share button</strong> <span style="font-size:16px">⬆️</span> in the Safari toolbar at the bottom</div></div>
-      <div class="istep"><div class="isn">2</div><div class="ist">Scroll down and tap <strong>"Add to Home Screen"</strong> 📲</div></div>
-      <div class="istep"><div class="isn">3</div><div class="ist">Tap <strong>"Add"</strong> in the top right – done!</div></div>
+      <div class="istep"><div class="isn">1</div><div class="ist">Tippe auf den <strong>Teilen-Button</strong> <span style="font-size:16px">⬆️</span> in der Safari-Symbolleiste unten</div></div>
+      <div class="istep"><div class="isn">2</div><div class="ist">Nach unten scrollen und <strong>„Zum Home-Bildschirm"</strong> 📲 antippen</div></div>
+      <div class="istep"><div class="isn">3</div><div class="ist">Oben rechts auf <strong>„Hinzufügen"</strong> tippen – fertig!</div></div>
     </div>
     <div id="andInstr" style="display:none">
-      <div class="istep"><div class="isn">1</div><div class="ist">Tap the <strong>"Install"</strong> button below</div></div>
-      <div class="istep"><div class="isn">2</div><div class="ist">Confirm the installation – the app will appear on your home screen</div></div>
+      <div class="istep"><div class="isn">1</div><div class="ist">Tippe auf den <strong>„Installieren"</strong>-Button unten</div></div>
+      <div class="istep"><div class="isn">2</div><div class="ist">Installation bestätigen – die App erscheint auf dem Startbildschirm</div></div>
     </div>
   </div>
 
-  <button id="andBtn" onclick="promptInstall()">📲 Install App</button>
-  <p class="inote">After installation the app is available offline.</p>
+  <button id="andBtn" onclick="promptInstall()">📲 App installieren</button>
+  <p class="inote">Nach der Installation ist die App offline verfügbar.</p>
 </div>
 
 <!-- "Im Web nutzen" floating button (visible only on install screen) -->
-<button id="webUseBtn" onclick="launchApp()" title="Use directly in browser without installing">🌐 Use in Browser</button>
+<button id="webUseBtn" onclick="launchApp()" title="Direkt im Browser nutzen ohne Installation">🌐 Im Browser nutzen</button>
 
 <!-- ══════════════════════════════════════════
      WARNING MODAL
@@ -765,11 +852,11 @@
 <div id="warnOverlay" style="display:none">
   <div id="warnModal">
     <div class="wi">⚠️</div>
-    <h2>Note: No Data Storage</h2>
-    <p>MathSpaces does <strong>not save any inputs, calculations or drawings</strong>.
-      All data is lost when you close the app. Please note important results
-      separately before closing the app.</p>
-    <button class="wok" onclick="dismissWarning()">Got it – Start App</button>
+    <h2>Hinweis: Keine Datenspeicherung</h2>
+    <p>MathSpaces <strong>speichert keine Eingaben, Rechnungen oder Zeichnungen</strong>.
+      Alle Daten gehen verloren, wenn du die App schließt. Bitte notiere wichtige Ergebnisse
+      separat, bevor du die App schließt.</p>
+    <button class="wok" onclick="dismissWarning()">Verstanden – App starten</button>
   </div>
 </div>
 
@@ -793,6 +880,14 @@
     <button id="fsModeKlasse" onclick="fsSwitchTab('klasse')"><span>🎓</span>Formeln +</button>
     <button id="fsModeBild" onclick="fsSwitchTab('bild')"><span>📷</span>Bild</button>
     <button id="fsModeAgent" onclick="fsSwitchTab('agent')"><span>🤖</span>Agent</button>
+    <button id="fsModeHandbuch" onclick="fsSwitchTab('handbuch')"><span>📖</span>Handbuch</button>
+  </div>
+  <div style="padding:8px 12px 0;border-top:1px solid var(--bdr);margin-top:6px">
+    <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Schnellzugriff</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="quick-access-btn" onclick="openFloatingTimer();closeFsMenu()">⏱️ Timer öffnen</button>
+      <button class="quick-access-btn" onclick="openFloatingCalc();closeFsMenu()">🧮 Rechner öffnen</button>
+    </div>
   </div>
   <button class="fsExit" onclick="closeFsMenuAndExit()">✕ Vollbild beenden</button>
 </div>
@@ -804,6 +899,7 @@
   </div>
   <div class="sdtabs">
     <button class="sdtab active" onclick="switchSideTab('sdMiniCalc')">Mini-Rechner</button>
+    <button class="sdtab" onclick="switchSideTab('sdTimer')">⏱️ Timer</button>
     <button class="sdtab" onclick="switchSideTab('sdSideNotes')">Notizen</button>
     <button class="sdtab" onclick="switchSideTab('sdLineConn')">Verbinder</button>
   </div>
@@ -843,6 +939,33 @@
     </div>
   </div>
 
+  <!-- Sidebar Timer -->
+  <div id="sdTimer" class="sdpanel">
+    <div class="timer-display" id="sdTimerDisplay">00:00</div>
+    <div class="timer-label" id="sdTimerLabel">Bereit</div>
+    <div class="timer-progress-track"><div class="timer-progress-fill" id="sdTimerFill" style="width:100%"></div></div>
+    <div class="timer-presets">
+      <button class="timer-preset" onclick="sdTimerSetPreset(5)">5 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(10)">10 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(15)">15 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(20)">20 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(25)">25 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(45)">45 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(90)">90 Min</button>
+    </div>
+    <div class="timer-custom-row">
+      <span>Eigene Zeit:</span>
+      <input class="timer-custom-in" id="sdTimerMin" type="number" min="0" max="999" value="5" placeholder="Min">
+      <span>Min</span>
+      <input class="timer-custom-in" id="sdTimerSec" type="number" min="0" max="59" value="0" placeholder="Sek">
+      <span>Sek</span>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn start" id="sdTimerStartBtn" onclick="sdTimerToggle()">▶ Start</button>
+      <button class="timer-btn reset" onclick="sdTimerReset()">⟲ Reset</button>
+    </div>
+  </div>
+
   <!-- Sidebar Quick Notes -->
   <div id="sdSideNotes" class="sdpanel">
     <div class="sdnotes">
@@ -875,6 +998,87 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FLOATING WIDGETS
+══════════════════════════════════════════ -->
+<!-- Floating Timer -->
+<div id="floatingTimer" class="floating-widget" style="width:280px;top:80px;left:50%;transform:translateX(-50%)">
+  <div class="fw-handle" id="floatingTimerHandle">
+    <span style="font-size:16px">⏱️</span>
+    <span class="fw-handle-title">Klassentimer</span>
+    <button class="fw-close" onclick="closeFloatingTimer()">✕</button>
+  </div>
+  <div class="fw-body">
+    <div class="timer-display" id="ftTimerDisplay">00:00</div>
+    <div class="timer-label" id="ftTimerLabel">Bereit</div>
+    <div class="timer-progress-track"><div class="timer-progress-fill" id="ftTimerFill" style="width:100%"></div></div>
+    <div class="timer-presets">
+      <button class="timer-preset" onclick="ftTimerSetPreset(5)">5 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(10)">10 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(15)">15 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(20)">20 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(25)">25 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(45)">45 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(90)">90 Min</button>
+    </div>
+    <div class="timer-custom-row">
+      <span>Zeit:</span>
+      <input class="timer-custom-in" id="ftTimerMin" type="number" min="0" max="999" value="5" placeholder="Min">
+      <span>Min</span>
+      <input class="timer-custom-in" id="ftTimerSec" type="number" min="0" max="59" value="0" placeholder="Sek">
+      <span>Sek</span>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn start" id="ftTimerStartBtn" onclick="ftTimerToggle()">▶ Start</button>
+      <button class="timer-btn reset" onclick="ftTimerReset()">⟲ Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Mini Calculator -->
+<div id="floatingCalc" class="floating-widget" style="width:260px;top:80px;right:10px">
+  <div class="fw-handle" id="floatingCalcHandle">
+    <span style="font-size:16px">🧮</span>
+    <span class="fw-handle-title">Mini-Rechner</span>
+    <button class="fw-close" onclick="closeFloatingCalc()">✕</button>
+  </div>
+  <div class="fw-body">
+    <div class="mcwrap" style="padding:6px">
+      <div class="mcdisp">
+        <div class="mcexpr" id="fmcExpr"></div>
+        <div class="mcres" id="fmcRes">0</div>
+      </div>
+      <div class="mcbtns">
+        <button class="mcb cl"    onclick="fmcInput('AC')">AC</button>
+        <button class="mcb"       onclick="fmcInput('⌫')">⌫</button>
+        <button class="mcb"       onclick="fmcInput('%')">%</button>
+        <button class="mcb op"    onclick="fmcInput('÷')">÷</button>
+        <button class="mcb"       onclick="fmcInput('7')">7</button>
+        <button class="mcb"       onclick="fmcInput('8')">8</button>
+        <button class="mcb"       onclick="fmcInput('9')">9</button>
+        <button class="mcb op"    onclick="fmcInput('×')">×</button>
+        <button class="mcb"       onclick="fmcInput('4')">4</button>
+        <button class="mcb"       onclick="fmcInput('5')">5</button>
+        <button class="mcb"       onclick="fmcInput('6')">6</button>
+        <button class="mcb op"    onclick="fmcInput('-')">−</button>
+        <button class="mcb"       onclick="fmcInput('1')">1</button>
+        <button class="mcb"       onclick="fmcInput('2')">2</button>
+        <button class="mcb"       onclick="fmcInput('3')">3</button>
+        <button class="mcb op"    onclick="fmcInput('+')">+</button>
+        <button class="mcb sp2"   onclick="fmcInput('0')">0</button>
+        <button class="mcb"       onclick="fmcInput('.')">.</button>
+        <button class="mcb eq"    onclick="fmcInput('=')">= </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Glossary Tooltip -->
+<div id="glossaryTooltip">
+  <div class="gt-term" id="gtTerm"></div>
+  <div class="gt-def" id="gtDef"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -1046,8 +1250,8 @@
         <button class="tbtn" title="Ansicht zurücksetzen" onclick="resetView()">⊙</button>
         <button class="tbtn" title="Screenshot" onclick="saveCanvas()">📷</button>
         <button class="tbtn" id="lockBtn" title="Koordinatensystem sperren" onclick="toggleLock()">🔓</button>
-        <button class="tbtn" id="rulerBtn" title="Coordinate ruler toggle" onclick="toggleRuler()">📏</button>
-        <button class="tbtn" id="physRulerBtn" title="Physical ruler for straight lines" onclick="togglePhysRuler()">📐</button>
+        <button class="tbtn" id="rulerBtn" title="Koordinatenlineal ein/aus" onclick="toggleRuler()">📏</button>
+        <button class="tbtn" id="physRulerBtn" title="Physisches Lineal für Geraden" onclick="togglePhysRuler()">📐</button>
         <button class="tbtn" id="quadBtn" title="Quadrant-Ansicht" onclick="toggleQuadPanel()">⊞</button>
       </div>
 
@@ -1189,9 +1393,9 @@
               <button class="togbtn active" id="togLabels" onclick="toggleSetting('labels')">Beschriftung</button>
               <button class="togbtn active" id="togAxes" onclick="toggleSetting('axes')">Achsen</button>
             </div>
-            <div class="psect" style="margin-top:10px">Connector Options</div>
+            <div class="psect" style="margin-top:10px">Verbinder-Optionen</div>
             <div class="togrow">
-              <button class="togbtn active" id="togConnDots" onclick="toggleConnectorDots()">Point Circles</button>
+              <button class="togbtn active" id="togConnDots" onclick="toggleConnectorDots()">Punkt-Kreise</button>
             </div>
             <div class="psect" style="margin-top:10px">Verhältnis (Pixel/Einheit)</div>
             <div class="srow">
@@ -1634,8 +1838,8 @@
       <!-- Drop zone / upload area -->
       <div class="iu-dropzone" id="bildDropZone">
         <div class="iu-icon">📷</div>
-        <div class="iu-title">Upload Image</div>
-        <div class="iu-sub">Tap here or drag a photo in</div>
+        <div class="iu-title">Bild hochladen</div>
+        <div class="iu-sub">Hier tippen oder Foto hineinziehen</div>
         <input type="file" id="bildFileInput" accept="image/*" style="display:none">
       </div>
       <!-- Image preview -->
@@ -1644,10 +1848,10 @@
         <button id="bildClearBtn" onclick="bildClear()">✕</button>
       </div>
       <!-- Scan button -->
-      <button class="sbtn" id="bildScanBtn" onclick="bildScan()" style="margin:0 14px 10px;display:none">🔍 Scan Numbers &amp; Math</button>
+      <button class="sbtn" id="bildScanBtn" onclick="bildScan()" style="margin:0 14px 10px;display:none">🔍 Zahlen &amp; Mathe scannen</button>
       <!-- Status / progress -->
       <div class="bild-status" id="bildStatus">
-        <span id="bildStatusText">Ready</span>
+        <span id="bildStatusText">Bereit</span>
         <div class="bild-progress"><div class="bild-progress-bar" id="bildProgressBar" style="width:0%"></div></div>
       </div>
       <!-- Results -->
@@ -1679,6 +1883,143 @@
       <div id="agentResultsWrap"></div>
     </div><!-- end tabAgent -->
 
+    <!-- ══════════════════════════════════════════
+         HANDBUCH PANEL
+    ══════════════════════════════════════════ -->
+    <div id="tabHandbuch" class="panel">
+      <div style="padding:12px 14px 8px;background:var(--bg2);border-bottom:1px solid var(--bdr);flex-shrink:0">
+        <input class="hb-search" id="hbSearch" type="text" placeholder="🔍 Suche im Handbuch…" oninput="hbFilter()" autocorrect="off" autocapitalize="off">
+        <div class="hb-toc">
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekRechner')">🧮 Rechner</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekKoord')">📐 Koordinaten</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekFormeln')">🎓 Formeln</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekTimer')">⏱️ Timer</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekGlossar')">📚 Glossar</button>
+        </div>
+      </div>
+      <div id="hbContent" style="flex:1;overflow-y:auto">
+
+        <!-- Rechner -->
+        <div class="hb-section" id="hbSekRechner">
+          <div class="hb-section-title">🧮 Rechner</div>
+          <div class="hb-section-sub">Der Rechner ermöglicht das Berechnen von mathematischen <span class="hw" data-term="Ausdruck">Ausdrücken</span>. Er unterstützt einfache Grundrechenarten bis hin zu <span class="hw" data-term="Trigonometrie">trigonometrischen</span> Funktionen.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔢 Grundrechner</div>
+            <div class="hb-fn-desc">Der Grundrechner führt <span class="hw" data-term="Addition">Addition</span> (+), <span class="hw" data-term="Subtraktion">Subtraktion</span> (−), <span class="hw" data-term="Multiplikation">Multiplikation</span> (×) und <span class="hw" data-term="Division">Division</span> (÷) durch. Gib einen Ausdruck ein und tippe auf <strong>=</strong> für das Ergebnis. Mit <strong>AC</strong> wird alles gelöscht, <strong>⌫</strong> löscht das letzte Zeichen.</div>
+            <div class="hb-fn-example">Beispiel: 12 × 3 + 5 = 41</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔬 Wissenschaftlicher Modus (SCI)</div>
+            <div class="hb-fn-desc">Aktiviere den wissenschaftlichen Modus mit dem <strong>SCI</strong>-Knopf oben rechts im Rechner. Dann erscheinen zusätzliche Funktionen wie <span class="hw" data-term="Sinus">sin</span>, <span class="hw" data-term="Kosinus">cos</span>, <span class="hw" data-term="Tangens">tan</span>, <span class="hw" data-term="Logarithmus">log</span>, <span class="hw" data-term="Wurzel">√</span> und <span class="hw" data-term="Potenz">x²</span>. Mit <strong>DEG/RAD</strong> wechselst du zwischen <span class="hw" data-term="Grad">Grad</span> und <span class="hw" data-term="Bogenmass">Bogenmass</span>.</div>
+            <div class="hb-fn-example">Beispiel: sin(30°) = 0.5</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">⚖️ Gleichungslöser</div>
+            <div class="hb-fn-desc">Löst <span class="hw" data-term="LineareGleichung">lineare Gleichungen</span> (z.B. 2x+3=7 → x=2) und <span class="hw" data-term="QuadratischeGleichung">quadratische Gleichungen</span> (z.B. x²−5x+6=0 → x=2, x=3). Gib die Gleichung in der Form „ax+b=c" oder „ax²+bx+c=0" ein. Die Lösung wird schrittweise angezeigt.</div>
+            <div class="hb-fn-example">Beispiel: 3x - 6 = 0 → x = 2</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">½ Bruchrechner</div>
+            <div class="hb-fn-desc">Rechnet mit <span class="hw" data-term="Bruch">Brüchen</span>. Gib <span class="hw" data-term="Zaehler">Zähler</span> und <span class="hw" data-term="Nenner">Nenner</span> zweier Brüche ein, wähle eine Rechenart (+, −, ×, ÷) und tippe auf <strong>Berechnen</strong>. Das Ergebnis wird <span class="hw" data-term="Kuerzen">gekürzt</span> angezeigt.</div>
+            <div class="hb-fn-example">Beispiel: 1/2 + 1/3 = 5/6</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📏 Einheitenumrechner</div>
+            <div class="hb-fn-desc">Rechnet Einheiten um, z.B. Längen, Gewichte, Temperaturen, Flächen, Volumen, Geschwindigkeit und Zeit. Wähle eine Kategorie, gib den Wert ein und wähle Quell- und Zieleinheit.</div>
+            <div class="hb-fn-example">Beispiel: 100 km/h → 27,78 m/s</div>
+          </div>
+        </div>
+
+        <!-- Koordinaten -->
+        <div class="hb-section" id="hbSekKoord">
+          <div class="hb-section-title">📐 Koordinatensystem</div>
+          <div class="hb-section-sub">Das Koordinatensystem zeigt ein <span class="hw" data-term="KartesischesKS">kartesisches Koordinatensystem</span>. Du kannst Funktionen zeichnen, Punkte setzen und das System verschieben/zoomen.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📈 Funktionen zeichnen</div>
+            <div class="hb-fn-desc">Gib im linken Bereich eine Funktion ein (z.B. <code>x^2</code> oder <code>sin(x)</code>) und tippe auf <strong>+</strong>. Die Funktion wird sofort im Koordinatensystem gezeichnet. Du kannst mehrere Funktionen gleichzeitig anzeigen und jede einzeln löschen oder ausblenden.</div>
+            <div class="hb-fn-example">Beispiel: x^2-2x+1 → Parabel</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📍 Punkte setzen</div>
+            <div class="hb-fn-desc">Im Tab <strong>Punkte</strong> kannst du benannte Punkte mit x- und y-Koordinaten setzen. Diese werden im Koordinatensystem mit ihrem Namen beschriftet. Du kannst Punkte auch direkt auf dem Bildschirm antippen, wenn der <span class="hw" data-term="Tippen">Tipp-Modus</span> aktiv ist.</div>
+            <div class="hb-fn-example">Beispiel: Punkt A bei (3, 4)</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔍 Zoom und Navigation</div>
+            <div class="hb-fn-desc">Mit zwei Fingern zoomen (Pinch-to-Zoom) oder mit den Zoom-Tasten (+/−) vergrößern/verkleinern. Mit einem Finger (oder Maus) verschieben, wenn der Panning-Modus aktiv ist. Mit dem 🏠-Knopf zu Standardansicht zurückkehren.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📏 Lineal</div>
+            <div class="hb-fn-desc">Das physische Lineal ermöglicht das Zeichnen gerader Linien. Aktiviere es mit dem 📐-Knopf, dann erscheint ein drehbares Lineal im Koordinatensystem. Zeichne entlang des Lineals für eine gerade Linie.</div>
+          </div>
+        </div>
+
+        <!-- Formeln -->
+        <div class="hb-section" id="hbSekFormeln">
+          <div class="hb-section-title">🎓 Formeln &amp; Klasse</div>
+          <div class="hb-section-sub">Der Bereich <strong>Formeln+</strong> enthält mathematische Formeln, Vorlagen, Geometrie- und Physikrechner.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📋 Formelsammlung</div>
+            <div class="hb-fn-desc">Schnelle Übersicht über wichtige Formeln: <span class="hw" data-term="QuadratischeFormel">Quadratische Formel</span>, <span class="hw" data-term="BinomischeFormeln">Binomische Formeln</span>, <span class="hw" data-term="Steigung">Steigung</span>, <span class="hw" data-term="Statistik">Statistik</span> (Mittelwert, <span class="hw" data-term="Varianz">Varianz</span>, <span class="hw" data-term="Standardabweichung">Standardabweichung</span>) und <span class="hw" data-term="Zahlentheorie">Zahlentheorie</span>.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔧 Vorlagen-Rechner</div>
+            <div class="hb-fn-desc">Vorlagen für häufige Berechnungen: <span class="hw" data-term="Pythagoras">Pythagoras</span> (c = √(a²+b²)), <span class="hw" data-term="Prozentrechnung">Prozentrechnung</span>, <span class="hw" data-term="Zinsrechnung">Zinsrechnung</span>, <span class="hw" data-term="BMI">BMI</span>, <span class="hw" data-term="OhmschesGesetz">Ohmsches Gesetz</span>, Kreisberechnung und mehr.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📐 Geometrie</div>
+            <div class="hb-fn-desc">Berechne Flächen und Umfänge von Formen: Kreis, Rechteck, Dreieck, Trapez, Parallelogramm, Rhombus und mehr. Auch 3D-Körper: Zylinder, Kugel, Würfel, Quader, Kegel.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">⚡ Physik</div>
+            <div class="hb-fn-desc">Physikalische Berechnungen: <span class="hw" data-term="Kraft">Kraft</span> (F=m×a), <span class="hw" data-term="kinetischeEnergie">Kinetische Energie</span> (Ekin=½mv²), <span class="hw" data-term="potentielleEnergie">Potentielle Energie</span>, Leistung, <span class="hw" data-term="OhmschesGesetz">Ohmsches Gesetz</span>, Geschwindigkeit, Druck und Wärme.</div>
+          </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="hb-section" id="hbSekTimer">
+          <div class="hb-section-title">⏱️ Klassentimer</div>
+          <div class="hb-section-sub">Der Klassentimer hilft beim Zeitmanagement im Unterricht. Er kann als <span class="hw" data-term="Countdown">Countdown</span> für Aufgaben, Pausen oder ganze Unterrichtsstunden verwendet werden.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">▶ Timer starten</div>
+            <div class="hb-fn-desc">Wähle eine voreingestellte Zeit (5, 10, 15, 20, 25, 45 oder 90 Minuten) oder gib eine eigene Zeit in Minuten und Sekunden ein. Tippe auf <strong>▶ Start</strong>, um den Countdown zu beginnen. Mit <strong>⏸ Pause</strong> anhaltbar, mit <strong>⟲ Reset</strong> zurücksetzen.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔔 Alarmsignal</div>
+            <div class="hb-fn-desc">Wenn der Timer abläuft, wird ein akustisches Signal ausgegeben (sofern der Ton nicht stummgeschaltet ist) und die Anzeige blinkt rot. Der Timer wechselt in den Zustand <strong>Zeit abgelaufen!</strong>.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📌 Schwebender Timer</div>
+            <div class="hb-fn-desc">Öffne den Timer als schwebende, verschiebbare Karte über den Schnellmenü-Knopf oder das Schnellmenü. Das Fenster kann frei verschoben (Titelleiste ziehen) und in der Größe verändert (Ecke/Rand ziehen) werden.</div>
+          </div>
+        </div>
+
+        <!-- Glossar -->
+        <div class="hb-section" id="hbSekGlossar">
+          <div class="hb-section-title">📚 Glossar – Erklärung von Fachbegriffen</div>
+          <div class="hb-section-sub">Blaue unterstrichene Begriffe im Handbuch sind <span class="hw" data-term="Fachbegriff">Fachbegriffe</span>. Tippe darauf, um die Erklärung zu sehen. Hier findest du alle Begriffe auf einen Blick.</div>
+          <div id="hbGlossarList" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+        </div>
+
+      </div>
+    </div><!-- end tabHandbuch -->
+
   </div><!-- content -->
 
   <nav id="nav">
@@ -1699,6 +2040,9 @@
     </button>
     <button class="nb" id="nbAgent" onclick="switchTab('agent')">
       <span class="ni">🤖</span>Agent
+    </button>
+    <button class="nb" id="nbHandbuch" onclick="switchTab('handbuch')">
+      <span class="ni">📖</span>Handbuch
     </button>
   </nav>
 </div><!-- app -->
@@ -1782,7 +2126,7 @@ window.addEventListener('load', () => {
       }
       if (!isIOS() && !deferredPrompt) {
         // Desktop or non-iOS non-Android – update tutorial title
-        document.getElementById('tutTitle').textContent = '🖥️ Install Web App';
+        document.getElementById('tutTitle').textContent = '🖥️ Web-App installieren';
       }
     }
   };
@@ -1810,14 +2154,17 @@ function switchTab(tab) {
   document.getElementById('tabKlasse').classList.toggle('active', tab === 'klasse');
   document.getElementById('tabBild').classList.toggle('active', tab === 'bild');
   document.getElementById('tabAgent').classList.toggle('active', tab === 'agent');
+  document.getElementById('tabHandbuch').classList.toggle('active', tab === 'handbuch');
   document.getElementById('nbRechner').classList.toggle('active', tab === 'rechner');
   document.getElementById('nbKoord').classList.toggle('active', tab === 'koordinaten');
   document.getElementById('nbNotizen').classList.toggle('active', tab === 'notizen');
   document.getElementById('nbKlasse').classList.toggle('active', tab === 'klasse');
   document.getElementById('nbBild').classList.toggle('active', tab === 'bild');
   document.getElementById('nbAgent').classList.toggle('active', tab === 'agent');
+  document.getElementById('nbHandbuch').classList.toggle('active', tab === 'handbuch');
   if (tab === 'koordinaten') { resizeCanvas(); applyRangeSettings(); }
   if (tab === 'klasse') { initKlasse(); }
+  if (tab === 'handbuch') { initHandbuch(); }
 }
 
 function switchSub(id) {
@@ -3087,8 +3434,8 @@ function toggleHideUI() {
 ══════════════════════════════════════════════ */
 function openFsMenu() {
   // Highlight the currently active tab button
-  const tabs = ['rechner','koordinaten','notizen','klasse','bild','agent'];
-  const ids  = ['fsModeRechner','fsModeKoord','fsModeNotizen','fsModeKlasse','fsModeBild','fsModeAgent'];
+  const tabs = ['rechner','koordinaten','notizen','klasse','bild','agent','handbuch'];
+  const ids  = ['fsModeRechner','fsModeKoord','fsModeNotizen','fsModeKlasse','fsModeBild','fsModeAgent','fsModeHandbuch'];
   ids.forEach((id, i) => {
     document.getElementById(id).classList.toggle('active', tabs[i] === currentTab);
   });
@@ -3125,8 +3472,9 @@ function switchSideTab(id) {
   document.querySelectorAll('.sdpanel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sdtab').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs = ['sdMiniCalc','sdSideNotes','sdLineConn'];
-  document.querySelectorAll('.sdtab')[tabs.indexOf(id)].classList.add('active');
+  const tabs = ['sdMiniCalc','sdTimer','sdSideNotes','sdLineConn'];
+  const idx = tabs.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.sdtab')[idx].classList.add('active');
   if (id === 'sdLineConn') { initLcColorRow(); renderLcPointList(); renderLcConnectors(); }
 }
 
@@ -3937,7 +4285,7 @@ async function bildScan() {
   const resultsEl = document.getElementById('bildResults');
 
   statusEl.classList.add('vis');
-  statusTxt.textContent = 'Loading OCR engine…';
+  statusTxt.textContent = 'OCR-Engine laden…';
   bar.style.width = '5%';
   resultsEl.innerHTML = '';
 
@@ -3948,12 +4296,12 @@ async function bildScan() {
         const s = document.createElement('script');
         s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
         s.onload = resolve;
-        s.onerror = () => reject(new Error('OCR engine could not be loaded. Please check your internet connection.'));
+        s.onerror = () => reject(new Error('OCR-Engine konnte nicht geladen werden. Bitte überprüfe deine Internetverbindung.'));
         document.head.appendChild(s);
       });
     }
 
-    statusTxt.textContent = 'Starting recognition…';
+    statusTxt.textContent = 'Erkennung starten…';
     bar.style.width = '15%';
 
     // Use English only and whitelist math/number characters for better accuracy
@@ -3961,7 +4309,7 @@ async function bildScan() {
       logger: m => {
         if (m.status === 'recognizing text') {
           bar.style.width = Math.round(15 + m.progress * 75) + '%';
-          statusTxt.textContent = 'Recognizing… ' + Math.round(m.progress * 100) + '%';
+          statusTxt.textContent = 'Erkennung… ' + Math.round(m.progress * 100) + '%';
         }
       }
     });
@@ -3976,7 +4324,7 @@ async function bildScan() {
     await worker.terminate();
 
     bar.style.width = '100%';
-    statusTxt.textContent = '✅ Done!';
+    statusTxt.textContent = '✅ Fertig!';
 
     bildParseAndShow(text);
   } catch (err) {
@@ -4040,17 +4388,17 @@ function bildParseAndShow(rawText) {
     return;
   }
 
-  // Show OCR accuracy notice
-  html += `<div class="bild-ocr-notice">⚠️ Recognized text may contain errors – please verify results.</div>`;
+  // OCR-Genauigkeitshinweis anzeigen
+  html += `<div class="bild-ocr-notice">⚠️ Der erkannte Text kann Fehler enthalten – bitte Ergebnisse überprüfen.</div>`;
 
   if (equations.length > 0) {
-    html += `<div class="bild-sec-title">Detected Equations (${equations.length})</div>`;
+    html += `<div class="bild-sec-title">Erkannte Gleichungen (${equations.length})</div>`;
     equations.forEach((eq, idx) => {
       let solHtml = '';
       try {
         const steps = parseAndSolve(eq);
         const res = steps.find(s => s.result);
-        if (res) solHtml = `<div class="bild-item-sol">Solution: <strong>${escHtml(res.math)}</strong></div>`;
+        if (res) solHtml = `<div class="bild-item-sol">Lösung: <strong>${escHtml(res.math)}</strong></div>`;
       } catch { /* unsolvable – still show it */ }
       // Check if equation can be plotted as y = f(x)
       const fnExpr = bildExtractFnExpr(eq);
@@ -4059,34 +4407,34 @@ function bildParseAndShow(rawText) {
         <div class="bild-item-text">${escHtml(eq)}</div>
         ${solHtml}
         <div class="bild-item-actions">
-          <button class="bi-btn" onclick="bildSendToSolver(${idx})">→ Solver</button>
-          <button class="bi-btn" onclick="bildSendToCalc(${idx})">→ Calculator</button>
+          <button class="bi-btn" onclick="bildSendToSolver(${idx})">→ Löser</button>
+          <button class="bi-btn" onclick="bildSendToCalc(${idx})">→ Rechner</button>
           ${fnExpr !== null ? `<button class="bi-btn" onclick="bildSendToCoordFn(${idx})">→ Graph</button>` : ''}
           <button class="bi-btn" onclick="bildSendToAgent(${idx})">→ Agent</button>
-          <button class="bi-btn" onclick="bildCopyEq(${idx})">📋 Copy</button>
+          <button class="bi-btn" onclick="bildCopyEq(${idx})">📋 Kopieren</button>
         </div>
       </div>`;
     });
   }
 
   if (uniquePts.length > 0) {
-    html += `<div class="bild-sec-title" style="margin-top:${equations.length ? '10px' : '0'}">Detected Coordinates (${uniquePts.length})</div>`;
+    html += `<div class="bild-sec-title" style="margin-top:${equations.length ? '10px' : '0'}">Erkannte Koordinaten (${uniquePts.length})</div>`;
     uniquePts.forEach((pt, idx) => {
       const disp = (pt.label ? pt.label + ' = ' : '') + '(' + pt.x + ', ' + pt.y + ')';
       html += `<div class="bild-pt-item">
         <div class="bild-item-text">${escHtml(disp)}</div>
         <div class="bild-item-actions">
           <button class="bi-btn" onclick="bildAddPoint(${idx})">→ Graph</button>
-          <button class="bi-btn" onclick="bildCopyPt(${idx})">📋 Copy</button>
+          <button class="bi-btn" onclick="bildCopyPt(${idx})">📋 Kopieren</button>
         </div>
       </div>`;
     });
   }
 
-  // "Add all to agent" bar at the bottom
+  // „Alle zum Agent hinzufügen"-Leiste unten
   if (equations.length > 0) {
     html += `<div class="bild-agent-bar">
-      <button onclick="bildSendAllToAgent()">🤖 Add all equations to Agent</button>
+      <button onclick="bildSendAllToAgent()">🤖 Alle Gleichungen zum Agent hinzufügen</button>
     </div>`;
   }
 
@@ -4821,6 +5169,404 @@ function toggleConnectorDots() {
   drawCanvas();
 }
 
+/* ══════════════════════════════════════════════
+   SIDEBAR TIMER
+══════════════════════════════════════════════ */
+const sdTimer = { total: 0, remaining: 0, running: false, interval: null };
+
+function sdTimerSetPreset(minutes) {
+  sdTimerReset();
+  document.getElementById('sdTimerMin').value = minutes;
+  document.getElementById('sdTimerSec').value = 0;
+  sdTimer.total = minutes * 60;
+  sdTimer.remaining = sdTimer.total;
+  sdTimerUpdateDisplay();
+}
+
+function sdTimerToggle() {
+  if (sdTimer.running) {
+    sdTimerPause();
+  } else {
+    sdTimerStart();
+  }
+}
+
+function sdTimerStart() {
+  if (sdTimer.remaining <= 0) {
+    const m = parseInt(document.getElementById('sdTimerMin').value) || 0;
+    const s = parseInt(document.getElementById('sdTimerSec').value) || 0;
+    sdTimer.total = m * 60 + s;
+    sdTimer.remaining = sdTimer.total;
+  }
+  if (sdTimer.total <= 0) return;
+  sdTimer.running = true;
+  document.getElementById('sdTimerStartBtn').textContent = '⏸ Pause';
+  document.getElementById('sdTimerStartBtn').classList.replace('start','pause');
+  sdTimer.interval = setInterval(() => {
+    sdTimer.remaining--;
+    sdTimerUpdateDisplay();
+    if (sdTimer.remaining <= 0) {
+      clearInterval(sdTimer.interval);
+      sdTimer.running = false;
+      timerAlarm('sd');
+    }
+  }, 1000);
+}
+
+function sdTimerPause() {
+  clearInterval(sdTimer.interval);
+  sdTimer.running = false;
+  document.getElementById('sdTimerStartBtn').textContent = '▶ Weiter';
+  document.getElementById('sdTimerStartBtn').classList.replace('pause','start');
+}
+
+function sdTimerReset() {
+  clearInterval(sdTimer.interval);
+  sdTimer.running = false;
+  const m = parseInt(document.getElementById('sdTimerMin').value) || 0;
+  const s = parseInt(document.getElementById('sdTimerSec').value) || 0;
+  sdTimer.total = m * 60 + s;
+  sdTimer.remaining = sdTimer.total;
+  document.getElementById('sdTimerStartBtn').textContent = '▶ Start';
+  document.getElementById('sdTimerStartBtn').classList.remove('pause');
+  document.getElementById('sdTimerStartBtn').classList.add('start');
+  sdTimerUpdateDisplay();
+}
+
+function sdTimerUpdateDisplay() {
+  const m = Math.floor(sdTimer.remaining / 60);
+  const s = sdTimer.remaining % 60;
+  const disp = document.getElementById('sdTimerDisplay');
+  const fill = document.getElementById('sdTimerFill');
+  const lbl = document.getElementById('sdTimerLabel');
+  disp.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  disp.className = 'timer-display';
+  if (sdTimer.running) {
+    if (sdTimer.remaining <= 60) { disp.classList.add('warning'); lbl.textContent = 'Fast vorbei!'; }
+    else { disp.classList.add('running'); lbl.textContent = 'Läuft…'; }
+  } else if (sdTimer.remaining <= 0 && sdTimer.total > 0) {
+    disp.classList.add('done'); lbl.textContent = 'Zeit abgelaufen!';
+  } else {
+    lbl.textContent = 'Bereit';
+  }
+  const pct = sdTimer.total > 0 ? (sdTimer.remaining / sdTimer.total) * 100 : 100;
+  if (fill) fill.style.width = pct + '%';
+}
+
+/* ══════════════════════════════════════════════
+   FLOATING TIMER
+══════════════════════════════════════════════ */
+const ftTimer = { total: 0, remaining: 0, running: false, interval: null };
+
+function openFloatingTimer() {
+  const el = document.getElementById('floatingTimer');
+  el.classList.add('visible');
+  ftTimerUpdateDisplay();
+}
+
+function closeFloatingTimer() {
+  document.getElementById('floatingTimer').classList.remove('visible');
+}
+
+function ftTimerSetPreset(minutes) {
+  ftTimerReset();
+  document.getElementById('ftTimerMin').value = minutes;
+  document.getElementById('ftTimerSec').value = 0;
+  ftTimer.total = minutes * 60;
+  ftTimer.remaining = ftTimer.total;
+  ftTimerUpdateDisplay();
+}
+
+function ftTimerToggle() {
+  if (ftTimer.running) { ftTimerPause(); } else { ftTimerStart(); }
+}
+
+function ftTimerStart() {
+  if (ftTimer.remaining <= 0) {
+    const m = parseInt(document.getElementById('ftTimerMin').value) || 0;
+    const s = parseInt(document.getElementById('ftTimerSec').value) || 0;
+    ftTimer.total = m * 60 + s;
+    ftTimer.remaining = ftTimer.total;
+  }
+  if (ftTimer.total <= 0) return;
+  ftTimer.running = true;
+  document.getElementById('ftTimerStartBtn').textContent = '⏸ Pause';
+  document.getElementById('ftTimerStartBtn').classList.replace('start','pause');
+  ftTimer.interval = setInterval(() => {
+    ftTimer.remaining--;
+    ftTimerUpdateDisplay();
+    if (ftTimer.remaining <= 0) {
+      clearInterval(ftTimer.interval);
+      ftTimer.running = false;
+      timerAlarm('ft');
+    }
+  }, 1000);
+}
+
+function ftTimerPause() {
+  clearInterval(ftTimer.interval);
+  ftTimer.running = false;
+  document.getElementById('ftTimerStartBtn').textContent = '▶ Weiter';
+  document.getElementById('ftTimerStartBtn').classList.replace('pause','start');
+}
+
+function ftTimerReset() {
+  clearInterval(ftTimer.interval);
+  ftTimer.running = false;
+  const m = parseInt(document.getElementById('ftTimerMin').value) || 0;
+  const s = parseInt(document.getElementById('ftTimerSec').value) || 0;
+  ftTimer.total = m * 60 + s;
+  ftTimer.remaining = ftTimer.total;
+  document.getElementById('ftTimerStartBtn').textContent = '▶ Start';
+  document.getElementById('ftTimerStartBtn').classList.remove('pause');
+  document.getElementById('ftTimerStartBtn').classList.add('start');
+  ftTimerUpdateDisplay();
+}
+
+function ftTimerUpdateDisplay() {
+  const m = Math.floor(ftTimer.remaining / 60);
+  const s = ftTimer.remaining % 60;
+  const disp = document.getElementById('ftTimerDisplay');
+  const fill = document.getElementById('ftTimerFill');
+  const lbl = document.getElementById('ftTimerLabel');
+  disp.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  disp.className = 'timer-display';
+  if (ftTimer.running) {
+    if (ftTimer.remaining <= 60) { disp.classList.add('warning'); lbl.textContent = 'Fast vorbei!'; }
+    else { disp.classList.add('running'); lbl.textContent = 'Läuft…'; }
+  } else if (ftTimer.remaining <= 0 && ftTimer.total > 0) {
+    disp.classList.add('done'); lbl.textContent = 'Zeit abgelaufen!';
+  } else {
+    lbl.textContent = 'Bereit';
+  }
+  const pct = ftTimer.total > 0 ? (ftTimer.remaining / ftTimer.total) * 100 : 100;
+  if (fill) fill.style.width = pct + '%';
+}
+
+function timerAlarm(prefix) {
+  // Visual alarm
+  const disp = document.getElementById((prefix === 'sd' ? 'sd' : 'ft') + 'TimerDisplay');
+  if (!disp) return;
+  disp.classList.add('done');
+  let blinks = 0;
+  const blink = setInterval(() => {
+    disp.style.opacity = disp.style.opacity === '0.3' ? '1' : '0.3';
+    blinks++;
+    if (blinks > 10) { clearInterval(blink); disp.style.opacity = '1'; }
+  }, 300);
+  // Audio alarm
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 200, 400].forEach(delay => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.4, ctx.currentTime + delay/1000);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay/1000 + 0.4);
+      osc.start(ctx.currentTime + delay/1000);
+      osc.stop(ctx.currentTime + delay/1000 + 0.4);
+    });
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════════════
+   FLOATING MINI CALCULATOR
+══════════════════════════════════════════════ */
+const fmc = { expr: '', result: '0' };
+
+function openFloatingCalc() {
+  document.getElementById('floatingCalc').classList.add('visible');
+}
+
+function closeFloatingCalc() {
+  document.getElementById('floatingCalc').classList.remove('visible');
+}
+
+function fmcInput(ch) {
+  if (ch === 'AC') { fmc.expr = ''; fmc.result = '0'; updateFmcDisplay(); return; }
+  if (ch === '⌫') {
+    fmc.expr = fmc.expr.slice(0,-1);
+    try { fmc.result = fmc.expr ? String(evalSafe(fmc.expr.replace(/÷/g,'/').replace(/×/g,'*'))) : '0'; } catch { fmc.result = '...'; }
+    updateFmcDisplay(); return;
+  }
+  if (ch === '=') {
+    try {
+      const expr = fmc.expr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+      fmc.result = formatNum(evalSafe(expr));
+      fmc.expr = fmc.result === 'Fehler' ? '' : fmc.result;
+    } catch { fmc.result = 'Fehler'; fmc.expr = ''; }
+    updateFmcDisplay(); return;
+  }
+  if (ch === '%') {
+    try { fmc.expr = String(evalSafe(fmc.expr.replace(/÷/g,'/').replace(/×/g,'*')) / 100); } catch {}
+    updateFmcDisplay(); return;
+  }
+  fmc.expr += ch;
+  try { fmc.result = String(evalSafe(fmc.expr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-'))); } catch { fmc.result = '...'; }
+  updateFmcDisplay();
+}
+
+function updateFmcDisplay() {
+  const ex = document.getElementById('fmcExpr');
+  const rs = document.getElementById('fmcRes');
+  if (ex) ex.textContent = fmc.expr;
+  if (rs) rs.textContent = fmc.result;
+}
+
+/* ══════════════════════════════════════════════
+   DRAGGABLE + RESIZABLE FLOATING WIDGETS
+══════════════════════════════════════════════ */
+function initFloatingDrag(widgetId, handleId) {
+  const widget = document.getElementById(widgetId);
+  const handle = document.getElementById(handleId);
+  if (!widget || !handle) return;
+  let startX, startY, startLeft, startTop;
+
+  function onMove(e) {
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    let newLeft = startLeft + cx - startX;
+    let newTop  = startTop  + cy - startY;
+    // Clamp to viewport
+    newLeft = Math.max(0, Math.min(window.innerWidth  - widget.offsetWidth,  newLeft));
+    newTop  = Math.max(0, Math.min(window.innerHeight - widget.offsetHeight, newTop));
+    widget.style.left      = newLeft + 'px';
+    widget.style.top       = newTop  + 'px';
+    widget.style.transform = 'none';
+    widget.style.right     = 'auto';
+  }
+  function onEnd() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup',   onEnd);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend',  onEnd);
+  }
+  handle.addEventListener('mousedown', e => {
+    startX = e.clientX; startY = e.clientY;
+    const rect = widget.getBoundingClientRect();
+    startLeft = rect.left; startTop = rect.top;
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup',   onEnd);
+    e.preventDefault();
+  });
+  handle.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+    const rect = widget.getBoundingClientRect();
+    startLeft = rect.left; startTop = rect.top;
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend',  onEnd);
+    e.preventDefault();
+  }, { passive: false });
+}
+
+/* ══════════════════════════════════════════════
+   HANDBUCH (HANDBOOK)
+══════════════════════════════════════════════ */
+const GLOSSAR = {
+  'Ausdruck':           'Ein mathematischer Ausdruck ist eine Kombination aus Zahlen, Variablen und Rechenzeichen, z.B. 2x+3 oder sin(π/2).',
+  'Trigonometrie':      'Die Trigonometrie befasst sich mit den Winkeln und Seiten von Dreiecken. Wichtige Funktionen: Sinus, Kosinus, Tangens.',
+  'Addition':           'Addition bedeutet das Zusammenzählen von Zahlen. Zeichen: +. Beispiel: 3+5=8.',
+  'Subtraktion':        'Subtraktion ist das Abziehen einer Zahl von einer anderen. Zeichen: −. Beispiel: 8−3=5.',
+  'Multiplikation':     'Multiplikation ist das wiederholte Addieren einer Zahl. Zeichen: ×. Beispiel: 4×3=12.',
+  'Division':           'Division teilt eine Zahl durch eine andere. Zeichen: ÷. Beispiel: 12÷4=3.',
+  'Sinus':              'Der Sinus (sin) eines Winkels im rechtwinkligen Dreieck ist das Verhältnis Gegenkathete zu Hypotenuse. Beispiel: sin(30°)=0,5.',
+  'Kosinus':            'Der Kosinus (cos) eines Winkels ist das Verhältnis Ankathete zu Hypotenuse. Beispiel: cos(60°)=0,5.',
+  'Tangens':            'Der Tangens (tan) eines Winkels ist das Verhältnis Gegenkathete zu Ankathete. tan = sin/cos.',
+  'Logarithmus':        'Der Logarithmus log(x) gibt an, mit welcher Potenz man die Basis erheben muss, um x zu erhalten. log₁₀(100)=2.',
+  'Wurzel':             'Die Wurzel √x ist die Zahl, die mit sich selbst multipliziert x ergibt. Beispiel: √9=3.',
+  'Potenz':             'Eine Potenz aⁿ bedeutet, dass a n-mal mit sich selbst multipliziert wird. Beispiel: 2³=8.',
+  'Grad':               'Grad (°) ist eine Einheit für Winkel. Ein voller Kreis = 360°.',
+  'Bogenmass':          'Das Bogenmass (rad) ist eine Einheit für Winkel. 180° entspricht π rad ≈ 3,14159 rad.',
+  'LineareGleichung':   'Eine lineare Gleichung hat die Form ax+b=c. Die Lösung ist x=(c−b)/a. Beispiel: 2x+3=7 → x=2.',
+  'QuadratischeGleichung': 'Eine quadratische Gleichung hat die Form ax²+bx+c=0. Die Lösungen werden mit der Lösungsformel berechnet: x=(−b±√(b²−4ac))/(2a).',
+  'Bruch':              'Ein Bruch stellt einen Teil eines Ganzen dar. Format: Zähler/Nenner. Beispiel: 3/4 bedeutet 3 von 4 Teilen.',
+  'Zaehler':            'Der Zähler ist die Zahl oberhalb des Bruchstrichs. Er gibt an, wie viele Teile gemeint sind.',
+  'Nenner':             'Der Nenner ist die Zahl unterhalb des Bruchstrichs. Er gibt an, in wie viele Teile das Ganze aufgeteilt ist.',
+  'Kuerzen':            'Kürzen bedeutet, Zähler und Nenner eines Bruchs durch den gleichen Wert zu teilen. Beispiel: 4/6 → 2/3.',
+  'KartesischesKS':     'Das kartesische Koordinatensystem hat zwei senkrechte Achsen (x und y). Jeder Punkt wird durch ein Zahlenpaar (x,y) beschrieben.',
+  'Tippen':             'Im Tipp-Modus setzt du durch Antippen der Zeichenfläche einen Punkt an der geklickten Stelle.',
+  'QuadratischeFormel': 'Die Lösungsformel für quadratische Gleichungen: x = (−b ± √(b²−4ac)) / (2a). Auch „abc-Formel" genannt.',
+  'BinomischeFormeln':  'Binomische Formeln sind Kurzformeln für quadratische Ausdrücke: (a+b)²=a²+2ab+b², (a−b)²=a²−2ab+b², (a+b)(a−b)=a²−b².',
+  'Steigung':           'Die Steigung m einer Geraden gibt an, wie stark sie ansteigt. m=(y₂−y₁)/(x₂−x₁). Positive m = aufsteigend, negative m = absteigend.',
+  'Statistik':          'Die Statistik beschäftigt sich mit dem Sammeln, Auswerten und Darstellen von Daten.',
+  'Varianz':            'Die Varianz σ² ist ein Maß für die Streuung von Daten um den Mittelwert. σ²=Σ(xᵢ−x̄)²/n.',
+  'Standardabweichung': 'Die Standardabweichung σ ist die Wurzel der Varianz. Sie gibt an, wie stark die Daten vom Mittelwert abweichen.',
+  'Zahlentheorie':      'Die Zahlentheorie untersucht Eigenschaften ganzer Zahlen, z.B. Teilbarkeit, Primzahlen, ggT und kgV.',
+  'Pythagoras':         'Der Satz des Pythagoras: In einem rechtwinkligen Dreieck gilt a²+b²=c². c ist die Hypotenuse (längste Seite).',
+  'Prozentrechnung':    'Prozentrechnung bestimmt Anteile. 1% = 1/100. Prozentwert = Grundwert × Prozentsatz / 100.',
+  'Zinsrechnung':       'Zinsrechnung berechnet Zinsen für Kapital. Einfach: Z=K×p/100×t. Zinseszins: A=K×(1+p/100)ᵗ.',
+  'BMI':                'BMI (Body-Mass-Index) berechnet das Verhältnis von Körpergewicht zu Körpergröße². BMI=Gewicht(kg)/Größe(m)².',
+  'OhmschesGesetz':     'Das Ohmsche Gesetz beschreibt den Zusammenhang zwischen Spannung U (V), Widerstand R (Ω) und Stromstärke I (A): U=R×I.',
+  'Kraft':              'Kraft F=m×a. F in Newton (N), m ist Masse (kg), a ist Beschleunigung (m/s²).',
+  'kinetischeEnergie':  'Kinetische Energie ist die Energie einer Bewegung. Ekin=½×m×v². Einheit: Joule (J).',
+  'potentielleEnergie': 'Potentielle Energie ist gespeicherte Lageenergie. Epot=m×g×h. g≈9,81 m/s², h ist die Höhe.',
+  'Countdown':          'Ein Countdown zählt von einer eingestellten Zeit rückwärts bis auf null.',
+  'Fachbegriff':        'Ein Fachbegriff ist ein spezifisches Wort aus einem bestimmten Wissensgebiet. In diesem Handbuch werden schwierige Fachbegriffe blau hervorgehoben.',
+};
+
+let hbInited = false;
+
+function initHandbuch() {
+  if (hbInited) return;
+  hbInited = true;
+  // Build glossar list
+  const list = document.getElementById('hbGlossarList');
+  if (list) {
+    list.innerHTML = Object.entries(GLOSSAR).sort((a,b)=>a[0].localeCompare(b[0])).map(([term, def]) =>
+      `<div class="hb-fn"><div class="hb-fn-name" style="color:#0055cc">📌 ${term}</div><div class="hb-fn-desc">${def}</div></div>`
+    ).join('');
+  }
+  // Setup glossary tooltips for handbook hard words
+  document.querySelectorAll('.hw').forEach(el => {
+    el.addEventListener('click', e => { showGlossary(e, el.dataset.term); e.stopPropagation(); });
+  });
+}
+
+function showGlossary(e, term) {
+  const tip = document.getElementById('glossaryTooltip');
+  const def = GLOSSAR[term];
+  if (!def) return;
+  document.getElementById('gtTerm').textContent = term;
+  document.getElementById('gtDef').textContent = def;
+  tip.style.display = 'block';
+  const x = Math.min(e.clientX + 8, window.innerWidth - 290);
+  const y = Math.min(e.clientY + 8, window.innerHeight - tip.offsetHeight - 10);
+  tip.style.left = x + 'px';
+  tip.style.top  = Math.max(10, y) + 'px';
+}
+
+function hbFilter() {
+  const q = document.getElementById('hbSearch').value.toLowerCase().trim();
+  document.querySelectorAll('#hbContent .hb-fn').forEach(el => {
+    el.style.display = (!q || el.textContent.toLowerCase().includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('#hbContent .hb-section').forEach(sec => {
+    const visible = [...sec.querySelectorAll('.hb-fn')].some(e => e.style.display !== 'none');
+    sec.style.display = visible ? '' : 'none';
+  });
+}
+
+function hbScrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Init drag/glossary tooltips after DOM ready
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    initFloatingDrag('floatingTimer', 'floatingTimerHandle');
+    initFloatingDrag('floatingCalc', 'floatingCalcHandle');
+    document.addEventListener('click', () => {
+      const tip = document.getElementById('glossaryTooltip');
+      if (tip) tip.style.display = 'none';
+    });
+    document.querySelectorAll('.hw').forEach(el => {
+      el.addEventListener('click', e => { showGlossary(e, el.dataset.term); e.stopPropagation(); });
+    });
+  }, 500);
+});
+
 </script>
 
 <!-- ══════════════════════════════════════════
@@ -4857,7 +5603,7 @@ function toggleConnectorDots() {
     <button class="mk mk-frac" onclick="openFracPicker()">½</button>
     <button class="mk" onclick="mkInsert('√')">√</button>
     <button class="mk" onclick="mkInsert('π')">π</button>
-    <button class="mk mk-enter" onclick="mkInsert('ENTER')">✓ Done</button>
+    <button class="mk mk-enter" onclick="mkInsert('ENTER')">✓ Fertig</button>
   </div>
 </div>
 
@@ -4865,19 +5611,19 @@ function toggleConnectorDots() {
      FRACTION PICKER
 ══════════════════════════════════════════ -->
 <div id="fracPicker">
-  <h4>Insert Fraction</h4>
+  <h4>Bruch einfügen</h4>
   <div class="fp-row">
     <div class="fp-field">
-      <div class="fp-label">Numerator</div>
+      <div class="fp-label">Zähler</div>
       <input class="fp-input" id="fpNum" type="text" inputmode="decimal" placeholder="1" autocomplete="off">
       <div class="fp-line"></div>
       <input class="fp-input" id="fpDen" type="text" inputmode="decimal" placeholder="2" autocomplete="off">
-      <div class="fp-label">Denominator</div>
+      <div class="fp-label">Nenner</div>
     </div>
   </div>
   <div class="fp-actions">
-    <button class="fp-btn" onclick="closeFracPicker()">Cancel</button>
-    <button class="fp-btn ok" onclick="insertFraction()">Insert ½</button>
+    <button class="fp-btn" onclick="closeFracPicker()">Abbrechen</button>
+    <button class="fp-btn ok" onclick="insertFraction()">½ Einfügen</button>
   </div>
 </div>
 
