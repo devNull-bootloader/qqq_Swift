@@ -1,5 +1,5 @@
-/* XRECHNER Service Worker */
-const CACHE = 'xrechner-v1';
+/* MathSpaces Service Worker */
+const CACHE = 'mathspaces-v1';
 const ASSETS = [
   './',
   './index.html',

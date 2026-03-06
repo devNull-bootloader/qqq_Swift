@@ -6,10 +6,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Rechner +">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Professioneller Taschenrechner mit Koordinatensystem, Gleichungslöser und Bruchrechnung – Rechner +">
-  <title>Rechner +</title>
+  <meta name="apple-mobile-web-app-title" content="MathSpaces">
+  <meta name="theme-color" content="#0a0a1a">
+  <meta name="description" content="MathSpaces – Math keyboard, coordinate system, equation solver, OCR scanner and more">
+  <title>MathSpaces</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -579,60 +579,137 @@
     .ures.vis { display: block; }
     .ures .rl { font-size: 12px; color: var(--dim); margin-bottom: 3px; }
     .ures .rv { font-size: 26px; font-weight: 700; color: var(--acc3); font-family: 'Courier New', monospace; word-break: break-all; }
+
+    /* ─── Loading Screen ─── */
+    #loadingScreen { position: fixed; inset: 0; background: #0a0a1a; z-index: 99999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+    #loadingScreen .ls-title { font-size: 52px; font-weight: 900; color: #ffffff; letter-spacing: -1px;
+      text-align: center; line-height: 1; }
+    #loadingScreen .ls-version { font-size: 13px; font-weight: 400; color: rgba(255,255,255,.45);
+      text-align: center; margin-top: 6px; letter-spacing: 2px; text-transform: uppercase; }
+    #loadingScreen .ls-bar-wrap { margin-top: 40px; width: 260px; }
+    #loadingBar { width: 260px; height: 70px; display: block; }
+    #loadingScreen.fade-out { animation: lsFadeOut .5s ease forwards; }
+    @keyframes lsFadeOut { to { opacity: 0; pointer-events: none; } }
+
+    /* ─── Custom Math Keyboard ─── */
+    #mathKbd { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9000;
+      background: #1a1a2e; border-top: 1px solid #2a2a4a;
+      padding: 8px 6px calc(8px + env(safe-area-inset-bottom,0px));
+      transform: translateY(100%); transition: transform .25s ease; display: flex; flex-direction: column; gap: 5px; }
+    #mathKbd.open { transform: translateY(0); }
+    .mkrow { display: flex; gap: 5px; justify-content: center; }
+    .mk { flex: 1; max-width: 52px; height: 44px; background: #2a2a4a; border: none; border-radius: 9px;
+      color: #fff; font-size: 18px; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background .1s; touch-action: manipulation; }
+    .mk:active { background: #cc0000; }
+    .mk.mk-op { background: #cc0000; font-size: 20px; }
+    .mk.mk-op:active { background: #aa0000; }
+    .mk.mk-del { background: #3a2a2a; font-size: 16px; }
+    .mk.mk-enter { background: #00885a; font-size: 15px; font-weight: 700; max-width: 70px; }
+    .mk.mk-frac { background: #2244aa; font-size: 16px; font-weight: 700; }
+    .mk.mk-wide { max-width: 72px; flex: 1.4; }
+
+    /* ─── Fraction Picker (in keyboard) ─── */
+    #fracPicker { position: fixed; bottom: 0; left: 0; right: 0; z-index: 9010;
+      background: #1a1a2e; border-top: 2px solid #cc0000; padding: 16px 14px calc(16px + env(safe-area-inset-bottom,0px));
+      transform: translateY(100%); transition: transform .25s ease; }
+    #fracPicker.open { transform: translateY(0); }
+    #fracPicker h4 { font-size: 13px; font-weight: 700; color: #aaa; text-align: center; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .fp-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 14px; }
+    .fp-field { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .fp-input { width: 80px; height: 44px; background: #2a2a4a; border: 1px solid #3a3a6a;
+      border-radius: 9px; color: #fff; font-size: 20px; text-align: center;
+      font-family: 'Courier New', monospace; outline: none; -webkit-user-select: text; user-select: text; }
+    .fp-input:focus { border-color: #cc0000; }
+    .fp-line { width: 80px; height: 2px; background: #fff; }
+    .fp-label { font-size: 11px; color: #888; }
+    .fp-actions { display: flex; gap: 8px; }
+    .fp-btn { flex: 1; padding: 12px; background: #2a2a4a; border: none; border-radius: 9px;
+      color: #fff; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+    .fp-btn.ok { background: #cc0000; }
+    .fp-btn:active { opacity: .8; }
+
+    /* ─── Physical Ruler on canvas ─── */
+    #physRuler { position: absolute; z-index: 20; pointer-events: none; display: none;
+      transform-origin: left center; }
+    #physRuler.active { pointer-events: auto; }
+    #physRulerCanvas { display: block; }
+    #physRulerHandle { position: absolute; right: -18px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 34px; background: rgba(255,180,0,.85); border-radius: 0 6px 6px 0;
+      cursor: grab; display: flex; align-items: center; justify-content: center; }
+    #physRulerHandle:active { cursor: grabbing; }
+    #rulerLine { position: absolute; pointer-events: none; z-index: 19; display: none; }
+
+    /* ─── Straight line drawing mode ─── */
+    #cvs.ruler-draw { cursor: crosshair; }
   </style>
 </head>
 <body>
 
 <!-- ══════════════════════════════════════════
-     INSTALL SCREEN
+     LOADING SCREEN
 ══════════════════════════════════════════ -->
-<div id="installScreen">
-  <div class="ic">🧮</div>
-  <h1>Rechner +</h1>
+<div id="loadingScreen">
+  <div class="ls-title">MathSpaces</div>
+  <div class="ls-version">ver 1</div>
+  <div class="ls-bar-wrap">
+    <canvas id="loadingBar" width="260" height="70"></canvas>
+  </div>
+</div>
 
-  <p class="sub">Professioneller Taschenrechner &amp; Koordinatensystem</p>
+<!-- ══════════════════════════════════════════
+     INSTALL SCREEN
+     (hidden by default; loading screen shows first,
+      then JS reveals this or the main app after animation)
+══════════════════════════════════════════ -->
+<div id="installScreen" style="display:none">
+  <div class="ic">∑</div>
+  <h1>MathSpaces</h1>
+
+  <p class="sub">Math keyboard, coordinate system &amp; equation solver</p>
 
   <!-- Features -->
   <div class="feat-grid">
     <div class="feat-card">
-      <div class="fi">🧮</div>
-      <div class="ft">Grundrechner</div>
-      <div class="fd">Basis- &amp; Wissenschaftlicher Modus mit Verlauf</div>
+      <div class="fi">⌨️</div>
+      <div class="ft">Math Keyboard</div>
+      <div class="fd">Custom keyboard with numbers &amp; math symbols only</div>
     </div>
     <div class="feat-card">
       <div class="fi">📷</div>
-      <div class="ft">Bild-Upload</div>
-      <div class="fd">Fragen &amp; Koordinaten aus Fotos erkennen</div>
+      <div class="ft">Math OCR</div>
+      <div class="fd">Scan numbers &amp; equations from photos</div>
     </div>
     <div class="feat-card">
       <div class="fi">📐</div>
-      <div class="ft">Koordinatensystem</div>
-      <div class="fd">Funktionen zeichnen, Punkte setzen &amp; mehr</div>
+      <div class="ft">Coordinate System</div>
+      <div class="fd">Plot functions, set points &amp; more</div>
     </div>
     <div class="feat-card">
       <div class="fi">🔢</div>
-      <div class="ft">Gleichungslöser</div>
-      <div class="fd">Lineare &amp; quadratische Gleichungen lösen</div>
+      <div class="ft">Equation Solver</div>
+      <div class="fd">Solve linear &amp; quadratic equations</div>
     </div>
     <div class="feat-card">
       <div class="fi">½</div>
-      <div class="ft">Bruchrechnung</div>
-      <div class="fd">Brüche addieren, subtrahieren, multiplizieren</div>
+      <div class="ft">Fractions</div>
+      <div class="fd">Add, subtract, multiply fractions</div>
     </div>
     <div class="feat-card">
       <div class="fi">📏</div>
-      <div class="ft">Einheiten</div>
-      <div class="fd">Länge, Gewicht, Temperatur &amp; mehr umrechnen</div>
+      <div class="ft">Physical Ruler</div>
+      <div class="fd">Draw straight lines with a draggable ruler</div>
     </div>
     <div class="feat-card">
       <div class="fi">📝</div>
-      <div class="ft">Notizen</div>
-      <div class="fd">Schnelle Notizen direkt in der App speichern</div>
+      <div class="ft">Notes</div>
+      <div class="fd">Quick notes saved in the app</div>
     </div>
     <div class="feat-card">
       <div class="fi">🎓</div>
-      <div class="ft">Formeln +</div>
-      <div class="fd">Formeln, Geometrie &amp; Physik-Rechner</div>
+      <div class="ft">Formulas +</div>
+      <div class="fd">Formulas, geometry &amp; physics calculators</div>
     </div>
   </div>
 
@@ -644,43 +721,43 @@
     <div class="inst-option disabled">
       <div class="io-icon">🍎</div>
       <div class="io-body">
-        <div class="io-title">Im App Store laden</div>
-        <div class="io-sub">Nicht verfügbar</div>
+        <div class="io-title">Download from App Store</div>
+        <div class="io-sub">Not available</div>
       </div>
-      <div class="io-badge">Nicht verfügbar</div>
+      <div class="io-badge">Not available</div>
     </div>
 
     <!-- Web App – available -->
     <div class="inst-option available" onclick="document.getElementById('webAppTutorial').scrollIntoView({behavior:'smooth'})">
       <div class="io-icon">🌐</div>
       <div class="io-body">
-        <div class="io-title">Web App Installierung</div>
-        <div class="io-sub">Kostenlos als Web-App installieren</div>
+        <div class="io-title">Install as Web App</div>
+        <div class="io-sub">Free – install as a progressive web app</div>
       </div>
-      <div class="io-badge">Verfügbar</div>
+      <div class="io-badge">Available</div>
     </div>
   </div>
 
   <!-- Tutorial -->
   <div class="box" id="webAppTutorial">
-    <h2 id="tutTitle">📲 Web App installieren</h2>
+    <h2 id="tutTitle">📲 Install Web App</h2>
     <div id="iosInstr">
-      <div class="istep"><div class="isn">1</div><div class="ist">Tippe auf das <strong>Teilen-Symbol</strong> <span style="font-size:16px">⬆️</span> in der Safari-Menüleiste unten</div></div>
-      <div class="istep"><div class="isn">2</div><div class="ist">Scrolle nach unten und tippe auf <strong>„Zum Home-Bildschirm"</strong> 📲</div></div>
-      <div class="istep"><div class="isn">3</div><div class="ist">Tippe oben rechts auf <strong>„Hinzufügen"</strong> – fertig!</div></div>
+      <div class="istep"><div class="isn">1</div><div class="ist">Tap the <strong>Share button</strong> <span style="font-size:16px">⬆️</span> in the Safari toolbar at the bottom</div></div>
+      <div class="istep"><div class="isn">2</div><div class="ist">Scroll down and tap <strong>"Add to Home Screen"</strong> 📲</div></div>
+      <div class="istep"><div class="isn">3</div><div class="ist">Tap <strong>"Add"</strong> in the top right – done!</div></div>
     </div>
     <div id="andInstr" style="display:none">
-      <div class="istep"><div class="isn">1</div><div class="ist">Tippe auf den <strong>„Installieren"</strong>-Button unten</div></div>
-      <div class="istep"><div class="isn">2</div><div class="ist">Bestätige die Installation – die App erscheint auf dem Startbildschirm</div></div>
+      <div class="istep"><div class="isn">1</div><div class="ist">Tap the <strong>"Install"</strong> button below</div></div>
+      <div class="istep"><div class="isn">2</div><div class="ist">Confirm the installation – the app will appear on your home screen</div></div>
     </div>
   </div>
 
-  <button id="andBtn" onclick="promptInstall()">📲 App installieren</button>
-  <p class="inote">Nach der Installation steht die App offline zur Verfügung.</p>
+  <button id="andBtn" onclick="promptInstall()">📲 Install App</button>
+  <p class="inote">After installation the app is available offline.</p>
 </div>
 
 <!-- "Im Web nutzen" floating button (visible only on install screen) -->
-<button id="webUseBtn" onclick="launchApp()" title="Direkt im Browser verwenden ohne Installation">🌐 Im Web nutzen</button>
+<button id="webUseBtn" onclick="launchApp()" title="Use directly in browser without installing">🌐 Use in Browser</button>
 
 <!-- ══════════════════════════════════════════
      WARNING MODAL
@@ -688,11 +765,11 @@
 <div id="warnOverlay" style="display:none">
   <div id="warnModal">
     <div class="wi">⚠️</div>
-    <h2>Hinweis: Keine Datenspeicherung</h2>
-    <p>Rechner + speichert <strong>keine Eingaben, Berechnungen oder Zeichnungen</strong>.
-      Alle Daten gehen beim Schließen der App verloren. Bitte notiere wichtige Ergebnisse
-      separat, bevor du die App beendest.</p>
-    <button class="wok" onclick="dismissWarning()">Verstanden – App starten</button>
+    <h2>Note: No Data Storage</h2>
+    <p>MathSpaces does <strong>not save any inputs, calculations or drawings</strong>.
+      All data is lost when you close the app. Please note important results
+      separately before closing the app.</p>
+    <button class="wok" onclick="dismissWarning()">Got it – Start App</button>
   </div>
 </div>
 
@@ -805,9 +882,9 @@
 ══════════════════════════════════════════ -->
 <div id="app" style="display:none">
   <header id="appHdr">
-    <div class="logo">🧮</div>
+    <div class="logo" style="font-size:20px;font-weight:900;color:white;font-family:inherit">M</div>
     <div style="display:flex;flex-direction:column;gap:0">
-      <h1>Rechner +</h1>
+      <h1>MathSpaces</h1>
     </div>
     <button id="hideUIBtn" onclick="toggleHideUI()">UI aus</button>
   </header>
@@ -883,7 +960,7 @@
         <div class="ig" style="margin:14px 14px 0">
           <div class="sect">Gleichung eingeben</div>
           <label>Lineare oder quadratische Gleichung (z.B. 2x+3=7 oder x^2+5x+6=0)</label>
-          <input class="mi" id="eqInput" type="text" placeholder="z.B.  2x + 3 = 7" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <input class="mi" id="eqInput" type="text" placeholder="z.B.  2x + 3 = 7" autocorrect="off" autocapitalize="off" spellcheck="false" data-mk-confirm="solve">
         </div>
         <div style="padding:0 14px 10px; margin-top:10px">
           <button class="sbtn" onclick="solveEquation()">🔍 Gleichung lösen</button>
@@ -969,7 +1046,8 @@
         <button class="tbtn" title="Ansicht zurücksetzen" onclick="resetView()">⊙</button>
         <button class="tbtn" title="Screenshot" onclick="saveCanvas()">📷</button>
         <button class="tbtn" id="lockBtn" title="Koordinatensystem sperren" onclick="toggleLock()">🔓</button>
-        <button class="tbtn" id="rulerBtn" title="Lineal ein-/ausblenden" onclick="toggleRuler()">📏</button>
+        <button class="tbtn" id="rulerBtn" title="Coordinate ruler toggle" onclick="toggleRuler()">📏</button>
+        <button class="tbtn" id="physRulerBtn" title="Physical ruler for straight lines" onclick="togglePhysRuler()">📐</button>
         <button class="tbtn" id="quadBtn" title="Quadrant-Ansicht" onclick="toggleQuadPanel()">⊞</button>
       </div>
 
@@ -984,6 +1062,12 @@
       <div id="rulerCorner"></div>
       <canvas id="rulerH"></canvas>
       <canvas id="rulerV"></canvas>
+
+      <!-- Physical Ruler overlay (draggable + rotatable) -->
+      <div id="physRuler">
+        <canvas id="physRulerCanvas"></canvas>
+        <div id="physRulerHandle" title="Drag to move ruler">⠿</div>
+      </div>
 
       <!-- Quadrant panel -->
       <div id="quadrantPanel">
@@ -1104,6 +1188,10 @@
               <button class="togbtn active" id="togGrid" onclick="toggleSetting('grid')">Gitter</button>
               <button class="togbtn active" id="togLabels" onclick="toggleSetting('labels')">Beschriftung</button>
               <button class="togbtn active" id="togAxes" onclick="toggleSetting('axes')">Achsen</button>
+            </div>
+            <div class="psect" style="margin-top:10px">Connector Options</div>
+            <div class="togrow">
+              <button class="togbtn active" id="togConnDots" onclick="toggleConnectorDots()">Point Circles</button>
             </div>
             <div class="psect" style="margin-top:10px">Verhältnis (Pixel/Einheit)</div>
             <div class="srow">
@@ -1546,20 +1634,20 @@
       <!-- Drop zone / upload area -->
       <div class="iu-dropzone" id="bildDropZone">
         <div class="iu-icon">📷</div>
-        <div class="iu-title">Bild hochladen</div>
-        <div class="iu-sub">Tippe hier oder ziehe ein Foto rein</div>
+        <div class="iu-title">Upload Image</div>
+        <div class="iu-sub">Tap here or drag a photo in</div>
         <input type="file" id="bildFileInput" accept="image/*" style="display:none">
       </div>
       <!-- Image preview -->
       <div id="bildPreviewWrap">
-        <img id="bildPreview" alt="Vorschau">
+        <img id="bildPreview" alt="Preview">
         <button id="bildClearBtn" onclick="bildClear()">✕</button>
       </div>
       <!-- Scan button -->
-      <button class="sbtn" id="bildScanBtn" onclick="bildScan()" style="margin:0 14px 10px;display:none">🔍 Fragen &amp; Koordinaten erkennen</button>
+      <button class="sbtn" id="bildScanBtn" onclick="bildScan()" style="margin:0 14px 10px;display:none">🔍 Scan Numbers &amp; Math</button>
       <!-- Status / progress -->
       <div class="bild-status" id="bildStatus">
-        <span id="bildStatusText">Bereit</span>
+        <span id="bildStatusText">Ready</span>
         <div class="bild-progress"><div class="bild-progress-bar" id="bildProgressBar" style="width:0%"></div></div>
       </div>
       <!-- Results -->
@@ -1665,6 +1753,9 @@ function launchApp() {
   initCoordCanvas();
   initLcColorRow();
   bildSetupDropZone();
+  initPhysRulerDrag();
+  // Hide loading screen when app is ready
+  if (window._hideLoadingScreen) window._hideLoadingScreen();
 }
 
 window.addEventListener('load', () => {
@@ -1673,16 +1764,31 @@ window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 
-  if (isStandalone()) {
-    launchApp();
-  } else {
-    // Show iOS instructions by default; Android instructions shown on beforeinstallprompt
-    document.getElementById('installScreen').style.display = 'flex';
-    if (!isIOS() && !deferredPrompt) {
-      // Desktop or non-iOS non-Android – update tutorial title
-      document.getElementById('tutTitle').textContent = '🖥️ Web App installieren';
+  // After loading animation finishes (min 1.2s), show the actual app/install screen
+  const showUI = () => {
+    if (isStandalone()) {
+      launchApp();
+    } else {
+      // Hide loading screen first, then show install screen
+      const ls = document.getElementById('loadingScreen');
+      if (ls && ls.style.display !== 'none') {
+        ls.classList.add('fade-out');
+        setTimeout(() => {
+          ls.style.display = 'none';
+          document.getElementById('installScreen').style.display = 'flex';
+        }, 520);
+      } else {
+        document.getElementById('installScreen').style.display = 'flex';
+      }
+      if (!isIOS() && !deferredPrompt) {
+        // Desktop or non-iOS non-Android – update tutorial title
+        document.getElementById('tutTitle').textContent = '🖥️ Install Web App';
+      }
     }
-  }
+  };
+
+  // Wait at least 1.4s for the loading animation to play through
+  setTimeout(showUI, 1400);
 
   // Listen for display-mode change (after install)
   window.matchMedia('(display-mode: standalone)').addEventListener('change', e => {
@@ -2390,23 +2496,25 @@ function drawConnector(ctx, pts, color, inProgress) {
   }
 
   // Draw highlighted circles on connector points
-  canvasPts.forEach((cp, i) => {
-    ctx.beginPath();
-    ctx.arc(cp.cx, cp.cy, 7, 0, Math.PI * 2);
-    ctx.fillStyle = color;
-    ctx.globalAlpha = 0.35;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    // Order number label
-    ctx.fillStyle = color;
-    ctx.font = 'bold 11px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(String(i + 1), cp.cx, cp.cy - 11);
-    ctx.textAlign = 'left';
-  });
+  if (coord.showConnectorDots !== false) {
+    canvasPts.forEach((cp, i) => {
+      ctx.beginPath();
+      ctx.arc(cp.cx, cp.cy, 7, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.35;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Order number label
+      ctx.fillStyle = color;
+      ctx.font = 'bold 11px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(i + 1), cp.cx, cp.cy - 11);
+      ctx.textAlign = 'left';
+    });
+  }
 }
 
 /* ─ Pointer Events ─ */
@@ -3829,7 +3937,7 @@ async function bildScan() {
   const resultsEl = document.getElementById('bildResults');
 
   statusEl.classList.add('vis');
-  statusTxt.textContent = 'Lade OCR-Engine…';
+  statusTxt.textContent = 'Loading OCR engine…';
   bar.style.width = '5%';
   resultsEl.innerHTML = '';
 
@@ -3840,28 +3948,35 @@ async function bildScan() {
         const s = document.createElement('script');
         s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
         s.onload = resolve;
-        s.onerror = () => reject(new Error('OCR-Engine konnte nicht geladen werden. Bitte Internetverbindung prüfen.'));
+        s.onerror = () => reject(new Error('OCR engine could not be loaded. Please check your internet connection.'));
         document.head.appendChild(s);
       });
     }
 
-    statusTxt.textContent = 'Starte Texterkennung…';
+    statusTxt.textContent = 'Starting recognition…';
     bar.style.width = '15%';
 
-    const worker = await Tesseract.createWorker(['deu', 'eng'], 1, {
+    // Use English only and whitelist math/number characters for better accuracy
+    const worker = await Tesseract.createWorker(['eng'], 1, {
       logger: m => {
         if (m.status === 'recognizing text') {
           bar.style.width = Math.round(15 + m.progress * 75) + '%';
-          statusTxt.textContent = 'Texterkennung… ' + Math.round(m.progress * 100) + '%';
+          statusTxt.textContent = 'Recognizing… ' + Math.round(m.progress * 100) + '%';
         }
       }
+    });
+
+    // Configure Tesseract to focus on numbers and math symbols
+    await worker.setParameters({
+      tessedit_char_whitelist: '0123456789+-*/=^().,:;[]{}|\\/<>!?%xXyYzZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ²³√πΣ∫∞≤≥≠±×÷',
+      preserve_interword_spaces: '1'
     });
 
     const { data: { text } } = await worker.recognize(document.getElementById('bildPreview'));
     await worker.terminate();
 
     bar.style.width = '100%';
-    statusTxt.textContent = '✅ Fertig!';
+    statusTxt.textContent = '✅ Done!';
 
     bildParseAndShow(text);
   } catch (err) {
@@ -3926,16 +4041,16 @@ function bildParseAndShow(rawText) {
   }
 
   // Show OCR accuracy notice
-  html += `<div class="bild-ocr-notice">⚠️ Erkannter Text kann Fehler enthalten – bitte Ergebnisse prüfen.</div>`;
+  html += `<div class="bild-ocr-notice">⚠️ Recognized text may contain errors – please verify results.</div>`;
 
   if (equations.length > 0) {
-    html += `<div class="bild-sec-title">Erkannte Gleichungen (${equations.length})</div>`;
+    html += `<div class="bild-sec-title">Detected Equations (${equations.length})</div>`;
     equations.forEach((eq, idx) => {
       let solHtml = '';
       try {
         const steps = parseAndSolve(eq);
         const res = steps.find(s => s.result);
-        if (res) solHtml = `<div class="bild-item-sol">Lösung: <strong>${escHtml(res.math)}</strong></div>`;
+        if (res) solHtml = `<div class="bild-item-sol">Solution: <strong>${escHtml(res.math)}</strong></div>`;
       } catch { /* unsolvable – still show it */ }
       // Check if equation can be plotted as y = f(x)
       const fnExpr = bildExtractFnExpr(eq);
@@ -3944,25 +4059,25 @@ function bildParseAndShow(rawText) {
         <div class="bild-item-text">${escHtml(eq)}</div>
         ${solHtml}
         <div class="bild-item-actions">
-          <button class="bi-btn" onclick="bildSendToSolver(${idx})">→ Gleichungslöser</button>
-          <button class="bi-btn" onclick="bildSendToCalc(${idx})">→ Rechner</button>
-          ${fnExpr !== null ? `<button class="bi-btn" onclick="bildSendToCoordFn(${idx})">→ Koordinatensystem</button>` : ''}
+          <button class="bi-btn" onclick="bildSendToSolver(${idx})">→ Solver</button>
+          <button class="bi-btn" onclick="bildSendToCalc(${idx})">→ Calculator</button>
+          ${fnExpr !== null ? `<button class="bi-btn" onclick="bildSendToCoordFn(${idx})">→ Graph</button>` : ''}
           <button class="bi-btn" onclick="bildSendToAgent(${idx})">→ Agent</button>
-          <button class="bi-btn" onclick="bildCopyEq(${idx})">📋 Kopieren</button>
+          <button class="bi-btn" onclick="bildCopyEq(${idx})">📋 Copy</button>
         </div>
       </div>`;
     });
   }
 
   if (uniquePts.length > 0) {
-    html += `<div class="bild-sec-title" style="margin-top:${equations.length ? '10px' : '0'}">Erkannte Koordinaten (${uniquePts.length})</div>`;
+    html += `<div class="bild-sec-title" style="margin-top:${equations.length ? '10px' : '0'}">Detected Coordinates (${uniquePts.length})</div>`;
     uniquePts.forEach((pt, idx) => {
       const disp = (pt.label ? pt.label + ' = ' : '') + '(' + pt.x + ', ' + pt.y + ')';
       html += `<div class="bild-pt-item">
         <div class="bild-item-text">${escHtml(disp)}</div>
         <div class="bild-item-actions">
-          <button class="bi-btn" onclick="bildAddPoint(${idx})">→ Koordinatensystem</button>
-          <button class="bi-btn" onclick="bildCopyPt(${idx})">📋 Kopieren</button>
+          <button class="bi-btn" onclick="bildAddPoint(${idx})">→ Graph</button>
+          <button class="bi-btn" onclick="bildCopyPt(${idx})">📋 Copy</button>
         </div>
       </div>`;
     });
@@ -3971,7 +4086,7 @@ function bildParseAndShow(rawText) {
   // "Add all to agent" bar at the bottom
   if (equations.length > 0) {
     html += `<div class="bild-agent-bar">
-      <button onclick="bildSendAllToAgent()">🤖 Alle Gleichungen zum Agent hinzufügen</button>
+      <button onclick="bildSendAllToAgent()">🤖 Add all equations to Agent</button>
     </div>`;
   }
 
@@ -4357,6 +4472,414 @@ function calcStat() {
   sol.classList.add('vis');
 }
 
+/* ══════════════════════════════════════════════
+   LOADING SCREEN ANIMATION
+══════════════════════════════════════════════ */
+(function initLoadingScreen() {
+  const cvs = document.getElementById('loadingBar');
+  const ctx = cvs.getContext('2d');
+  const W = 260, H = 70;
+  const dpr = window.devicePixelRatio || 1;
+  cvs.width = W * dpr; cvs.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  // Pick a random function for the loading animation
+  const fns = [
+    x => Math.sin(x * 1.5) * 0.7,
+    x => x * x * 0.18 - 0.5,
+    x => Math.cos(x * 2) * 0.6,
+    x => Math.sin(x) * Math.cos(x * 0.5) * 0.8,
+    x => (x * x * x) * 0.05
+  ];
+  const fn = fns[Math.floor(Math.random() * fns.length)];
+
+  let progress = 0; // 0..1
+  let done = false;
+
+  function drawLoadingBar(p) {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background mini coordinate system
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    // Grid lines
+    for (let gx = 0; gx <= W; gx += W/8) {
+      ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+    }
+    for (let gy = 0; gy <= H; gy += H/4) {
+      ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, H/2); ctx.lineTo(W, H/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(14, 0); ctx.lineTo(14, H); ctx.stroke();
+
+    // Axis arrow tips
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath(); ctx.moveTo(W, H/2); ctx.lineTo(W-6, H/2-4); ctx.lineTo(W-6, H/2+4); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(14, 0); ctx.lineTo(10, 6); ctx.lineTo(18, 6); ctx.closePath(); ctx.fill();
+
+    // Draw function line up to progress
+    const maxX = p * (W - 14);
+    ctx.beginPath();
+    ctx.strokeStyle = '#cc0000';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#ff3333';
+    ctx.shadowBlur = 6;
+    let started = false;
+    for (let px = 14; px <= 14 + maxX; px += 1) {
+      const t = (px - 14) / (W - 14) * 6 - 3; // math x from -3 to 3
+      const fy = fn(t);
+      const cy = H/2 - fy * (H/3);
+      if (!started) { ctx.moveTo(px, Math.max(2, Math.min(H-2, cy))); started = true; }
+      else ctx.lineTo(px, Math.max(2, Math.min(H-2, cy)));
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Leading dot
+    if (p > 0.01 && p < 1) {
+      const px = 14 + maxX;
+      const t = (px - 14) / (W - 14) * 6 - 3;
+      const fy = fn(t);
+      const cy = H/2 - fy * (H/3);
+      ctx.beginPath();
+      ctx.arc(px, Math.max(4, Math.min(H-4, cy)), 4, 0, Math.PI*2);
+      ctx.fillStyle = '#ff6666';
+      ctx.shadowColor = '#ff3333'; ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function animate() {
+    if (done) return;
+    progress = Math.min(1, progress + 0.012);
+    drawLoadingBar(progress);
+    if (progress >= 1) {
+      done = true;
+      setTimeout(hideLoadingScreen, 300);
+      return;
+    }
+    requestAnimationFrame(animate);
+  }
+
+  function hideLoadingScreen() {
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    el.classList.add('fade-out');
+    setTimeout(() => { el.style.display = 'none'; }, 520);
+  }
+
+  // Start animation after a tiny delay so DOM is ready
+  setTimeout(() => {
+    requestAnimationFrame(animate);
+  }, 80);
+
+  // Expose for early dismissal if app is ready fast
+  window._hideLoadingScreen = hideLoadingScreen;
+})();
+
+/* ══════════════════════════════════════════════
+   CUSTOM MATH KEYBOARD
+══════════════════════════════════════════════ */
+let _mkTarget = null;  // currently focused input
+
+function mkInsert(ch) {
+  if (!_mkTarget) return;
+  if (ch === '⌫') {
+    const v = _mkTarget.value;
+    const s = _mkTarget.selectionStart, e = _mkTarget.selectionEnd;
+    if (s !== e) {
+      _mkTarget.value = v.slice(0, s) + v.slice(e);
+      _mkTarget.setSelectionRange(s, s);
+    } else if (s > 0) {
+      _mkTarget.value = v.slice(0, s-1) + v.slice(s);
+      _mkTarget.setSelectionRange(s-1, s-1);
+    }
+    _mkTarget.dispatchEvent(new Event('input', { bubbles: true }));
+    _mkTarget.focus({ preventScroll: true });
+  } else if (ch === 'ENTER') {
+    // Use data-mk-confirm attribute for any "confirm" action to avoid hardcoding IDs
+    const confirmAction = _mkTarget.dataset.mkConfirm;
+    _mkTarget.blur();
+    closeMathKbd();
+    if (confirmAction === 'solve') solveEquation();
+    else if (confirmAction === 'fraction') solveFraction();
+  } else {
+    const pos = _mkTarget.selectionStart || _mkTarget.value.length;
+    const v = _mkTarget.value;
+    const ins = ch === '√' ? 'sqrt(' : ch;
+    _mkTarget.value = v.slice(0, pos) + ins + v.slice(_mkTarget.selectionEnd || pos);
+    const newPos = pos + ins.length;
+    _mkTarget.setSelectionRange(newPos, newPos);
+    _mkTarget.dispatchEvent(new Event('input', { bubbles: true }));
+    _mkTarget.focus({ preventScroll: true });
+  }
+}
+
+function openMathKbd(input) {
+  _mkTarget = input;
+  document.getElementById('mathKbd').classList.add('open');
+}
+
+function closeMathKbd() {
+  document.getElementById('mathKbd').classList.remove('open');
+  _mkTarget = null;
+}
+
+function openFracPicker() {
+  document.getElementById('fracPicker').classList.add('open');
+  document.getElementById('fpNum').value = '';
+  document.getElementById('fpDen').value = '';
+  setTimeout(() => document.getElementById('fpNum').focus(), 80);
+}
+
+function closeFracPicker() {
+  document.getElementById('fracPicker').classList.remove('open');
+}
+
+function insertFraction() {
+  const n = document.getElementById('fpNum').value.trim() || '1';
+  const d = document.getElementById('fpDen').value.trim() || '2';
+  closeFracPicker();
+  if (_mkTarget) {
+    mkInsert('(' + n + '/' + d + ')');
+  }
+}
+
+// Attach math keyboard to math-input elements
+document.addEventListener('DOMContentLoaded', () => {
+  // Inputs that should use math keyboard
+  const mathInputIds = ['eqInput', 'fnInput', 'ptX', 'ptY', 'vtplCustomInput', 'xMin','xMax','yMin','yMax','gridStep','scaleInput','tblXFrom','tblXTo','tblXStep'];
+  mathInputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.setAttribute('inputmode', 'none');
+    el.setAttribute('autocomplete', 'off');
+    el.addEventListener('focus', () => openMathKbd(el));
+    el.addEventListener('click', () => openMathKbd(el));
+  });
+  // Also fraction number inputs
+  ['fn1','fd1','fn2','fd2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.setAttribute('inputmode', 'none');
+    el.addEventListener('focus', () => openMathKbd(el));
+    el.addEventListener('click', () => openMathKbd(el));
+  });
+  // Unit converter value
+  const ucv = document.getElementById('ucValue');
+  if (ucv) {
+    ucv.setAttribute('inputmode', 'none');
+    ucv.addEventListener('focus', () => openMathKbd(ucv));
+    ucv.addEventListener('click', () => openMathKbd(ucv));
+  }
+});
+
+/* ══════════════════════════════════════════════
+   PHYSICAL RULER
+══════════════════════════════════════════════ */
+const physRulerState = {
+  active: false,
+  x: 60, y: 120,    // position (left, top) inside tabKoord
+  angle: 0,          // degrees
+  len: 280,
+  dragging: false,
+  rotating: false,
+  startX: 0, startY: 0,
+  startAngle: 0
+};
+
+function togglePhysRuler() {
+  physRulerState.active = !physRulerState.active;
+  const el = document.getElementById('physRuler');
+  const btn = document.getElementById('physRulerBtn');
+  el.style.display = physRulerState.active ? 'block' : 'none';
+  if (physRulerState.active) {
+    el.classList.add('active');
+    // Position in centre of canvas initially
+    const cont = document.getElementById('tabKoord');
+    const r = cont.getBoundingClientRect();
+    physRulerState.x = r.width / 2 - physRulerState.len / 2;
+    physRulerState.y = r.height / 2;
+    physRulerState.angle = 0;
+    renderPhysRuler();
+    btn.classList.add('act');
+  } else {
+    el.classList.remove('active');
+    btn.classList.remove('act');
+  }
+}
+
+function renderPhysRuler() {
+  const el = document.getElementById('physRuler');
+  const cvs = document.getElementById('physRulerCanvas');
+  const L = physRulerState.len;
+  const H = 28;
+  const dpr = window.devicePixelRatio || 1;
+  cvs.width = L * dpr; cvs.height = H * dpr;
+  cvs.style.width = L + 'px'; cvs.style.height = H + 'px';
+  el.style.left = physRulerState.x + 'px';
+  el.style.top = (physRulerState.y - H/2) + 'px';
+  el.style.transform = 'rotate(' + physRulerState.angle + 'deg)';
+
+  const ctx = cvs.getContext('2d');
+  ctx.save(); ctx.scale(dpr, dpr);
+  // Ruler body
+  ctx.fillStyle = 'rgba(255,220,80,0.88)';
+  ctx.strokeStyle = 'rgba(180,120,0,0.9)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  // roundRectCompat: draw rounded rect with fallback for older browsers
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(0, 0, L, H, 4);
+  } else {
+    const r = 4;
+    ctx.moveTo(r, 0); ctx.lineTo(L-r, 0); ctx.arcTo(L, 0, L, r, r);
+    ctx.lineTo(L, H-r); ctx.arcTo(L, H, L-r, H, r);
+    ctx.lineTo(r, H); ctx.arcTo(0, H, 0, H-r, r);
+    ctx.lineTo(0, r); ctx.arcTo(0, 0, r, 0, r);
+    ctx.closePath();
+  }
+  ctx.fill(); ctx.stroke();
+
+  // Tick marks every 10px (representing 1 grid unit equivalent)
+  ctx.strokeStyle = 'rgba(100,60,0,0.8)';
+  ctx.fillStyle = 'rgba(100,60,0,0.9)';
+  ctx.font = '7px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= L; i += 10) {
+    const isMajor = i % 50 === 0;
+    const isMid   = i % 25 === 0 && !isMajor;
+    const tickH = isMajor ? 12 : isMid ? 9 : 5;
+    ctx.lineWidth = isMajor ? 1.2 : 0.8;
+    ctx.beginPath(); ctx.moveTo(i, H - tickH); ctx.lineTo(i, H); ctx.stroke();
+    if (isMajor && i > 0 && i < L) ctx.fillText(String(i/10), i, H - 13);
+  }
+  // Edge ticks at top too
+  for (let i = 0; i <= L; i += 10) {
+    const isMajor = i % 50 === 0;
+    const tickH = isMajor ? 8 : 4;
+    ctx.lineWidth = 0.7;
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, tickH); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function initPhysRulerDrag() {
+  const handle = document.getElementById('physRulerHandle');
+  const cvs = document.getElementById('physRulerCanvas');
+
+  // Move ruler by dragging the handle
+  handle.addEventListener('pointerdown', e => {
+    e.stopPropagation(); e.preventDefault();
+    physRulerState.dragging = true;
+    physRulerState.startX = e.clientX - physRulerState.x;
+    physRulerState.startY = e.clientY - physRulerState.y;
+    handle.setPointerCapture(e.pointerId);
+  });
+  handle.addEventListener('pointermove', e => {
+    if (!physRulerState.dragging) return;
+    physRulerState.x = e.clientX - physRulerState.startX;
+    physRulerState.y = e.clientY - physRulerState.startY;
+    renderPhysRuler();
+  });
+  handle.addEventListener('pointerup', () => { physRulerState.dragging = false; });
+
+  // Rotate ruler by dragging the ruler body
+  cvs.addEventListener('pointerdown', e => {
+    e.stopPropagation(); e.preventDefault();
+    const el = document.getElementById('physRuler');
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    physRulerState.rotating = true;
+    physRulerState.startAngle = physRulerState.angle - Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+    cvs.setPointerCapture(e.pointerId);
+  });
+  cvs.addEventListener('pointermove', e => {
+    if (!physRulerState.rotating) return;
+    const el = document.getElementById('physRuler');
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    physRulerState.angle = physRulerState.startAngle + Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+    renderPhysRuler();
+  });
+  cvs.addEventListener('pointerup', () => { physRulerState.rotating = false; });
+}
+
+/* ══════════════════════════════════════════════
+   CONNECTOR DOTS TOGGLE
+══════════════════════════════════════════════ */
+coord.showConnectorDots = true;
+
+function toggleConnectorDots() {
+  coord.showConnectorDots = !coord.showConnectorDots;
+  document.getElementById('togConnDots').classList.toggle('active', coord.showConnectorDots);
+  drawCanvas();
+}
+
 </script>
+
+<!-- ══════════════════════════════════════════
+     CUSTOM MATH KEYBOARD
+══════════════════════════════════════════ -->
+<div id="mathKbd">
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('7')">7</button>
+    <button class="mk" onclick="mkInsert('8')">8</button>
+    <button class="mk" onclick="mkInsert('9')">9</button>
+    <button class="mk mk-op" onclick="mkInsert('÷')">÷</button>
+    <button class="mk mk-op" onclick="mkInsert('×')">×</button>
+    <button class="mk mk-del" onclick="mkInsert('⌫')">⌫</button>
+  </div>
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('4')">4</button>
+    <button class="mk" onclick="mkInsert('5')">5</button>
+    <button class="mk" onclick="mkInsert('6')">6</button>
+    <button class="mk mk-op" onclick="mkInsert('+')">+</button>
+    <button class="mk mk-op" onclick="mkInsert('-')">−</button>
+    <button class="mk mk-op" onclick="mkInsert('^')">xⁿ</button>
+  </div>
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('1')">1</button>
+    <button class="mk" onclick="mkInsert('2')">2</button>
+    <button class="mk" onclick="mkInsert('3')">3</button>
+    <button class="mk" onclick="mkInsert('(')"> (</button>
+    <button class="mk" onclick="mkInsert(')')">)</button>
+    <button class="mk" onclick="mkInsert('%')">%</button>
+  </div>
+  <div class="mkrow">
+    <button class="mk mk-wide" onclick="mkInsert('0')">0</button>
+    <button class="mk" onclick="mkInsert('.')">.</button>
+    <button class="mk mk-frac" onclick="openFracPicker()">½</button>
+    <button class="mk" onclick="mkInsert('√')">√</button>
+    <button class="mk" onclick="mkInsert('π')">π</button>
+    <button class="mk mk-enter" onclick="mkInsert('ENTER')">✓ Done</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FRACTION PICKER
+══════════════════════════════════════════ -->
+<div id="fracPicker">
+  <h4>Insert Fraction</h4>
+  <div class="fp-row">
+    <div class="fp-field">
+      <div class="fp-label">Numerator</div>
+      <input class="fp-input" id="fpNum" type="text" inputmode="decimal" placeholder="1" autocomplete="off">
+      <div class="fp-line"></div>
+      <input class="fp-input" id="fpDen" type="text" inputmode="decimal" placeholder="2" autocomplete="off">
+      <div class="fp-label">Denominator</div>
+    </div>
+  </div>
+  <div class="fp-actions">
+    <button class="fp-btn" onclick="closeFracPicker()">Cancel</button>
+    <button class="fp-btn ok" onclick="insertFraction()">Insert ½</button>
+  </div>
+</div>
+
 </body>
 </html>
