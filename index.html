@@ -253,6 +253,13 @@
       outline: none; -webkit-user-select: text; user-select: text; }
     .ptinput:focus { border-color: var(--acc); }
     .iclr { color: var(--acc4); }
+    /* Coordinate system Vorlagen (template) rows */
+    .vtpl-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      background: var(--card); border-radius: 8px; }
+    .vtpl-lbl { flex: 1; font-size: 12px; color: var(--txt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vtpl-btn { flex-shrink: 0; padding: 6px 10px; background: var(--acc); border: none; border-radius: 7px;
+      color: white; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .vtpl-btn:active { opacity: .7; }
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-thumb { background: var(--bdr); border-radius: 2px; }
 
@@ -934,6 +941,7 @@
           <div class="ptabs">
             <button class="ptab active" onclick="switchPTab('pFunktionen')">Funktionen</button>
             <button class="ptab" onclick="switchPTab('pPunkte')">Punkte</button>
+            <button class="ptab" onclick="switchPTab('pVorlagen')">Vorlagen</button>
             <button class="ptab" onclick="switchPTab('pZeichnen')">Zeichnen</button>
             <button class="ptab" onclick="switchPTab('pTabelle')">Tabelle</button>
             <button class="ptab" onclick="switchPTab('pEinst')">Einstellungen</button>
@@ -963,6 +971,40 @@
             <div class="errmsg" id="ptErr" style="display:none"></div>
             <div class="psect" style="margin-top:10px">Punkte</div>
             <div id="ptList"></div>
+          </div>
+
+          <!-- Vorlagen -->
+          <div id="pVorlagen" class="psec">
+            <div class="psect">Funktions-Vorlagen</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="vtpl-row"><span class="vtpl-lbl">📈 Linear &nbsp;<small>y = x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">📐 Gerade &nbsp;<small>y = 2x+1</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('2x+1')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔴 Parabel &nbsp;<small>y = x²</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^2')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔵 Kubisch &nbsp;<small>y = x³</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^3')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">📉 Negat. Parabel &nbsp;<small>y = −x²</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('-x^2')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">〰️ Sinus &nbsp;<small>y = sin(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('sin(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">〰️ Kosinus &nbsp;<small>y = cos(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('cos(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">📊 Tangens &nbsp;<small>y = tan(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('tan(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">📦 Betrag &nbsp;<small>y = |x|</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('abs(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔀 Hyperbel &nbsp;<small>y = 1/x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('1/x')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">√ Wurzel &nbsp;<small>y = √x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('sqrt(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">📈 Exponential &nbsp;<small>y = eˣ</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('exp(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">📉 Logarithmus &nbsp;<small>y = ln(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('log(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔵 Quadrat-komplett &nbsp;<small>y = x²−2x+1</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^2-2x+1')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔴 Kubisch-verschob. &nbsp;<small>y = x³−3x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^3-3x')">→ Einfügen</button></div>
+            </div>
+            <div class="psect" style="margin-top:14px">Benutzerdefinierte Vorlage</div>
+            <div style="display:flex;gap:7px;margin-bottom:7px">
+              <input class="finput" id="vtplCustomInput" placeholder="z.B. 2x^2-x+3" autocorrect="off" autocapitalize="off" style="-webkit-user-select:text;user-select:text">
+              <button class="addbtn" onclick="insertCoordTemplateCustom()">→</button>
+            </div>
+            <div class="errmsg" id="vtplErr" style="display:none"></div>
+            <div class="psect" style="margin-top:14px">Punkte-Vorlagen</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="vtpl-row"><span class="vtpl-lbl">⊙ Ursprung &nbsp;<small>(0, 0)</small></span><button class="vtpl-btn" onclick="insertCoordPoint(0,0,'O')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">➕ Einheitspunkte &nbsp;<small>(1,0), (0,1)</small></span><button class="vtpl-btn" onclick="insertUnitPoints()">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔵 Einheitskreis-Punkte &nbsp;<small>N, E, S, W</small></span><button class="vtpl-btn" onclick="insertUnitCirclePoints()">→ Einfügen</button></div>
+            </div>
           </div>
 
           <!-- Zeichnen -->
@@ -1040,6 +1082,7 @@
         <button class="stab" onclick="switchKlasseSub('kVorlagen')">Vorlagen</button>
         <button class="stab" onclick="switchKlasseSub('kGeometrie')">Geometrie</button>
         <button class="stab" onclick="switchKlasseSub('kPhysik')">Physik</button>
+        <button class="stab" onclick="switchKlasseSub('k3D')">3D</button>
       </div>
 
       <!-- Formeln -->
@@ -1350,6 +1393,80 @@
           <div id="physInputs" style="margin-top:8px; display:flex; flex-direction:column; gap:6px"></div>
           <button class="sbtn" style="margin-top:8px" onclick="calcPhys()">⚡ Berechnen</button>
           <div class="sol" id="physSol" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- 3D -->
+      <div id="k3D" class="spanel" style="overflow-y:auto; padding:14px; gap:10px">
+        <div class="klasse-card">
+          <h3>📦 Würfel &amp; Quader</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Würfel V</span><span class="kf-val">V = a³</span></div>
+            <div class="kf-item"><span class="kf-name">Würfel O</span><span class="kf-val">O = 6 · a²</span></div>
+            <div class="kf-item"><span class="kf-name">Quader V</span><span class="kf-val">V = a · b · c</span></div>
+            <div class="kf-item"><span class="kf-name">Quader O</span><span class="kf-val">O = 2(ab + bc + ac)</span></div>
+            <div class="kf-item"><span class="kf-name">Raumdiagonale</span><span class="kf-val">d = √(a²+b²+c²)</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc)">
+          <h3>🔵 Zylinder &amp; Kegel</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Zylinder V</span><span class="kf-val">V = π · r² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Zylinder O</span><span class="kf-val">O = 2πr² + 2πrh</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel V</span><span class="kf-val">V = ⅓ · π · r² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel O</span><span class="kf-val">O = πr² + πrs</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel Mantellinie</span><span class="kf-val">s = √(r²+h²)</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc2)">
+          <h3>🌐 Kugel &amp; Pyramide</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Kugel V</span><span class="kf-val">V = (4/3) · π · r³</span></div>
+            <div class="kf-item"><span class="kf-name">Kugel O</span><span class="kf-val">O = 4 · π · r²</span></div>
+            <div class="kf-item"><span class="kf-name">Pyramide V (quad.)</span><span class="kf-val">V = ⅓ · a² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Pyramide O (quad.)</span><span class="kf-val">O = a² + 2as</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc4)">
+          <h3>📐 3D Koordinaten</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Abstand P₁P₂</span><span class="kf-val">d = √(Δx²+Δy²+Δz²)</span></div>
+            <div class="kf-item"><span class="kf-name">Mittelpunkt</span><span class="kf-val">M = ((x₁+x₂)/2, (y₁+y₂)/2, (z₁+z₂)/2)</span></div>
+            <div class="kf-item"><span class="kf-name">Betrag Vektor</span><span class="kf-val">|v| = √(v_x²+v_y²+v_z²)</span></div>
+            <div class="kf-item"><span class="kf-name">Skalarprodukt</span><span class="kf-val">a·b = a_x·b_x + a_y·b_y + a_z·b_z</span></div>
+          </div>
+        </div>
+        <!-- 3D Calculator -->
+        <div class="ig">
+          <div class="sect">3D-Rechner</div>
+          <div class="modbtns" id="btn3D" style="flex-wrap:wrap">
+            <button class="modbtn active" onclick="set3DMode('wuerfel')">Würfel</button>
+            <button class="modbtn" onclick="set3DMode('quader')">Quader</button>
+            <button class="modbtn" onclick="set3DMode('zylinder3d')">Zylinder</button>
+            <button class="modbtn" onclick="set3DMode('kegel')">Kegel</button>
+            <button class="modbtn" onclick="set3DMode('kugel3d')">Kugel</button>
+            <button class="modbtn" onclick="set3DMode('pyramide')">Pyramide</button>
+          </div>
+          <div id="inp3D" style="margin-top:8px; display:flex; flex-direction:column; gap:6px"></div>
+          <button class="sbtn" style="margin-top:8px" onclick="calc3D()">📦 Berechnen</button>
+          <div class="sol" id="sol3D" style="margin-top:8px"></div>
+        </div>
+        <!-- 3D Koordinaten Rechner -->
+        <div class="ig">
+          <div class="sect">3D Koordinaten-Rechner</div>
+          <div class="psect" style="margin-top:4px">Punkt P₁</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="p3x1" type="number" placeholder="x₁" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3y1" type="number" placeholder="y₁" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3z1" type="number" placeholder="z₁" style="flex:1" oninput="calc3DCoord()">
+          </div>
+          <div class="psect">Punkt P₂</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="p3x2" type="number" placeholder="x₂" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3y2" type="number" placeholder="y₂" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3z2" type="number" placeholder="z₂" style="flex:1" oninput="calc3DCoord()">
+          </div>
+          <div class="ures vis" id="res3DCoord" style="display:block;min-height:36px"></div>
         </div>
       </div>
     </div><!-- end tabKlasse -->
@@ -2622,7 +2739,7 @@ function switchPTab(id) {
   document.querySelectorAll('.psec').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs = ['pFunktionen','pPunkte','pZeichnen','pTabelle','pEinst'];
+  const tabs = ['pFunktionen','pPunkte','pVorlagen','pZeichnen','pTabelle','pEinst'];
   document.querySelectorAll('.ptab')[tabs.indexOf(id)].classList.add('active');
 }
 
@@ -3124,6 +3241,7 @@ function initKlasse() {
   klasseInited = true;
   setGeoMode('kreis');
   setPhysMode('kraft');
+  set3DMode('wuerfel');
 }
 
 function calcVorlagen(type) {
@@ -3248,13 +3366,169 @@ function calcVorlagen(type) {
   }
 }
 
+/* ─ Coordinate System Template Insertion ─ */
+function insertCoordTemplate(expr) {
+  const color = COLORS[colorIdx % COLORS.length]; colorIdx++;
+  const id = coord.nextId++;
+  coord.functions.push({ expr, color, id, raw: 'y = ' + expr });
+  switchTab('koordinaten');
+  renderFnList();
+  setTimeout(() => { resizeCanvas(); drawCanvas(); }, 80);
+}
 
+function insertCoordTemplateCustom() {
+  const raw = document.getElementById('vtplCustomInput').value.trim();
+  const errEl = document.getElementById('vtplErr');
+  if (!raw) return;
+  const expr = raw.replace(/^y\s*=\s*/i, '').replace(/\s/g, '');
+  if (!expr) { showErr(errEl, 'Bitte eine Funktion eingeben'); return; }
+  const test = evalFn(expr, 1);
+  if (isNaN(test)) { showErr(errEl, 'Ungültige Funktion. Beispiel: 2x+1 oder x^2-3'); return; }
+  errEl.style.display = 'none';
+  document.getElementById('vtplCustomInput').value = '';
+  insertCoordTemplate(expr);
+}
+
+function insertCoordPoint(x, y, name) {
+  const n = name || ('P' + coord.nextId);
+  coord.points.push({ x, y, name: n, id: coord.nextId++ });
+  switchTab('koordinaten');
+  renderPtList();
+  setTimeout(() => { resizeCanvas(); drawCanvas(); }, 80);
+}
+
+function insertUnitPoints() {
+  insertCoordPoint(1, 0, 'E₁');
+  insertCoordPoint(0, 1, 'E₂');
+}
+
+function insertUnitCirclePoints() {
+  insertCoordPoint(1, 0, 'E');
+  insertCoordPoint(0, 1, 'N');
+  insertCoordPoint(-1, 0, 'W');
+  insertCoordPoint(0, -1, 'S');
+}
+
+/* ─ 3D Calculator ─ */
+let mode3D = 'wuerfel';
+
+function set3DMode(mode) {
+  mode3D = mode;
+  const modeList = ['wuerfel','quader','zylinder3d','kegel','kugel3d','pyramide'];
+  document.querySelectorAll('#btn3D .modbtn').forEach((b, i) => {
+    b.classList.toggle('active', modeList[i] === mode);
+  });
+  const inp = document.getElementById('inp3D');
+  const defs = {
+    wuerfel:    [['Seite a', 'd3A']],
+    quader:     [['Seite a', 'd3A'], ['Seite b', 'd3B'], ['Seite c', 'd3C']],
+    zylinder3d: [['Radius r', 'd3R'], ['Höhe h', 'd3H']],
+    kegel:      [['Radius r', 'd3R'], ['Höhe h', 'd3H']],
+    kugel3d:    [['Radius r', 'd3R']],
+    pyramide:   [['Seite a (Grundf.)', 'd3A'], ['Höhe h', 'd3H']],
+  };
+  inp.innerHTML = (defs[mode] || []).map(([lbl, id]) =>
+    `<div class="srow"><span class="slbl">${lbl}</span>
+     <input class="sinput" id="${id}" type="number" placeholder="Wert" step="0.1" style="-webkit-user-select:text;user-select:text"></div>`
+  ).join('');
+  const sol = document.getElementById('sol3D');
+  sol.classList.remove('vis');
+  sol.innerHTML = '';
+}
+
+function calc3D() {
+  const sol = document.getElementById('sol3D');
+  const get = id => { const el = document.getElementById(id); return el ? parseFloat(el.value) : NaN; };
+  const PI = Math.PI;
+  let res = '';
+  switch (mode3D) {
+    case 'wuerfel': {
+      const a = get('d3A');
+      if (isNaN(a)) { sol.innerHTML = '<div class="errmsg">Seite a eingeben</div>'; sol.classList.add('vis'); return; }
+      const V = a**3, O = 6*a*a, d = Math.sqrt(3)*a;
+      res = `<div class="solres"><div class="rl">Würfel · a = ${a}</div>
+        <div class="rv">V = ${round(V)}</div>
+        <div class="rv" style="font-size:16px;margin-top:4px">O = ${round(O)}</div>
+        <div class="rv" style="font-size:16px">Raumdiagonale d = ${round(d)}</div></div>`;
+      break;
+    }
+    case 'quader': {
+      const a = get('d3A'), b = get('d3B'), c = get('d3C');
+      if (isNaN(a)||isNaN(b)||isNaN(c)) { sol.innerHTML = '<div class="errmsg">a, b und c eingeben</div>'; sol.classList.add('vis'); return; }
+      const V = a*b*c, O = 2*(a*b+b*c+a*c), d = Math.sqrt(a*a+b*b+c*c);
+      res = `<div class="solres"><div class="rl">Quader · a=${a}, b=${b}, c=${c}</div>
+        <div class="rv">V = ${round(V)}</div>
+        <div class="rv" style="font-size:16px;margin-top:4px">O = ${round(O)}</div>
+        <div class="rv" style="font-size:16px">Raumdiagonale d = ${round(d)}</div></div>`;
+      break;
+    }
+    case 'zylinder3d': {
+      const r = get('d3R'), h = get('d3H');
+      if (isNaN(r)||isNaN(h)) { sol.innerHTML = '<div class="errmsg">r und h eingeben</div>'; sol.classList.add('vis'); return; }
+      const V = PI*r*r*h, M = 2*PI*r*h, O = M + 2*PI*r*r;
+      res = `<div class="solres"><div class="rl">Zylinder · r=${r}, h=${h}</div>
+        <div class="rv">V = ${round(V)}</div>
+        <div class="rv" style="font-size:16px;margin-top:4px">Mantelfläche = ${round(M)}</div>
+        <div class="rv" style="font-size:16px">Oberfläche O = ${round(O)}</div></div>`;
+      break;
+    }
+    case 'kegel': {
+      const r = get('d3R'), h = get('d3H');
+      if (isNaN(r)||isNaN(h)) { sol.innerHTML = '<div class="errmsg">r und h eingeben</div>'; sol.classList.add('vis'); return; }
+      const s = Math.sqrt(r*r+h*h);
+      const V = PI*r*r*h/3, M = PI*r*s, O = M + PI*r*r;
+      res = `<div class="solres"><div class="rl">Kegel · r=${r}, h=${h}</div>
+        <div class="rv">V = ${round(V)}</div>
+        <div class="rv" style="font-size:16px;margin-top:4px">Mantelfläche = ${round(M)}</div>
+        <div class="rv" style="font-size:16px">Oberfläche O = ${round(O)}</div>
+        <div class="rv" style="font-size:16px">Mantellinie s = ${round(s)}</div></div>`;
+      break;
+    }
+    case 'kugel3d': {
+      const r = get('d3R');
+      if (isNaN(r)) { sol.innerHTML = '<div class="errmsg">Radius eingeben</div>'; sol.classList.add('vis'); return; }
+      const V = 4/3*PI*r**3, O = 4*PI*r*r;
+      res = `<div class="solres"><div class="rl">Kugel · r=${r}</div>
+        <div class="rv">V = ${round(V)}</div>
+        <div class="rv" style="font-size:16px;margin-top:4px">O = ${round(O)}</div></div>`;
+      break;
+    }
+    case 'pyramide': {
+      const a = get('d3A'), h = get('d3H');
+      if (isNaN(a)||isNaN(h)) { sol.innerHTML = '<div class="errmsg">a und h eingeben</div>'; sol.classList.add('vis'); return; }
+      const s = Math.sqrt(h*h + (a/2)**2);
+      const V = a*a*h/3, G = a*a, M = 4*(a*s/2), O = G+M;
+      res = `<div class="solres"><div class="rl">Pyramide (quad.) · a=${a}, h=${h}</div>
+        <div class="rv">V = ${round(V)}</div>
+        <div class="rv" style="font-size:16px;margin-top:4px">Grundfläche G = ${round(G)}</div>
+        <div class="rv" style="font-size:16px">Mantelfläche = ${round(M)}</div>
+        <div class="rv" style="font-size:16px">Oberfläche O = ${round(O)}</div></div>`;
+      break;
+    }
+  }
+  if (res) { sol.innerHTML = res; sol.classList.add('vis'); }
+}
+
+/* ─ 3D Coordinate Calculator ─ */
+function calc3DCoord() {
+  const v = id => parseFloat(document.getElementById(id).value);
+  const fmt = n => isFinite(n) ? (Math.abs(n) < 0.001 && n !== 0 ? n.toExponential(4) : parseFloat(n.toPrecision(8)).toString()) : '—';
+  const x1=v('p3x1'),y1=v('p3y1'),z1=v('p3z1'),x2=v('p3x2'),y2=v('p3y2'),z2=v('p3z2');
+  const res = document.getElementById('res3DCoord');
+  if ([x1,y1,z1,x2,y2,z2].some(isNaN)) {
+    res.innerHTML = '<span style="color:var(--dim)">Alle 6 Koordinaten eingeben</span>';
+    return;
+  }
+  const d = Math.sqrt((x2-x1)**2+(y2-y1)**2+(z2-z1)**2);
+  const mx=(x1+x2)/2, my=(y1+y2)/2, mz=(z1+z2)/2;
+  res.innerHTML = `Abstand d = <b>${fmt(d)}</b><br>Mittelpunkt M = (<b>${fmt(mx)}</b> | <b>${fmt(my)}</b> | <b>${fmt(mz)}</b>)`;
+}
 
 function switchKlasseSub(id) {
   document.querySelectorAll('#tabKlasse .spanel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('#tabKlasse .stab').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs = ['kFormeln','kVorlagen','kGeometrie','kPhysik'];
+  const tabs = ['kFormeln','kVorlagen','kGeometrie','kPhysik','k3D'];
   document.querySelectorAll('#tabKlasse .stab')[tabs.indexOf(id)].classList.add('active');
 }
 
