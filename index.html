@@ -5669,7 +5669,9 @@ function addKbVar() {
   const valEl  = document.getElementById('varPickerVal');
   const name = nameEl.value.trim();
   const value = parseFloat(valEl.value);
-  if (!name || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(name)) {
+  // Validate: only alphanumeric+underscore, starting with letter, not a reserved/function name
+  const blocked = ['sin','cos','tan','asin','acos','atan','sqrt','log','ln','exp','pi','true','false','return'];
+  if (!name || !/^[a-zA-Z][a-zA-Z0-9_]*$/.test(name) || blocked.includes(name.toLowerCase())) {
     nameEl.style.borderColor = '#cc0000';
     setTimeout(() => nameEl.style.borderColor = '#3a3a6a', 1000);
     return;
@@ -5715,19 +5717,38 @@ function renderVarPickerList() {
     list.innerHTML = '<div style="color:#666;font-size:13px;text-align:center">Noch keine Variablen definiert</div>';
     return;
   }
-  list.innerHTML = kbVars.map(v =>
+  list.innerHTML = kbVars.map((v, i) =>
     `<div style="display:flex;align-items:center;gap:8px;background:#2a2a4a;border-radius:9px;padding:8px 12px">
       <span style="font-weight:700;color:#fff;font-size:15px;min-width:40px">${escHtml(v.name)}</span>
       <span style="color:#888">=</span>
-      <input type="number" value="${v.value}" step="any"
+      <input type="number" value="${v.value}" step="any" data-varidx="${i}"
         style="flex:1;background:#1a1a2e;border:1px solid #3a3a6a;border-radius:6px;color:#fff;font-size:14px;padding:5px 8px;outline:none;font-family:inherit"
-        oninput="updateKbVar('${escHtml(v.name)}', this.value)">
-      <button onclick="mkInsert('${escHtml(v.name)}')"
+        class="vp-val-input">
+      <button data-insert-var="${i}"
         style="background:#00885a;border:none;border-radius:6px;color:#fff;font-size:12px;font-weight:700;padding:5px 8px;cursor:pointer;font-family:inherit">Einfügen</button>
-      <button onclick="deleteKbVar('${escHtml(v.name)}')"
+      <button data-delete-var="${i}"
         style="background:#cc0000;border:none;border-radius:6px;color:#fff;font-size:12px;font-weight:700;padding:5px 8px;cursor:pointer;font-family:inherit">✕</button>
     </div>`
   ).join('');
+  // Attach event listeners
+  list.querySelectorAll('.vp-val-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const idx = parseInt(inp.dataset.varidx, 10);
+      if (!isNaN(idx) && kbVars[idx]) updateKbVar(kbVars[idx].name, inp.value);
+    });
+  });
+  list.querySelectorAll('[data-insert-var]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.insertVar, 10);
+      if (!isNaN(idx) && kbVars[idx]) mkInsert(kbVars[idx].name);
+    });
+  });
+  list.querySelectorAll('[data-delete-var]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.deleteVar, 10);
+      if (!isNaN(idx) && kbVars[idx]) deleteKbVar(kbVars[idx].name);
+    });
+  });
 }
 
 function updateKbVar(name, rawVal) {
@@ -5752,9 +5773,15 @@ function updateKbVar(name, rawVal) {
 function renderMkVarBtns() {
   const container = document.getElementById('mkVarBtns');
   if (!container) return;
-  container.innerHTML = kbVars.map(v =>
-    `<button class="mk" style="background:#2244aa;font-size:13px;font-weight:700;max-width:60px" onclick="mkInsert('${escHtml(v.name)}')" title="${escHtml(v.name)} = ${v.value}">${escHtml(v.name)}</button>`
+  container.innerHTML = kbVars.map((v, i) =>
+    `<button class="mk" data-insert-var="${i}" style="background:#2244aa;font-size:13px;font-weight:700;max-width:60px" title="${escHtml(v.name)} = ${v.value}">${escHtml(v.name)}</button>`
   ).join('');
+  container.querySelectorAll('[data-insert-var]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.insertVar, 10);
+      if (!isNaN(idx) && kbVars[idx]) mkInsert(kbVars[idx].name);
+    });
+  });
 }
 
 // kbVars initialization is complete above
