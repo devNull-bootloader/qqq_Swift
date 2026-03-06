@@ -186,11 +186,11 @@
 
     /* ─── Coordinate System ─── */
     #tabKoord { overflow: hidden; }
-    #cvs { position: absolute; top: 36px; left: 0; width: 100%; height: calc(100% - 36px); touch-action: none; cursor: crosshair; }
+    #cvs { position: absolute; top: var(--csys-bar-h); left: 0; width: 100%; height: calc(100% - var(--csys-bar-h)); touch-action: none; cursor: crosshair; }
     #cvs.panning { cursor: grab; }
     #cvs.panning.dragging { cursor: grabbing; }
-    #rtoolbar { position: absolute; top: 48px; right: 10px; display: flex; flex-direction: column; gap: 7px; z-index: 10; }
-    #ltoolbar { position: absolute; top: 48px; left: 10px; display: flex; flex-direction: column; gap: 7px; z-index: 10; }
+    #rtoolbar { position: absolute; top: calc(var(--csys-bar-h) + 12px); right: 10px; display: flex; flex-direction: column; gap: 7px; z-index: 15; }
+    #ltoolbar { position: absolute; top: calc(var(--csys-bar-h) + 12px); left: 10px; display: flex; flex-direction: column; gap: 7px; z-index: 15; }
     .tbtn { width: 42px; height: 42px; background: var(--card); backdrop-filter: blur(8px);
       border: 1px solid var(--bdr); border-radius: 10px; color: var(--txt); font-size: 17px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; transition: all .2s; }
@@ -383,9 +383,9 @@
     #fsMenu .fsExit:active { opacity: .7; }
 
     /* ─── Ruler on canvas ─── */
-    #rulerH { position: absolute; top: 36px; left: 20px; right: 0; height: 20px; pointer-events: none; z-index: 4; display: none; }
-    #rulerV { position: absolute; top: 56px; left: 0; width: 20px; bottom: 0; pointer-events: none; z-index: 4; display: none; }
-    #rulerCorner { position: absolute; top: 36px; left: 0; width: 20px; height: 20px;
+    #rulerH { position: absolute; top: var(--csys-bar-h); left: 20px; right: 0; height: 20px; pointer-events: none; z-index: 4; display: none; }
+    #rulerV { position: absolute; top: calc(var(--csys-bar-h) + 20px); left: 0; width: 20px; bottom: 0; pointer-events: none; z-index: 4; display: none; }
+    #rulerCorner { position: absolute; top: var(--csys-bar-h); left: 0; width: 20px; height: 20px;
       background: var(--bg2); z-index: 5; pointer-events: none;
       border-bottom: 1px solid var(--bdr); border-right: 1px solid var(--bdr); display: none; }
     .ruler-visible #rulerH, .ruler-visible #rulerV, .ruler-visible #rulerCorner { display: block; }
@@ -721,12 +721,14 @@
       letter-spacing: .5px; margin-bottom: 4px; }
     #glossaryTooltip .gt-def { font-size: 13px; color: #e0e0e0; line-height: 1.5; }
     /* ─── Multiple Coordinate Systems tab bar ─── */
+    :root { --csys-bar-h: 36px; }
     #coordSysTabs .csys-tab { padding: 4px 10px; border: none; border-radius: 7px; background: var(--btn);
       color: var(--dim); font-size: 11px; font-family: inherit; cursor: pointer; white-space: nowrap;
       transition: all .2s; }
     #coordSysTabs .csys-tab.active { background: var(--acc); color: white; }
     #coordSysBar { scrollbar-width: none; }
     #coordSysBar::-webkit-scrollbar { display: none; }
+    .mk.mk-eq { background: #226622; color: white; }
 
     /* ─── TV Mode canvas ─── */
     #tvCoordCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -1280,7 +1282,7 @@
     <!-- ════════ TAB: KOORDINATENSYSTEM ════════ -->
     <div id="tabKoord" class="panel">
       <!-- Multiple coordinate systems tab bar -->
-      <div id="coordSysBar" style="position:absolute;top:0;left:0;right:0;z-index:11;display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 6px;height:36px;gap:4px;overflow-x:auto">
+      <div id="coordSysBar" style="position:absolute;top:0;left:0;right:0;z-index:11;display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 6px;height:var(--csys-bar-h);gap:4px;overflow-x:auto">
         <div id="coordSysTabs" style="display:flex;gap:4px;flex:1;overflow-x:auto"></div>
         <button onclick="addCoordSystem()" title="Neues Koordinatensystem" style="flex-shrink:0;width:28px;height:28px;background:var(--acc);border:none;border-radius:7px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
       </div>
@@ -2612,8 +2614,9 @@ const coord = {
 /* ══════════════════════════════════════════════
    MULTIPLE COORDINATE SYSTEMS
 ══════════════════════════════════════════════ */
-// Each entry is a serializable snapshot of the coord state
-let coordSystems = [null]; // index 0 = "live" (will be snapshotted on switch)
+// Each entry is a serializable snapshot of the coord state.
+// Index 0 starts as null because the live `coord` object IS system 0 – it gets snapshotted on first switch.
+let coordSystems = [null]; // index 0 = "live" coord (snapshotted on first switch away from it)
 let coordSystemNames = ['System 1'];
 let activeCoordIdx = 0;
 
@@ -5173,7 +5176,8 @@ function mkInsert(ch) {
     return { s: s != null ? s : len, e: e != null ? e : len };
   }
   function trySetSel(pos) {
-    try { _mkTarget.setSelectionRange(pos, pos); } catch (_) {}
+    // setSelectionRange throws on type="number" inputs — silently ignore (expected browser behaviour)
+    try { _mkTarget.setSelectionRange(pos, pos); } catch (_selErr) { /* intentional: number inputs */ }
   }
   if (ch === '⌫') {
     const v = _mkTarget.value;
@@ -5781,7 +5785,6 @@ function tvSetContent(type) {
         </div>`;
       _tvAnimFrame = requestAnimationFrame(tvCalcDraw);
     }
-    contentEl.style.background = '#1a1a2e';
     tvCalcDraw();
 
   } else if (type === 'timer') {
@@ -6087,7 +6090,7 @@ function renderMkVarBtns() {
   <div class="mkrow">
     <button class="mk" onclick="mkInsert('0')">0</button>
     <button class="mk" onclick="mkInsert('.')">.</button>
-    <button class="mk mk-op" style="background:#226622" onclick="mkInsert('=')"> = </button>
+    <button class="mk mk-op mk-eq" onclick="mkInsert('=')"> = </button>
     <button class="mk mk-frac" onclick="openFracPicker()">½</button>
     <button class="mk" onclick="mkInsert('√')">√</button>
     <button class="mk" onclick="mkInsert('π')">π</button>
