@@ -114,13 +114,22 @@
     .nb.active { color: var(--acc); }
     .nb .ni { font-size: 22px; line-height: 1; }
 
-    /* ─── Sub-Tabs ─── */
+    /* ─── Sub-Tabs (horizontal – used by Formeln+ etc.) ─── */
     .stabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--bdr); padding: 6px; gap: 5px; flex-shrink: 0; }
     .stab { flex: 1; padding: 8px 4px; background: none; border: none; border-radius: 8px;
       color: var(--dim); font-size: 12px; font-family: inherit; cursor: pointer; transition: all .2s; }
     .stab.active { background: var(--acc); color: white; }
     .spanel { display: none; flex-direction: column; flex: 1; overflow: hidden; }
     .spanel.active { display: flex; }
+    /* ─── Calculator vertical side-navigation ─── */
+    #tabRechner { flex-direction: row !important; }
+    #tabRechner > .stabs { flex-direction: column; border-bottom: none; border-right: 1px solid var(--bdr);
+      width: 64px; flex-shrink: 0; padding: 6px 4px; gap: 3px; align-items: stretch; overflow-y: auto; }
+    #tabRechner > .stabs .stab { flex: none; padding: 10px 4px 8px; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; font-size: 9px; line-height: 1.2; border-radius: 10px; font-weight: 600;
+      white-space: nowrap; text-align: center; }
+    #tabRechner > .stabs .stab .si { font-size: 22px; line-height: 1; display: block; }
+    .spanels-wrap { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
     /* ─── Basic Calculator ─── */
     #grundrechner { flex-direction: column; }
@@ -128,7 +137,10 @@
       flex-direction: column; justify-content: flex-end; flex-shrink: 0; border-bottom: 1px solid var(--bdr); }
     .chist { display: flex; flex-direction: column; gap: 1px; margin-bottom: 4px; }
     .chistrow { font-size: 12px; color: var(--dim); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cexpr { font-size: 18px; color: var(--dim); text-align: right; min-height: 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* cexpr: always show the right (latest) end of the expression */
+    .cexpr { font-size: 18px; color: var(--dim); text-align: right; min-height: 22px; white-space: nowrap;
+      overflow-x: auto; text-overflow: clip; scrollbar-width: none; }
+    .cexpr::-webkit-scrollbar { display: none; }
     .cres { font-size: 36px; font-weight: 300; color: var(--txt); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
     .cbtns { flex: 1; display: grid; grid-template-columns: repeat(4,1fr); grid-auto-rows: 1fr; gap: 6px; padding: 6px; }
     .cb { background: var(--btn); border: none; border-radius: var(--r); color: var(--txt); font-size: 19px;
@@ -193,18 +205,29 @@
     #cvs.mode-select { cursor: default; }
     #cvs.mode-delete { cursor: not-allowed; }
     #cvs.mode-edit { cursor: cell; }
-    #rtoolbar { position: absolute; top: calc(var(--csys-bar-h) + 12px); right: 10px; display: flex; flex-direction: column; gap: 7px; z-index: 15; }
+    #rtoolbar { position: absolute; bottom: 52px; left: 68px; right: 6px; top: auto;
+      display: flex; flex-direction: row; flex-wrap: nowrap; overflow-x: auto;
+      gap: 5px; z-index: 15; background: rgba(245,245,245,0.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border-radius: 14px; padding: 4px 6px; scrollbar-width: none;
+      border: 1px solid var(--bdr); }
+    #rtoolbar::-webkit-scrollbar { display: none; }
     #rtoolbar.collapsed > *:not(#rtoolbarCollapseBtn) { display: none !important; }
+    #rtoolbar.collapsed { left: auto; right: 6px; background: rgba(245,245,245,0.75); padding: 3px 4px; }
     #rtoolbarCollapseBtn { flex-shrink: 0; }
     #ltoolbar { position: absolute; top: calc(var(--csys-bar-h) + 12px); left: 10px; display: flex; flex-direction: column; gap: 7px; z-index: 15; }
     #ltoolbar.collapsed > *:not(#ltoolbarCollapseBtn) { display: none !important; }
     #ltoolbarCollapseBtn { flex-shrink: 0; }
+    /* Auto-dim toolbars while actively drawing/panning */
+    #tabKoord.canvas-busy #ltoolbar,
+    #tabKoord.canvas-busy #rtoolbar { opacity: 0.13; pointer-events: none; }
+    #ltoolbar, #rtoolbar { transition: opacity .25s; }
     .tbtn { width: 42px; height: 42px; background: var(--card); backdrop-filter: blur(8px);
       border: 1px solid var(--bdr); border-radius: 10px; color: var(--txt); font-size: 17px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; transition: all .2s; }
     .tbtn.act { background: var(--acc); border-color: var(--acc); color: white; }
     .tbtn:active { opacity: .7; }
-    #coordInfo { position: absolute; bottom: 60px; left: 10px; background: var(--card);
+    #coordInfo { position: absolute; bottom: 100px; left: 10px; background: var(--card);
       border: 1px solid var(--bdr); border-radius: 8px; padding: 5px 9px; font-size: 11px; color: var(--dim); z-index: 5; }
     /* ─── Template preview canvas ─── */
     .vtpl-prev { width: 52px; height: 38px; border-radius: 5px; border: 1px solid var(--bdr); flex-shrink: 0; background: #fff; }
@@ -768,13 +791,33 @@
       letter-spacing: .5px; margin-bottom: 4px; }
     #glossaryTooltip .gt-def { font-size: 13px; color: #e0e0e0; line-height: 1.5; }
     /* ─── Multiple Coordinate Systems tab bar ─── */
-    :root { --csys-bar-h: 36px; }
+    :root { --csys-bar-h: 76px; }   /* 36px tabs + 40px function quick-bar */
     #coordSysTabs .csys-tab { padding: 4px 10px; border: none; border-radius: 7px; background: var(--btn);
       color: var(--dim); font-size: 11px; font-family: inherit; cursor: pointer; white-space: nowrap;
       transition: all .2s; }
     #coordSysTabs .csys-tab.active { background: var(--acc); color: white; }
-    #coordSysBar { scrollbar-width: none; }
+    #coordSysBar { scrollbar-width: none; flex-direction: column !important; }
     #coordSysBar::-webkit-scrollbar { display: none; }
+    /* Tab row inside coordSysBar */
+    #coordSysTabRow { display: flex; align-items: center; gap: 4px; height: 36px; padding: 0 6px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none; }
+    #coordSysTabRow::-webkit-scrollbar { display: none; }
+    /* Function quick-input bar */
+    #coordFnBar { display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 8px;
+      border-top: 1px solid var(--bdr); background: var(--bg); }
+    #coordFnInput { flex: 1; background: var(--card); border: 1px solid var(--bdr); border-radius: 8px;
+      color: var(--txt); font-size: 13px; padding: 6px 10px; font-family: 'Courier New', monospace;
+      outline: none; -webkit-user-select: text; user-select: text; height: 30px; }
+    #coordFnInput:focus { border-color: var(--acc); }
+    #coordFnAddBtn { width: 30px; height: 30px; background: var(--acc); border: none; border-radius: 8px;
+      color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    #coordFnAddBtn:active { opacity: .7; }
+    /* Active function chips in the function bar */
+    #coordFnChips { display: flex; gap: 4px; overflow-x: auto; flex-shrink: 0; max-width: 45%; scrollbar-width: none; }
+    #coordFnChips::-webkit-scrollbar { display: none; }
+    .fn-chip { display: flex; align-items: center; gap: 3px; padding: 3px 7px; border-radius: 20px;
+      font-size: 11px; font-family: 'Courier New', monospace; white-space: nowrap; color: white;
+      max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
+    .fn-chip-del { background: none; border: none; color: rgba(255,255,255,0.8); cursor: pointer; font-size: 12px; padding: 0 0 0 2px; line-height: 1; }
     .mk.mk-eq { background: #226622; color: white; }
 
     /* ─── Premium Modal ─── */
@@ -1232,13 +1275,12 @@
     <!-- ════════ TAB: RECHNER ════════ -->
     <div id="tabRechner" class="panel active">
       <div class="stabs">
-        <button class="stab active" onclick="switchSub('grundrechner')">Grundrechner</button>
-        <button class="stab" onclick="switchSub('gleichungen')">Gleichungen</button>
-        <button class="stab" onclick="switchSub('brueche')">Brüche</button>
-        <button class="stab" onclick="switchSub('einheiten')">Einheiten</button>
+        <button class="stab active" onclick="switchSub('grundrechner')" aria-label="Grundrechner"><span class="si" aria-hidden="true">🧮</span>Rechner</button>
+        <button class="stab" onclick="switchSub('gleichungen')" aria-label="Gleichungen"><span class="si" aria-hidden="true">⚖️</span>Gleichung</button>
+        <button class="stab" onclick="switchSub('brueche')" aria-label="Brüche"><span class="si" aria-hidden="true">½</span>Brüche</button>
+        <button class="stab" onclick="switchSub('einheiten')" aria-label="Einheiten"><span class="si" aria-hidden="true">📏</span>Einheiten</button>
       </div>
-
-      <!-- ── Grundrechner ── -->
+      <div class="spanels-wrap">
       <div id="grundrechner" class="spanel active">
         <!-- x and y variable inputs -->
         <div id="calcVarRow" style="display:flex;gap:6px;padding:8px 10px 0;align-items:center;flex-wrap:wrap">
@@ -1386,19 +1428,31 @@
           </div>
         </div>
       </div><!-- end einheiten -->
-
+      </div><!-- end spanels-wrap -->
     </div><!-- end tabRechner -->
 
     <!-- ════════ TAB: KOORDINATENSYSTEM ════════ -->
     <div id="tabKoord" class="panel">
-      <!-- Multiple coordinate systems tab bar -->
-      <div id="coordSysBar" style="position:absolute;top:0;left:0;right:0;z-index:11;display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 6px;height:var(--csys-bar-h);gap:4px;overflow-x:auto">
-        <div id="coordSysTabs" style="display:flex;gap:4px;flex:1;overflow-x:auto"></div>
-        <button onclick="addCoordSystem()" title="Neues Koordinatensystem" style="flex-shrink:0;width:28px;height:28px;background:var(--acc);border:none;border-radius:7px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+      <!-- Multiple coordinate systems tab bar (two rows: tabs + function quick-input) -->
+      <div id="coordSysBar" style="position:absolute;top:0;left:0;right:0;z-index:11;background:var(--bg2);border-bottom:1px solid var(--bdr);height:var(--csys-bar-h)">
+        <!-- Row 1: system tabs -->
+        <div id="coordSysTabRow">
+          <div id="coordSysTabs" style="display:flex;gap:4px;flex:1;overflow-x:auto"></div>
+          <button onclick="addCoordSystem()" title="Neues Koordinatensystem" style="flex-shrink:0;width:28px;height:28px;background:var(--acc);border:none;border-radius:7px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+        </div>
+        <!-- Row 2: function quick-input -->
+        <div id="coordFnBar">
+          <span style="font-size:12px;color:var(--dim);font-weight:600;white-space:nowrap">y =</span>
+          <input id="coordFnInput" placeholder="z.B. x^2 oder sin(x)" autocorrect="off" autocapitalize="off"
+            aria-label="Funktionsausdruck eingeben"
+            onkeydown="if(event.key==='Enter')quickAddFn()">
+          <button id="coordFnAddBtn" onclick="quickAddFn()" title="Funktion hinzufügen">+</button>
+          <div id="coordFnChips"></div>
+        </div>
       </div>
       <canvas id="cvs"></canvas>
 
-      <!-- Right toolbar -->
+      <!-- Right toolbar (horizontal, bottom of canvas) -->
       <div id="rtoolbar">
         <button class="tbtn" id="rtoolbarCollapseBtn" title="Werkzeuge ein/ausblenden" onclick="toggleRtoolbar()">‹</button>
         <button class="tbtn" title="Vergrößern" onclick="zoomBy(1.25)">+</button>
@@ -2360,11 +2414,11 @@ function switchTab(tab) {
 
 function switchSub(id) {
   currentSub = id;
-  document.querySelectorAll('.spanel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#tabRechner .spanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#tabRechner .stab').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const idx = ['grundrechner','gleichungen','brueche','einheiten'].indexOf(id);
-  if (idx >= 0) document.querySelectorAll('.stab')[idx].classList.add('active');
+  if (idx >= 0) document.querySelectorAll('#tabRechner .stab')[idx].classList.add('active');
   if (id === 'einheiten') initUnitConverter();
 }
 
@@ -2507,7 +2561,10 @@ function updateCalcDisplay() {
   const histEl = document.getElementById('calcHist');
   histEl.innerHTML = calc.history.map(h =>
     `<div class="chistrow">${escHtml(h)}</div>`).join('');
-  document.getElementById('calcExpr').textContent = calc.expr || '';
+  const exprEl = document.getElementById('calcExpr');
+  exprEl.textContent = calc.expr || '';
+  // Always scroll to show the latest (rightmost) characters
+  exprEl.scrollLeft = exprEl.scrollWidth;
   document.getElementById('calcRes').textContent = calc.result;
 }
 
@@ -2904,6 +2961,20 @@ function initCoordCanvas() {
   cvs.addEventListener('pointerup', onPointerUp);
   cvs.addEventListener('pointercancel', onPointerUp);
   cvs.addEventListener('wheel', onWheel, { passive: false });
+
+  // Auto-dim toolbars when canvas is in active use
+  let _canvasBusyTimer = null;
+  cvs.addEventListener('pointerdown', () => {
+    document.getElementById('tabKoord').classList.add('canvas-busy');
+  });
+  const _clearCanvasBusy = () => {
+    clearTimeout(_canvasBusyTimer);
+    _canvasBusyTimer = setTimeout(() => {
+      document.getElementById('tabKoord').classList.remove('canvas-busy');
+    }, 600);
+  };
+  cvs.addEventListener('pointerup', _clearCanvasBusy);
+  cvs.addEventListener('pointercancel', _clearCanvasBusy);
 
   window.addEventListener('resize', () => { resizeCanvas(); applyRangeSettings(); });
   // Don't call drawCanvas here - canvas has 0 size since tabKoord is hidden on init
@@ -3558,6 +3629,7 @@ function addFunction() {
   coord.functions.push({ expr, color, id, raw });
   document.getElementById('fnInput').value = '';
   renderFnList();
+  renderCoordFnChips();
   drawCanvas();
   autoSyncTable();
 }
@@ -3574,7 +3646,7 @@ function renderFnList() {
 
 function deleteFunction(id) {
   coord.functions = coord.functions.filter(f => f.id !== id);
-  renderFnList(); drawCanvas();
+  renderFnList(); renderCoordFnChips(); drawCanvas();
   autoSyncTable();
 }
 
@@ -4694,7 +4766,41 @@ function insertCoordTemplate(expr) {
   coord.functions.push({ expr, color, id, raw: 'y = ' + expr });
   switchTab('koordinaten');
   renderFnList();
+  renderCoordFnChips();
   setTimeout(() => { resizeCanvas(); drawCanvas(); }, 80);
+}
+
+/* ─ Quick-add function from the top bar ─ */
+function quickAddFn() {
+  const inp = document.getElementById('coordFnInput');
+  if (!inp) return;
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const expr = raw.replace(/^y\s*=\s*/i, '').replace(/\s/g, '');
+  if (!expr) return;
+  const color = COLORS[colorIdx % COLORS.length]; colorIdx++;
+  const id = coord.nextId++;
+  coord.functions.push({ expr, color, id, raw: 'y = ' + expr });
+  inp.value = '';
+  renderFnList();
+  renderCoordFnChips();
+  drawCanvas();
+}
+
+/* ─ Render active function chips in the top bar ─ */
+function renderCoordFnChips() {
+  const chips = document.getElementById('coordFnChips');
+  if (!chips) return;
+  chips.innerHTML = '';
+  coord.functions.slice(-4).forEach(fn => {  // show last 4 max
+    const chip = document.createElement('div');
+    chip.className = 'fn-chip';
+    chip.style.background = fn.color;
+    chip.title = fn.raw || ('y = ' + fn.expr);
+    chip.innerHTML = `<span style="overflow:hidden;text-overflow:ellipsis;max-width:90px">${escHtml(fn.expr)}</span>` +
+      `<button class="fn-chip-del" onclick="deleteFunction(${fn.id})" title="Entfernen" aria-label="Funktion entfernen">✕</button>`;
+    chips.appendChild(chip);
+  });
 }
 
 function insertCoordTemplateCustom() {
