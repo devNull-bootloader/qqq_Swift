@@ -135,7 +135,7 @@
       onkeydown="if(event.key==='Enter')checkAuth()">
     <div class="err" id="authErr"></div>
     <button class="btn btn-primary" style="width:100%" onclick="checkAuth()">Einloggen</button>
-    <p style="font-size:11px;color:var(--dim);margin-top:18px">Standard-Passwort: <code style="color:#a0d0ff">ADMIN2025</code><br>Änderbar in der Datei (ADMIN_PASSWORD)</p>
+    <p style="font-size:11px;color:var(--dim);margin-top:18px">Passwort vergessen? Siehe Datei <code style="color:#a0d0ff">license-manager.html</code> → <code style="color:#a0d0ff">ADMIN_PASSWORD</code></p>
   </div>
 </div>
 
@@ -359,7 +359,7 @@
           <p>Am Anfang von <code style="color:#a0d0ff">license-manager.html</code> die Konstanten setzen:</p>
           <div class="code-block"><span class="sql-kw">const</span> SUPA_URL         = <span class="sql-str">'https://xxxx.supabase.co'</span>;
 <span class="sql-kw">const</span> SUPA_SERVICE_KEY = <span class="sql-str">'your-service-role-key'</span>; <span class="sql-cmt">// GEHEIM – nicht im Frontend!</span></div>
-          <p style="margin-top:10px;color:#f0c040">⚠️ Den <strong>Service Role Key</strong> darf nur der Admin-Server sehen. Für eine sichere Lösung solltest du den License Manager auf einem Server hosten (z.B. Vercel/Netlify Serverless Function) und nicht direkt im Browser ausführen.</p>
+          <p style="margin-top:10px;color:#f0c040">⚠️ <strong>KRITISCH:</strong> Den <strong>Service Role Key</strong> darf <em>niemals</em> im Client-seitigen Code stehen. Er gibt vollen Datenbankzugriff ohne Row-Level-Security. Hoste den License Manager als geschützte Server-seitige Funktion (z.B. Vercel/Netlify Serverless Function hinter Authentication) – <strong>nicht als statische HTML-Datei</strong>. Alternativ: Keys nur über den Supabase-Dashboard manuell eintragen.</p>
         </div>
       </div>
       <div class="guide-step">

@@ -7754,7 +7754,7 @@ function teacherCopyKey(key) {
 function teacherGenerateStudentKeys() {
   const data = getLicenseData();
   if (!data || data.type !== 'teacher' || !data.classId || data.classId === '0000') {
-    alert('Schüler-Keys können nur mit einem TCH-Schlüssel (aus dem License Manager) generiert werden.');
+    _showLicenseToast('❌ Nur mit TCH-Schlüssel aus dem License Manager möglich.', '#7a0000');
     return;
   }
   const classId = data.classId;
@@ -7762,13 +7762,13 @@ function teacherGenerateStudentKeys() {
   const count = Math.min(50, Math.max(1, parseInt(document.getElementById('genStuCount').value) || 1));
   const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-  function rnd(n) { let s=''; for(let i=0;i<n;i++) s+=CHARS[Math.floor(Math.random()*CHARS.length)]; return s; }
+  function randomStr(n) { let s=''; for(let i=0;i<n;i++) s+=CHARS[Math.floor(Math.random()*CHARS.length)]; return s; }
 
   let keys;
   try { keys = JSON.parse(localStorage.getItem('lm_keys') || '[]'); } catch { keys = []; }
   const newKeys = [];
   for (let i = 0; i < count; i++) {
-    const random = rnd(8);
+    const random = randomStr(8);
     const cs = _lmHash('STU' + classId + random + LICENSE_SECRET);
     const k = `STU-${classId}-${random}-${cs}`;
     keys.push({ key: k, type: 'STU', classId, note: name, revoked: false, locked: false, created: new Date().toISOString() });
