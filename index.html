@@ -892,6 +892,64 @@
     #model3dHint { padding: 8px 14px; background: #111; border-top: 1px solid #222;
       font-size: 12px; color: #555; text-align: center; flex-shrink: 0; }
 
+    /* ─── License Gate Overlay ─── */
+    #licenseGate { position: fixed; inset: 0; background: var(--bg); z-index: 13500;
+      display: none; align-items: center; justify-content: center; padding: 24px; }
+    #licenseGate.open { display: flex; }
+    #licenseGateModal { background: var(--bg2); border: 1px solid var(--bdr); padding: 32px 24px;
+      width: 100%; max-width: 420px; text-align: center; animation: suUp .35s ease; }
+    #licenseGate .lg-icon { font-size: 52px; margin-bottom: 12px; }
+    #licenseGate .lg-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+    #licenseGate .lg-sub { font-size: 13px; color: var(--dim); margin-bottom: 22px; line-height: 1.6; }
+    #licenseGate .lg-input { width: 100%; padding: 12px 14px; border: 2px solid var(--bdr);
+      font-size: 14px; font-family: 'Courier New', monospace; background: var(--btn);
+      color: var(--txt); text-align: center; letter-spacing: 2px; margin-bottom: 8px;
+      text-transform: uppercase; }
+    #licenseGate .lg-input:focus { outline: none; border-color: var(--acc); }
+    #licenseGate .lg-err { font-size: 13px; color: var(--acc); min-height: 18px; margin-bottom: 14px; }
+    #licenseGate .lg-btn { width: 100%; padding: 14px; background: var(--acc); border: none;
+      color: white; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+      margin-bottom: 10px; }
+    #licenseGate .lg-btn:active { opacity: .85; }
+    #licenseGate .lg-skip { width: 100%; padding: 12px; background: var(--btn); border: none;
+      color: var(--dim); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    /* ─── Limited Mode Banner ─── */
+    #limitedBanner { background: #7a0000; color: white; font-size: 12px; font-weight: 700;
+      padding: 7px 14px; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+      border-bottom: 1px solid #aa0000; cursor: pointer; }
+    #limitedBanner .lb-text { flex: 1; }
+    #limitedBanner .lb-btn { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4);
+      color: white; font-size: 11px; font-weight: 700; padding: 4px 10px; cursor: pointer;
+      font-family: inherit; white-space: nowrap; }
+    /* ─── License Settings Tab ─── */
+    .lic-status-box { display: flex; align-items: center; gap: 12px; padding: 14px;
+      background: var(--bg2); border: 1px solid var(--bdr); margin-bottom: 12px; }
+    .lic-status-box .ls-icon { font-size: 28px; flex-shrink: 0; }
+    .lic-status-box .ls-title { font-size: 14px; font-weight: 700; }
+    .lic-status-box .ls-sub { font-size: 12px; color: var(--dim); margin-top: 2px; }
+    .lic-badge { display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 800;
+      letter-spacing: .5px; margin-left: 6px; }
+    .lic-badge-free { background: var(--btn); color: var(--dim); }
+    .lic-badge-pro { background: #c47400; color: white; }
+    .lic-badge-teacher { background: #1a7a1a; color: white; }
+    .lic-badge-student { background: #0055cc; color: white; }
+    /* ─── Class Management (Teacher) ─── */
+    .cls-student-row { display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+      background: var(--bg2); border: 1px solid var(--bdr); margin-bottom: 6px; }
+    .cls-student-row .csr-key { font-family: monospace; font-size: 12px; color: #a0d0ff; flex: 1;
+      word-break: break-all; }
+    .cls-student-row .csr-name { font-size: 12px; color: var(--dim); }
+    .cls-student-row .csr-status { font-size: 11px; font-weight: 700; padding: 2px 7px; }
+    .csr-active { background: #1a3a1a; color: #6fda6f; }
+    .csr-locked { background: #3a1a00; color: #ffa060; }
+    .csr-revoked { background: #2a2a2a; color: #888; }
+    /* ─── Feature Toggle Row ─── */
+    .feat-toggle-row { display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid var(--bdr); }
+    .feat-toggle-row:last-child { border-bottom: none; }
+    .feat-toggle-row .ftr-label { font-size: 13px; font-weight: 600; }
+    .feat-toggle-row .ftr-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
     /* ─── Crown badge for premium Vorlagen ─── */
     .vtpl-crown { display: inline-flex; align-items: center; gap: 5px; }
     .vtpl-crown-badge { font-size: 13px; }
@@ -1429,6 +1487,11 @@
      MAIN APP
 ══════════════════════════════════════════ -->
 <div id="app" style="display:none">
+  <!-- Limited mode banner (hidden when licensed) -->
+  <div id="limitedBanner" style="display:none" onclick="openLicenseGate()">
+    <span class="lb-text">⚠️ Eingeschränkter Modus – Nur Grundrechner verfügbar</span>
+    <button class="lb-btn" onclick="event.stopPropagation();openLicenseGate()">🔑 Lizenz aktivieren</button>
+  </div>
   <header id="appHdr">
     <button id="sidebarToggle" onclick="toggleSidebar()" title="Sidebar ein/ausblenden" aria-label="Sidebar ein/ausblenden">☰</button>
     <div class="logo" style="font-size:20px;font-weight:900;color:white;font-family:inherit">M</div>
@@ -2437,6 +2500,7 @@
       <div class="stabs">
         <button class="stab active" onclick="switchSettingsTab('settGeneral')">Allgemein</button>
         <button class="stab" onclick="switchSettingsTab('settAdvanced')">Erweitert</button>
+        <button class="stab" onclick="switchSettingsTab('settLicenses')">🔑 Lizenz</button>
       </div>
 
       <!-- General tab -->
@@ -2524,6 +2588,65 @@
         </div>
 
       </div>
+
+      <!-- Licenses tab -->
+      <div id="settLicenses" class="spanel" style="overflow-y:auto;padding:14px;gap:12px">
+
+        <div class="sect">Lizenzstatus</div>
+        <div id="licStatusBox" class="lic-status-box">
+          <div class="ls-icon">🔓</div>
+          <div>
+            <div class="ls-title">Freier Modus <span class="lic-badge lic-badge-free">FREE</span></div>
+            <div class="ls-sub" id="licStatusSub">Nur Grundrechner verfügbar</div>
+          </div>
+        </div>
+        <div id="licKeyDisplay" style="display:none;font-size:11px;color:var(--dim);font-family:monospace;word-break:break-all;margin-bottom:8px"></div>
+        <button class="sbtn" onclick="openLicenseGate()">🔑 Lizenzschlüssel eingeben</button>
+        <button id="licDeactivateBtn" class="sbtn" style="display:none;background:#555;margin-top:6px" onclick="deactivateLicense()">Lizenz entfernen</button>
+
+        <!-- Teacher: Class Management -->
+        <div id="settTeacherClass" style="display:none">
+          <div class="sect" style="margin-top:14px">Meine Klasse</div>
+          <div class="ig">
+            <div style="font-size:13px;color:var(--dim);margin-bottom:10px">
+              Verwalte die Schüler-Keys deiner Klasse. Du kannst Schüler sperren oder freigeben und Features einschränken.
+            </div>
+            <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+              Klassen-ID: <span id="teacherClassIdDisplay" style="color:var(--txt);font-family:monospace"></span>
+            </div>
+
+            <!-- Feature restrictions -->
+            <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:8px">🎛️ Feature-Einschränkungen für Schüler</div>
+            <div id="teacherFeatToggles"></div>
+            <button class="sbtn" style="margin-top:10px" onclick="saveTeacherRestrictions()">💾 Einschränkungen speichern</button>
+
+            <!-- Generate student keys -->
+            <div style="font-size:13px;font-weight:700;color:var(--txt);margin:14px 0 8px">➕ Schüler-Keys generieren</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input id="genStuName" placeholder="Schüler-Name (optional)" class="mi" style="flex:1;min-width:140px">
+              <input id="genStuCount" type="number" value="1" min="1" max="50" class="mi" style="width:70px">
+              <button class="sbtn" onclick="teacherGenerateStudentKeys()">Generieren</button>
+            </div>
+            <div id="genStuResult" style="margin-top:8px"></div>
+
+            <!-- Student list -->
+            <div style="font-size:13px;font-weight:700;color:var(--txt);margin:14px 0 8px">👨‍🎓 Schüler dieser Klasse</div>
+            <div id="teacherStudentList"></div>
+          </div>
+        </div>
+
+        <!-- Student: class info -->
+        <div id="settStudentInfo" style="display:none">
+          <div class="sect" style="margin-top:14px">Meine Klasse</div>
+          <div class="ig">
+            <div style="font-size:13px;color:var(--dim);margin-bottom:6px">Dein Key ist an folgende Klasse gebunden:</div>
+            <div style="font-family:monospace;font-size:15px;color:var(--txt);font-weight:700" id="stuClassIdDisplay"></div>
+            <div style="font-size:12px;color:var(--dim);margin-top:6px">Features werden von deiner Lehrperson verwaltet.</div>
+          </div>
+        </div>
+
+      </div><!-- end settLicenses -->
+
     </div><!-- end tabSettings -->
 
   </div><!-- content -->
@@ -2607,7 +2730,7 @@ function launchApp() {
   if (forceOnboard) localStorage.removeItem('ms_prefs_done');
 
   const prefsDone   = localStorage.getItem('ms_prefs_done') === '1';
-  const teacherMode = isTeacher();
+  const teacherMode = isTeacher() || getLicenseType() === 'teacher';
   const showingOnboard = !teacherMode && !prefsDone;
 
   // Only show the data-loss warning if we're NOT about to show the onboarding
@@ -2637,15 +2760,14 @@ function launchApp() {
   toggleAdvancedMode(savedAdvanced);
 
   // ── Restore mode / preferences ──────────────────────────────────────────
-  if (teacherMode) {
-    document.getElementById('teacherBadge').style.display = 'flex';
-    document.getElementById('settTeacherActive').style.display = 'block';
-    document.getElementById('settTeacherInactive').style.display = 'none';
-    document.getElementById('settTeacherBadgeLbl').style.display = 'block';
-    document.getElementById('settRoleLabel').textContent = 'Lehrer/in';
-    applyPreferences('lehrer', ['calc','koord','notizen','formeln','bild','agent']);
-  } else if (prefsDone) {
-    loadAndApplyPreferences();
+  // License system handles feature enabling; legacy teacher mode is bridged inside checkLicenseOnStartup
+  checkLicenseOnStartup();
+  if (getLicenseType() === 'free' && prefsDone) {
+    // free mode: onboarding already done but no license → show prefs anyway as user set them
+    // But limit the visible tabs via applyLicense(null) already called
+  } else if (getLicenseType() !== 'free' && prefsDone && getLicenseType() !== 'teacher') {
+    // pro / student already applied by checkLicenseOnStartup → ensure grade prefs are loaded
+    if (getLicenseType() === 'pro') loadAndApplyPreferences();
   }
   // (onboarding already opened above if neither condition is true)
 
@@ -6989,7 +7111,8 @@ function hideActivateModal() {
 // Close modals on Escape key
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    if (document.getElementById('activateOverlay').classList.contains('open')) { hideActivateModal(); }
+    if (document.getElementById('licenseGate').classList.contains('open')) { closeLicenseGate(); }
+    else if (document.getElementById('activateOverlay').classList.contains('open')) { hideActivateModal(); }
     else if (document.getElementById('premiumOverlay').classList.contains('open')) { hidePremiumModal(); }
     else if (document.getElementById('model3dOverlay').classList.contains('open')) { close3DModel(); }
   }
@@ -7170,8 +7293,11 @@ function switchSettingsTab(id) {
   document.querySelectorAll('#tabSettings .spanel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('#tabSettings .stab').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs = ['settGeneral','settAdvanced'];
-  document.querySelectorAll('#tabSettings .stab')[tabs.indexOf(id)].classList.add('active');
+  const tabs = ['settGeneral','settAdvanced','settLicenses'];
+  const idx = tabs.indexOf(id);
+  const stabs = document.querySelectorAll('#tabSettings .stab');
+  if (idx >= 0 && stabs[idx]) stabs[idx].classList.add('active');
+  if (id === 'settLicenses') renderLicenseSettings();
 }
 
 function toggleAdvancedMode(enabled) {
@@ -7235,6 +7361,429 @@ function setAccentColor(color) {
   document.documentElement.style.setProperty('--acc2', color);
   document.documentElement.style.setProperty('--acc4', color);
   localStorage.setItem('accentColor', color);
+}
+
+/* ══════════════════════════════════════════════
+   LICENSE KEY SYSTEM
+══════════════════════════════════════════════ */
+const LICENSE_SECRET  = 'MSK2025';       // Must match license-manager.html
+const LIC_KEY_STORE   = 'ms_lic_key';    // stored key string
+const LIC_DATA_STORE  = 'ms_lic_data';  // stored license info JSON
+const LIC_CLASS_STORE = 'ms_lic_classes'; // teacher: class data JSON
+
+/* ── Key validation (offline checksum) ──────── */
+function _lmHash(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h, 33) ^ str.charCodeAt(i);
+  return Math.abs(h).toString(36).toUpperCase().padStart(4, '0').slice(0, 4);
+}
+
+/**
+ * validateLicenseKey(key) → { type:'pro'|'teacher'|'student', classId, raw } | null
+ */
+function validateLicenseKey(key) {
+  if (!key) return null;
+  const parts = key.trim().toUpperCase().split('-');
+  if (parts.length !== 4) return null;
+  const [type, classId, random, checksum] = parts;
+  if (!['PRO','TCH','STU'].includes(type)) return null;
+  if (random.length < 4) return null;
+  const expected = _lmHash(type + classId + random + LICENSE_SECRET);
+  if (expected !== checksum) return null;
+  return { type: type === 'PRO' ? 'pro' : type === 'TCH' ? 'teacher' : 'student', classId, raw: key.trim().toUpperCase() };
+}
+
+/* ── License storage ─────────────────────────── */
+function getLicenseData() {
+  try { return JSON.parse(localStorage.getItem(LIC_DATA_STORE) || 'null'); } catch { return null; }
+}
+
+function setLicenseData(data) {
+  try {
+    if (data) { localStorage.setItem(LIC_DATA_STORE, JSON.stringify(data)); localStorage.setItem(LIC_KEY_STORE, data.raw); }
+    else { localStorage.removeItem(LIC_DATA_STORE); localStorage.removeItem(LIC_KEY_STORE); }
+  } catch(e) {}
+}
+
+function getLicenseType() {
+  const d = getLicenseData();
+  return d ? d.type : 'free';
+}
+
+/* ── Check if key is revoked/locked (uses lm_keys stored by license-manager) ─── */
+function checkKeyStatus(rawKey) {
+  try {
+    const keys = JSON.parse(localStorage.getItem('lm_keys') || '[]');
+    const entry = keys.find(k => k.key === rawKey);
+    if (!entry) return 'ok'; // not in manager = ok (manager on different device)
+    if (entry.revoked) return 'revoked';
+    if (entry.locked) return 'locked';
+    return 'ok';
+  } catch { return 'ok'; }
+}
+
+/* ── Apply license to app ─────────────────────── */
+function applyLicense(licData) {
+  setLicenseData(licData);
+  const type = licData ? licData.type : 'free';
+
+  if (type === 'free') {
+    // Limited mode: only basic calculator
+    setPremium(false);
+    document.getElementById('limitedBanner').style.display = 'flex';
+    // Keep only rechner, hide others
+    const always = ['nbHandbuch', 'nbSettings'];
+    Object.values(FEAT_NAV).forEach(navId => {
+      const btn = document.getElementById(navId);
+      if (btn) btn.style.display = navId === 'nbRechner' ? '' : 'none';
+    });
+    switchTab('rechner');
+    document.getElementById('teacherBadge').style.display = 'none';
+  } else {
+    document.getElementById('limitedBanner').style.display = 'none';
+    if (type === 'teacher') {
+      setPremium(true);
+      document.getElementById('teacherBadge').style.display = 'flex';
+      document.getElementById('settTeacherActive').style.display = 'block';
+      document.getElementById('settTeacherInactive').style.display = 'none';
+      document.getElementById('settTeacherBadgeLbl').style.display = 'block';
+      document.getElementById('settRoleLabel').textContent = 'Lehrer/in';
+      applyPreferences('lehrer', ['calc','koord','notizen','formeln','bild','agent']);
+    } else if (type === 'student') {
+      const restrictions = getClassRestrictions(licData.classId);
+      const allowed = Object.entries(restrictions)
+        .filter(([, v]) => v !== false)
+        .map(([k]) => k);
+      // Default to all features if no restrictions set
+      const uses = allowed.length ? allowed : ['calc','koord','notizen','formeln','bild','agent'];
+      setPremium(true);
+      document.getElementById('teacherBadge').style.display = 'none';
+      applyPreferences('', uses);
+    } else {
+      // pro
+      setPremium(true);
+      document.getElementById('teacherBadge').style.display = 'none';
+      const grade = localStorage.getItem('ms_grade') || '';
+      const usesRaw = localStorage.getItem('ms_uses');
+      const uses = usesRaw ? usesRaw.split(',') : ['calc','koord','notizen','formeln','bild','agent'];
+      applyPreferences(grade, uses);
+    }
+  }
+}
+
+/* ── Get class restrictions (stored by teacher or license manager) ─── */
+function getClassRestrictions(classId) {
+  if (!classId || classId === '0000') return {};
+  try {
+    const classes = JSON.parse(localStorage.getItem('lm_classes') || '{}');
+    return (classes[classId] && classes[classId].restrictions) ? classes[classId].restrictions : {};
+  } catch { return {}; }
+}
+
+/* ── Check license on startup ─────────────────── */
+function checkLicenseOnStartup() {
+  const stored = getLicenseData();
+  if (!stored) {
+    // No license – check for legacy teacher or pro activation
+    if (isTeacher()) {
+      const data = { type: 'teacher', classId: null, raw: '_legacy_teacher_', legacyMode: true };
+      applyLicense(data);
+      return;
+    }
+    if (isPremium()) {
+      const data = { type: 'pro', classId: null, raw: '_legacy_pro_', legacyMode: true };
+      applyLicense(data);
+      return;
+    }
+    // Show limited mode
+    applyLicense(null);
+    // Show license gate on first visit (if prefs not done and not onboarding)
+    const prefsDone = localStorage.getItem('ms_prefs_done') === '1';
+    if (!prefsDone) {
+      // Let onboarding run first; gate will show after user dismisses banner
+    } else {
+      setTimeout(() => {
+        if (getLicenseType() === 'free') openLicenseGate();
+      }, 800);
+    }
+    return;
+  }
+  // Check if revoked/locked
+  if (!stored.legacyMode && stored.raw) {
+    const status = checkKeyStatus(stored.raw);
+    if (status === 'revoked') {
+      setLicenseData(null);
+      applyLicense(null);
+      alert('⚠️ Dein Lizenzschlüssel wurde widerrufen. Bitte wende dich an deine Lehrperson oder den Administrator.');
+      return;
+    }
+    if (status === 'locked') {
+      applyLicense(null);
+      document.getElementById('limitedBanner').style.display = 'flex';
+      document.getElementById('limitedBanner').querySelector('.lb-text').textContent = '🔒 Dein Zugang wurde von der Lehrperson gesperrt.';
+      document.getElementById('limitedBanner').onclick = null;
+      return;
+    }
+  }
+  applyLicense(stored);
+}
+
+/* ── License gate UI ─────────────────────────── */
+function openLicenseGate() {
+  document.getElementById('licenseKeyInput').value = '';
+  document.getElementById('licenseKeyErr').textContent = '';
+  document.getElementById('licenseGate').classList.add('open');
+  setTimeout(() => document.getElementById('licenseKeyInput').focus(), 200);
+}
+
+function closeLicenseGate() {
+  document.getElementById('licenseGate').classList.remove('open');
+}
+
+function activateLicenseKey() {
+  const raw = document.getElementById('licenseKeyInput').value.trim().toUpperCase();
+  const errEl = document.getElementById('licenseKeyErr');
+
+  // Support legacy codes
+  if (raw === 'KOSTENLOS123' || raw === PRO_CODE.toUpperCase()) {
+    const data = { type: 'pro', classId: null, raw: '_legacy_pro_', legacyMode: true };
+    setPremium(true);
+    applyLicense(data);
+    closeLicenseGate();
+    _showLicenseToast('🎉 Pro-Lizenz aktiviert!', '#c47400');
+    renderLicenseSettings();
+    return;
+  }
+  if (raw === TEACHER_CODE) {
+    activateTeacherMode();
+    const data = { type: 'teacher', classId: null, raw: '_legacy_teacher_', legacyMode: true };
+    setLicenseData(data);
+    closeLicenseGate();
+    _showLicenseToast('✅ Lehrermodus aktiviert!', '#1a7a1a');
+    renderLicenseSettings();
+    return;
+  }
+
+  const parsed = validateLicenseKey(raw);
+  if (!parsed) {
+    errEl.textContent = '❌ Ungültiger Schlüssel. Bitte überprüfe die Eingabe.';
+    document.getElementById('licenseKeyInput').select();
+    return;
+  }
+  // Check revoked/locked
+  const status = checkKeyStatus(parsed.raw);
+  if (status === 'revoked') { errEl.textContent = '❌ Dieser Schlüssel wurde widerrufen.'; return; }
+  if (status === 'locked') { errEl.textContent = '🔒 Dieser Zugang ist gesperrt. Wende dich an deine Lehrperson.'; return; }
+
+  // Save and apply
+  setLicenseData(parsed);
+  if (parsed.type === 'teacher') localStorage.setItem(TEACHER_KEY, '1');
+  applyLicense(parsed);
+  closeLicenseGate();
+
+  const msgs = { pro: '🎉 Pro-Lizenz aktiviert!', teacher: '✅ Lehrer-Lizenz aktiviert!', student: '🎓 Schüler-Lizenz aktiviert!' };
+  const cols = { pro: '#c47400', teacher: '#1a7a1a', student: '#0055cc' };
+  _showLicenseToast(msgs[parsed.type], cols[parsed.type]);
+  renderLicenseSettings();
+  // If student, reload prefs
+  if (parsed.type === 'student') applyLicense(parsed);
+}
+
+function deactivateLicense() {
+  if (!confirm('Lizenz entfernen? Du wechselst dann in den eingeschränkten Modus.')) return;
+  setLicenseData(null);
+  deactivateTeacherMode();
+  setPremium(false);
+  applyLicense(null);
+  renderLicenseSettings();
+}
+
+function _showLicenseToast(msg, color) {
+  const el = document.createElement('div');
+  el.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:${color || 'var(--acc)'};color:#fff;padding:14px 22px;font-size:15px;font-weight:700;z-index:13000;box-shadow:0 4px 20px rgba(0,0,0,.3);white-space:nowrap;`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.transition = 'opacity .5s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 2800);
+}
+
+/* ── License Settings Panel Renderer ─────────── */
+const LICENSE_FEATURES = [
+  { id: 'calc',    label: '🧮 Rechner'      },
+  { id: 'koord',   label: '📐 Koordinaten'  },
+  { id: 'notizen', label: '📝 Notizen'      },
+  { id: 'formeln', label: '🎓 Formeln+'     },
+  { id: 'bild',    label: '📷 Bild/OCR'     },
+  { id: 'agent',   label: '🤖 Agent'        }
+];
+
+function renderLicenseSettings() {
+  const data = getLicenseData();
+  const type = data ? data.type : 'free';
+
+  // Status box
+  const statusBox = document.getElementById('licStatusBox');
+  const statusSub = document.getElementById('licStatusSub');
+  const keyDisplay = document.getElementById('licKeyDisplay');
+  const deactBtn = document.getElementById('licDeactivateBtn');
+
+  const icons = { free:'🔓', pro:'🌟', teacher:'🎓', student:'📚' };
+  const labels = { free:'Freier Modus', pro:'Pro-Lizenz', teacher:'Lehrer-Lizenz', student:'Schüler-Lizenz' };
+  const badges = { free:'lic-badge-free', pro:'lic-badge-pro', teacher:'lic-badge-teacher', student:'lic-badge-student' };
+  const badgeTxt = { free:'FREE', pro:'PRO', teacher:'LEHRER', student:'SCHÜLER' };
+  const subs = {
+    free: 'Nur Grundrechner verfügbar – Lizenz eingeben um alle Features freizuschalten',
+    pro: 'Alle Features freigeschaltet',
+    teacher: 'Alle Features + Klassen-Management freigeschaltet',
+    student: 'Features gemäß Klassen-Einstellungen'
+  };
+
+  statusBox.innerHTML = `
+    <div class="ls-icon">${icons[type]}</div>
+    <div>
+      <div class="ls-title">${labels[type]} <span class="lic-badge ${badges[type]}">${badgeTxt[type]}</span></div>
+      <div class="ls-sub">${subs[type]}</div>
+    </div>`;
+
+  if (data && data.raw && !data.legacyMode) {
+    keyDisplay.style.display = 'block';
+    keyDisplay.textContent = 'Key: ' + data.raw;
+  } else { keyDisplay.style.display = 'none'; }
+
+  deactBtn.style.display = (type !== 'free') ? 'block' : 'none';
+
+  // Teacher class panel
+  const teacherPanel = document.getElementById('settTeacherClass');
+  const studentPanel = document.getElementById('settStudentInfo');
+  teacherPanel.style.display = 'none';
+  studentPanel.style.display = 'none';
+
+  if (type === 'teacher' && data && data.classId && data.classId !== '0000') {
+    teacherPanel.style.display = 'block';
+    document.getElementById('teacherClassIdDisplay').textContent = data.classId;
+    renderTeacherFeatToggles(data.classId);
+    renderTeacherStudentList(data.classId);
+  } else if (type === 'teacher' && data && (data.legacyMode || !data.classId || data.classId === '0000')) {
+    teacherPanel.style.display = 'block';
+    document.getElementById('teacherClassIdDisplay').textContent = 'Kein Klassen-Key (Legacy-Modus)';
+    document.getElementById('teacherFeatToggles').innerHTML = '<div style="font-size:12px;color:var(--dim)">Klassen-Features sind nur mit einem TCH-Schlüssel aus dem License Manager verfügbar.</div>';
+    document.getElementById('genStuResult').innerHTML = '';
+    document.getElementById('teacherStudentList').innerHTML = '';
+  }
+
+  if (type === 'student' && data && data.classId) {
+    studentPanel.style.display = 'block';
+    document.getElementById('stuClassIdDisplay').textContent = data.classId;
+  }
+}
+
+function renderTeacherFeatToggles(classId) {
+  const restrictions = getClassRestrictions(classId);
+  const container = document.getElementById('teacherFeatToggles');
+  container.innerHTML = LICENSE_FEATURES.map(f => {
+    const enabled = restrictions[f.id] !== false; // default: enabled
+    return `<div class="feat-toggle-row">
+      <div><div class="ftr-label">${f.label}</div><div class="ftr-sub">Schülern erlauben</div></div>
+      <label class="toggle-switch" aria-label="${f.label}">
+        <input type="checkbox" id="tchr_feat_${f.id}" ${enabled ? 'checked' : ''} aria-label="${f.label}">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>`;
+  }).join('');
+}
+
+function saveTeacherRestrictions() {
+  const data = getLicenseData();
+  if (!data || data.type !== 'teacher' || !data.classId || data.classId === '0000') return;
+  const classId = data.classId;
+
+  let classes;
+  try { classes = JSON.parse(localStorage.getItem('lm_classes') || '{}'); } catch { classes = {}; }
+  if (!classes[classId]) classes[classId] = { restrictions: {} };
+
+  const restrictions = {};
+  LICENSE_FEATURES.forEach(f => {
+    const el = document.getElementById('tchr_feat_' + f.id);
+    if (el) restrictions[f.id] = el.checked;
+  });
+  classes[classId].restrictions = restrictions;
+  localStorage.setItem('lm_classes', JSON.stringify(classes));
+  _showLicenseToast('💾 Einschränkungen gespeichert', 'var(--acc)');
+}
+
+function renderTeacherStudentList(classId) {
+  let keys;
+  try { keys = JSON.parse(localStorage.getItem('lm_keys') || '[]'); } catch { keys = []; }
+  const students = keys.filter(k => k.type === 'STU' && k.classId === classId);
+  const el = document.getElementById('teacherStudentList');
+  if (!students.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--dim)">Noch keine Schüler-Keys in dieser Klasse.</div>';
+    return;
+  }
+  el.innerHTML = students.map(s => `
+    <div class="cls-student-row">
+      <div>
+        <div class="csr-key">${s.key}</div>
+        ${s.note ? `<div class="csr-name">${s.note}</div>` : ''}
+      </div>
+      <span class="csr-status ${s.revoked ? 'csr-revoked' : s.locked ? 'csr-locked' : 'csr-active'}">
+        ${s.revoked ? 'Widerrufen' : s.locked ? 'Gesperrt' : 'Aktiv'}
+      </span>
+      <button class="sbtn" style="font-size:11px;padding:4px 10px;margin:0;${s.locked ? 'background:#1a7a1a' : 'background:#7a4400'}"
+        onclick="teacherToggleLockStudent('${s.key}')">${s.locked ? '🔓' : '🔒'}</button>
+      <button class="sbtn" style="font-size:11px;padding:4px 10px;margin:0;background:#555"
+        onclick="teacherCopyKey('${s.key}')">📋</button>
+    </div>`).join('');
+}
+
+function teacherToggleLockStudent(key) {
+  let keys;
+  try { keys = JSON.parse(localStorage.getItem('lm_keys') || '[]'); } catch { keys = []; }
+  const entry = keys.find(k => k.key === key);
+  if (!entry) return;
+  entry.locked = !entry.locked;
+  localStorage.setItem('lm_keys', JSON.stringify(keys));
+  const data = getLicenseData();
+  if (data && data.classId) renderTeacherStudentList(data.classId);
+}
+
+function teacherCopyKey(key) {
+  if (navigator.clipboard) navigator.clipboard.writeText(key).catch(() => {});
+  _showLicenseToast('📋 Key kopiert', 'var(--acc)');
+}
+
+function teacherGenerateStudentKeys() {
+  const data = getLicenseData();
+  if (!data || data.type !== 'teacher' || !data.classId || data.classId === '0000') {
+    alert('Schüler-Keys können nur mit einem TCH-Schlüssel (aus dem License Manager) generiert werden.');
+    return;
+  }
+  const classId = data.classId;
+  const name = (document.getElementById('genStuName').value || '').trim();
+  const count = Math.min(50, Math.max(1, parseInt(document.getElementById('genStuCount').value) || 1));
+  const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+  function rnd(n) { let s=''; for(let i=0;i<n;i++) s+=CHARS[Math.floor(Math.random()*CHARS.length)]; return s; }
+
+  let keys;
+  try { keys = JSON.parse(localStorage.getItem('lm_keys') || '[]'); } catch { keys = []; }
+  const newKeys = [];
+  for (let i = 0; i < count; i++) {
+    const random = rnd(8);
+    const cs = _lmHash('STU' + classId + random + LICENSE_SECRET);
+    const k = `STU-${classId}-${random}-${cs}`;
+    keys.push({ key: k, type: 'STU', classId, note: name, revoked: false, locked: false, created: new Date().toISOString() });
+    newKeys.push(k);
+  }
+  localStorage.setItem('lm_keys', JSON.stringify(keys));
+  document.getElementById('genStuName').value = '';
+
+  const resultHtml = newKeys.map(k =>
+    `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+       <code style="font-size:12px;font-family:monospace;color:var(--acc);flex:1;word-break:break-all">${k}</code>
+       <button class="sbtn" style="font-size:11px;padding:4px 10px;margin:0" onclick="teacherCopyKey('${k}')">📋</button>
+     </div>`).join('');
+  document.getElementById('genStuResult').innerHTML = `<div style="margin-top:6px"><div style="font-size:11px;color:var(--dim);margin-bottom:4px">${count} Key(s):</div>${resultHtml}</div>`;
+  renderTeacherStudentList(classId);
 }
 
 /* ══════════════════════════════════════════════
@@ -7617,6 +8166,24 @@ function obSkip() {
     <div class="act-error" id="activateError"></div>
     <button class="act-confirm-btn" onclick="activatePro()">✅ Aktivieren</button>
     <button class="act-back-btn" onclick="hideActivateModal()">← Zurück</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LICENSE GATE OVERLAY
+══════════════════════════════════════════ -->
+<div id="licenseGate">
+  <div id="licenseGateModal">
+    <div class="lg-icon">🔑</div>
+    <div class="lg-title">Lizenzschlüssel eingeben</div>
+    <div class="lg-sub">Gib deinen Lizenzschlüssel ein, um alle Features freizuschalten.<br>Ohne Key stehen nur der Grundrechner zur Verfügung.</div>
+    <input class="lg-input" id="licenseKeyInput" type="text" placeholder="z.B. PRO-0000-XXXXXXXX-XXXX"
+      autocorrect="off" autocapitalize="characters" spellcheck="false"
+      oninput="document.getElementById('licenseKeyErr').textContent='';this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')activateLicenseKey()">
+    <div class="lg-err" id="licenseKeyErr"></div>
+    <button class="lg-btn" onclick="activateLicenseKey()">✅ Aktivieren</button>
+    <button class="lg-skip" onclick="closeLicenseGate()">Später – eingeschränkt weiternutzen</button>
   </div>
 </div>
 
