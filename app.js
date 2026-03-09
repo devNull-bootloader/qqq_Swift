@@ -4707,9 +4707,10 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 // WARNING: The service-role key bypasses Row Level Security. Keep it out of
 // client-side code that is shipped to end-users. Only use server-side / Edge Functions.
 // const SUPA_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzZmF4dGFqZ3F0ZXhoeGRqbndvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzA3NjcwOSwiZXhwIjoyMDg4NjUyNzA5fQ.iIwQMdNcq3oDS1YqItmD91FtHn3Cn82Q54x79eTS2go';
-const supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+const supabase = window.supabase ? window.supabase.createClient(SUPA_URL, SUPA_KEY) : null;
 
 async function validateLicenseOnline(key) {
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from('licenses')
     .select('*')
@@ -4802,7 +4803,7 @@ function _deactivateLicenseForced() {
 }
 
 function stopLicenseWatch() {
-  _licWatchChannels.forEach(ch => { try { supabase.removeChannel(ch); } catch(e) { console.warn('License channel cleanup error:', e); } });
+  if (supabase) _licWatchChannels.forEach(ch => { try { supabase.removeChannel(ch); } catch(e) { console.warn('License channel cleanup error:', e); } });
   _licWatchChannels = [];
   _currentKey = null;
   _currentClassId = null;
@@ -4810,7 +4811,7 @@ function stopLicenseWatch() {
 
 function startLicenseWatch(key, classId) {
   stopLicenseWatch();
-  if (!key) return;
+  if (!key || !supabase) return;
   _currentKey = key;
   _currentClassId = classId || null;
 
