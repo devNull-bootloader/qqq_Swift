@@ -897,6 +897,45 @@
     .pro-badge { display: inline-block; background: #f5a623;
       color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 0;
       vertical-align: middle; margin-left: 4px; letter-spacing: .5px; }
+
+    /* ─── Onboarding Overlay ─── */
+    #onboardOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 19999;
+      display: none; flex-direction: column; align-items: center; overflow-y: auto;
+      padding: 32px 20px 40px; }
+    #onboardOverlay.open { display: flex; }
+    .ob-logo { width: 72px; height: 72px; background: var(--acc); display: flex;
+      align-items: center; justify-content: center; font-size: 36px; font-weight: 900;
+      color: white; flex-shrink: 0; margin-bottom: 16px; }
+    .ob-title { font-size: 24px; font-weight: 800; color: var(--txt); margin-bottom: 4px; text-align: center; }
+    .ob-sub { font-size: 13px; color: var(--dim); margin-bottom: 28px; text-align: center; max-width: 360px; }
+    .ob-step { display: none; flex-direction: column; width: 100%; max-width: 420px; }
+    .ob-step.active { display: flex; }
+    .ob-step-title { font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 14px; }
+    .ob-grade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .ob-grade-btn { padding: 16px 12px; background: var(--bg2); border: 2px solid var(--bdr);
+      color: var(--txt); font-size: 14px; font-weight: 600; cursor: pointer; text-align: center;
+      font-family: inherit; transition: all .15s; }
+    .ob-grade-btn:active, .ob-grade-btn.sel { border-color: var(--acc); background: var(--card);
+      color: var(--acc); }
+    .ob-feat-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .ob-feat-row { display: flex; align-items: center; gap: 14px; padding: 14px 12px;
+      background: var(--bg2); border: 2px solid var(--bdr); cursor: pointer; transition: border .15s; }
+    .ob-feat-row.sel { border-color: var(--acc); background: var(--card); }
+    .ob-feat-row input[type=checkbox] { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--acc); cursor: pointer; }
+    .ob-feat-icon { font-size: 24px; flex-shrink: 0; }
+    .ob-feat-body { flex: 1; }
+    .ob-feat-name { font-size: 14px; font-weight: 700; color: var(--txt); }
+    .ob-feat-desc { font-size: 12px; color: var(--dim); margin-top: 2px; }
+    .ob-next-btn { width: 100%; padding: 15px; background: var(--acc); border: none;
+      color: white; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+      margin-bottom: 8px; }
+    .ob-next-btn:active { opacity: .85; }
+    .ob-skip { font-size: 13px; color: var(--dim); text-align: center; cursor: pointer;
+      padding: 6px; text-decoration: underline; background: none; border: none; font-family: inherit; }
+    .ob-step-indicator { display: flex; gap: 6px; margin-bottom: 24px; }
+    .ob-dot { width: 8px; height: 8px; background: var(--bdr); }
+    .ob-dot.active { background: var(--acc); }
   </style>
 </head>
 <body>
@@ -1034,6 +1073,92 @@
       Alle Daten gehen verloren, wenn du die App schließt. Bitte notiere wichtige Ergebnisse
       separat, bevor du die App schließt.</p>
     <button class="wok" onclick="dismissWarning()">Verstanden – App starten</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ONBOARDING OVERLAY
+══════════════════════════════════════════ -->
+<div id="onboardOverlay">
+  <div class="ob-logo">M</div>
+  <div class="ob-title">Willkommen bei MathSpaces</div>
+  <div class="ob-sub">Kurze Fragen, damit wir dir nur die Funktionen zeigen, die du wirklich brauchst.</div>
+
+  <!-- Step indicators -->
+  <div class="ob-step-indicator">
+    <div class="ob-dot active" id="obDot0"></div>
+    <div class="ob-dot" id="obDot1"></div>
+  </div>
+
+  <!-- Step 1: Grade -->
+  <div class="ob-step active" id="obStep0">
+    <div class="ob-step-title">In welcher Klasse bist du?</div>
+    <div class="ob-grade-grid">
+      <button class="ob-grade-btn" id="obG56" onclick="obSelectGrade('5-6')">Klasse 5 – 6</button>
+      <button class="ob-grade-btn" id="obG78" onclick="obSelectGrade('7-8')">Klasse 7 – 8</button>
+      <button class="ob-grade-btn" id="obG910" onclick="obSelectGrade('9-10')">Klasse 9 – 10</button>
+      <button class="ob-grade-btn" id="obG1113" onclick="obSelectGrade('11-13')">Klasse 11 – 13</button>
+      <button class="ob-grade-btn" id="obGTeacher" onclick="obSelectGrade('lehrer')" style="grid-column:span 2">Lehrer / Erwachsener</button>
+    </div>
+    <button class="ob-next-btn" id="obNext0" onclick="obGoStep1()" disabled style="opacity:.4">Weiter →</button>
+    <button class="ob-skip" onclick="obSkip()">Überspringen</button>
+  </div>
+
+  <!-- Step 2: Features -->
+  <div class="ob-step" id="obStep1">
+    <div class="ob-step-title">Was wirst du hauptsächlich nutzen?</div>
+    <div class="ob-feat-list">
+      <label class="ob-feat-row sel" id="obFeatCalc">
+        <input type="checkbox" id="obChkCalc" value="calc" checked onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">🧮</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Rechner</div>
+          <div class="ob-feat-desc">Grundrechner, Gleichungen, Brüche, Einheiten</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatKoord">
+        <input type="checkbox" id="obChkKoord" value="koord" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">📐</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Koordinatensystem</div>
+          <div class="ob-feat-desc">Funktionen zeichnen, Punkte setzen</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatNotizen">
+        <input type="checkbox" id="obChkNotizen" value="notizen" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">📝</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Notizen</div>
+          <div class="ob-feat-desc">Schnellnotizen speichern</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatFormeln">
+        <input type="checkbox" id="obChkFormeln" value="formeln" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">🎓</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Formeln &amp; Physik</div>
+          <div class="ob-feat-desc">Formeln, Geometrie, Physikrechner</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatBild">
+        <input type="checkbox" id="obChkBild" value="bild" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">📷</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Mathe-Scanner</div>
+          <div class="ob-feat-desc">Gleichungen aus Fotos scannen (OCR)</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatAgent">
+        <input type="checkbox" id="obChkAgent" value="agent" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">🤖</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">KI-Agent</div>
+          <div class="ob-feat-desc">Aufgaben automatisch lösen lassen</div>
+        </div>
+      </label>
+    </div>
+    <button class="ob-next-btn" onclick="obComplete()">Fertig – App starten ✓</button>
+    <button class="ob-skip" onclick="obBack()">← Zurück</button>
   </div>
 </div>
 
