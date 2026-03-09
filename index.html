@@ -205,12 +205,14 @@
     #cvs.mode-select { cursor: default; }
     #cvs.mode-delete { cursor: not-allowed; }
     #cvs.mode-edit { cursor: cell; }
-    #rtoolbar { position: absolute; bottom: 52px; left: 68px; right: 6px; top: auto;
+    #rtoolbar { position: absolute; bottom: 60px; left: 68px; right: 6px; top: auto;
       display: flex; flex-direction: row; flex-wrap: nowrap; overflow-x: auto;
       gap: 5px; z-index: 15; background: rgba(245,245,245,0.92);
       backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
       border-radius: 14px; padding: 4px 6px; scrollbar-width: none;
-      border: 1px solid var(--bdr); }
+      border: 1px solid var(--bdr); transition: bottom .3s ease; }
+    /* Panel fully hidden: toolbar and info move down to use available space */
+    #tabKoord.kp-hidden #rtoolbar { bottom: 10px; }
     #rtoolbar::-webkit-scrollbar { display: none; }
     #rtoolbar.collapsed > *:not(#rtoolbarCollapseBtn) { display: none !important; }
     #rtoolbar.collapsed { left: auto; right: 6px; background: rgba(245,245,245,0.75); padding: 3px 4px; }
@@ -3778,6 +3780,7 @@ function toggleLineConnectMode() {
     if (currentTab !== 'koordinaten') switchTab('koordinaten');
     // Close the slide-up panel so it doesn't block the canvas while connecting
     document.getElementById('kpanel').classList.remove('open');
+    syncPanelBodyClass();
   } else {
     hint.textContent = 'Verbinder deaktiviert. Klicke "Aktivieren" um Punkte zu verbinden.';
   }
@@ -4073,6 +4076,15 @@ function saveCanvas() {
 }
 
 /* ─ Panel & settings ─ */
+function syncPanelBodyClass() {
+  const p = document.getElementById('kpanel');
+  const tab = document.getElementById('tabKoord');
+  if (!p || !tab) return;
+  tab.classList.remove('kp-open', 'kp-hidden');
+  if (p.classList.contains('hidden')) tab.classList.add('kp-hidden');
+  else if (p.classList.contains('open')) tab.classList.add('kp-open');
+}
+
 function togglePanel() {
   const p = document.getElementById('kpanel');
   // If fully hidden, un-hide first (show as peek)
@@ -4081,6 +4093,7 @@ function togglePanel() {
     return;
   }
   p.classList.toggle('open');
+  syncPanelBodyClass();
 }
 
 function closePanelFully() {
@@ -4088,6 +4101,7 @@ function closePanelFully() {
   p.classList.remove('open');
   p.classList.add('hidden');
   document.getElementById('kOpenBtn').classList.add('vis');
+  syncPanelBodyClass();
 }
 
 function openPanelFromBtn() {
@@ -4095,6 +4109,7 @@ function openPanelFromBtn() {
   p.classList.remove('hidden');
   p.classList.add('open');
   document.getElementById('kOpenBtn').classList.remove('vis');
+  syncPanelBodyClass();
 }
 
 function openPanelForInput() {
@@ -4104,6 +4119,7 @@ function openPanelForInput() {
   p.classList.add('open');
   const btn = document.getElementById('kOpenBtn');
   if (btn) btn.classList.remove('vis');
+  syncPanelBodyClass();
 }
 
 function switchPTab(id) {
