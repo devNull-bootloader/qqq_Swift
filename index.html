@@ -267,14 +267,17 @@
     .pte-btn.cancel { background: var(--btn); color: var(--txt); }
 
     /* ─── Slide-Up Panel ─── */
+    /* kpanel: peek as absolute inside tabKoord; lifts to position:fixed when fully open
+       so it overlays the bottom nav and all toolbars. */
     #kpanel { position: absolute; bottom: 0; left: 0; right: 0; background: var(--bg2);
       border-top: 1px solid var(--bdr); z-index: 10;
       transform: translateY(calc(100% - 50px)); transition: transform .3s ease;
-      border-radius: 0 0 0; max-height: 72%; display: flex; flex-direction: column; }
-    #kpanel.open { transform: translateY(0); }
+      max-height: 72%; display: flex; flex-direction: column; }
+    #kpanel.open { position: fixed; bottom: 0; left: 0; right: 0;
+      transform: translateY(0); z-index: 2000; max-height: 80vh; }
     #kpanel.hidden { transform: translateY(100%); pointer-events: none; }
     @media (orientation: landscape) and (max-height: 600px) {
-      #kpanel { max-height: 90%; }
+      #kpanel.open { max-height: 92vh; }
     }
     #khandle { height: 50px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; flex-shrink: 0; position: relative; }
@@ -2423,7 +2426,7 @@
     </div><!-- end tabHandbuch -->
 
     <div id="tabSettings" class="panel">
-      <div class="stabs" style="border-radius:0">
+      <div class="stabs">
         <button class="stab active" onclick="switchSettingsTab('settGeneral')">Allgemein</button>
         <button class="stab" onclick="switchSettingsTab('settAdvanced')">Erweitert</button>
       </div>
@@ -2585,15 +2588,34 @@ function launchApp() {
   document.getElementById('installScreen').style.display = 'none';
   document.getElementById('webUseBtn').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  if (!sessionStorage.getItem('warned')) {
+
+  // ── Determine if this is first-use or a returning user ──────────────────
+  // ?onboard in URL forces the onboarding to show (useful for re-testing)
+  const forceOnboard = new URLSearchParams(location.search).has('onboard');
+  if (forceOnboard) localStorage.removeItem('ms_prefs_done');
+
+  const prefsDone   = localStorage.getItem('ms_prefs_done') === '1';
+  const teacherMode = isTeacher();
+  const showingOnboard = !teacherMode && !prefsDone;
+
+  // Only show the data-loss warning if we're NOT about to show the onboarding
+  if (!showingOnboard && !sessionStorage.getItem('warned')) {
     document.getElementById('warnOverlay').style.display = 'flex';
   }
+
+  // Show onboarding FIRST so an init error below can't block it
+  if (showingOnboard) {
+    showOnboarding(false);
+  }
+
+  // ── App initialisation ──────────────────────────────────────────────────
   initCoordCanvas();
   initLcColorRow();
-  renderCoordSysTabs();   // initialize multiple coord system tabs
+  renderCoordSysTabs();
   bildSetupDropZone();
   initPhysRulerDrag();
-  // Load saved settings
+
+  // ── Restore saved settings ──────────────────────────────────────────────
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) applyTheme(savedTheme);
   const savedAccent = localStorage.getItem('accentColor');
@@ -2603,21 +2625,20 @@ function launchApp() {
     document.getElementById('advancedModeToggle').checked = true;
     toggleAdvancedMode(true);
   }
-  // Restore teacher mode if previously activated
-  if (isTeacher()) {
+
+  // ── Restore mode / preferences ──────────────────────────────────────────
+  if (teacherMode) {
     document.getElementById('teacherBadge').style.display = 'flex';
     document.getElementById('settTeacherActive').style.display = 'block';
     document.getElementById('settTeacherInactive').style.display = 'none';
     document.getElementById('settTeacherBadgeLbl').style.display = 'block';
     document.getElementById('settRoleLabel').textContent = 'Lehrer/in';
     applyPreferences('lehrer', ['calc','koord','notizen','formeln','bild','agent']);
-  } else if (localStorage.getItem('ms_prefs_done') === '1') {
-    // Restore student preferences
+  } else if (prefsDone) {
     loadAndApplyPreferences();
-  } else {
-    // First launch – show onboarding
-    showOnboarding(false);
   }
+  // (onboarding already opened above if neither condition is true)
+
   if (window._hideLoadingScreen) window._hideLoadingScreen();
 }
 
@@ -6981,7 +7002,7 @@ function activatePro() {
 function showProWelcome() {
   // Show a simple confirmation toast-style message
   const el = document.createElement('div');
-  el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#f5a623;color:#fff;padding:14px 22px;border-radius: 0;font-size:15px;font-weight:700;z-index:13000;box-shadow:0 4px 20px rgba(0,0,0,.25);white-space:nowrap;';
+  el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#f5a623;color:#fff;padding:14px 22px;border-radius:0;font-size:15px;font-weight:700;z-index:13000;box-shadow:0 4px 20px rgba(0,0,0,.25);white-space:nowrap;';
   el.textContent = '🎉 MathSpaces Pro aktiviert!';
   document.body.appendChild(el);
   setTimeout(() => { el.style.transition = 'opacity .5s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 2800);
@@ -7364,12 +7385,19 @@ function obToggleFeat(chk) {
   if (row) row.classList.toggle('sel', chk.checked);
 }
 
+function _obFinish() {
+  document.getElementById('onboardOverlay').classList.remove('open');
+  // Show the data-loss warning now (deferred from launchApp)
+  if (!sessionStorage.getItem('warned')) {
+    document.getElementById('warnOverlay').style.display = 'flex';
+  }
+}
+
 function obCheckTeacherCode() {
   const code = document.getElementById('obTeacherCodeInput').value.trim();
   if (code === TEACHER_CODE) {
-    // Close onboarding and activate teacher mode
-    document.getElementById('onboardOverlay').classList.remove('open');
     localStorage.setItem('ms_prefs_done', '1');
+    _obFinish();
     activateTeacherMode();
   } else {
     document.getElementById('obTeacherErr').textContent = '❌ Falscher Code. Bitte erneut versuchen.';
@@ -7382,21 +7410,18 @@ function obClearTeacherErr() {
 }
 
 function obComplete() {
-  // Collect checked features
   const uses = [];
   ['calc','koord','notizen','formeln','bild','agent'].forEach(feat => {
     const chkId = 'obChk' + feat.charAt(0).toUpperCase() + feat.slice(1);
     const chk = document.getElementById(chkId);
     if (chk && chk.checked) uses.push(feat);
   });
-  if (uses.length === 0) uses.push('calc'); // always keep calc
+  if (uses.length === 0) uses.push('calc');
   applyPreferences(_obGrade, uses);
   localStorage.setItem('ms_prefs_done', '1');
-  document.getElementById('onboardOverlay').classList.remove('open');
-  // Update settings grade label
-  const gradeLabels = { '5-6':'Klasse 5 – 6','7-8':'Klasse 7 – 8','9-10':'Klasse 9 – 10','11-13':'Klasse 11 – 13','lehrer':'Lehrermodus' };
   const rl = document.getElementById('settRoleLabel');
   if (rl) rl.textContent = 'Schüler/in';
+  _obFinish();
 }
 
 function obBack() {
@@ -7414,10 +7439,9 @@ function obBackToGrade() {
 }
 
 function obSkip() {
-  // Apply all features as default
   applyPreferences('', ['calc','koord','notizen','formeln','bild','agent']);
   localStorage.setItem('ms_prefs_done', '1');
-  document.getElementById('onboardOverlay').classList.remove('open');
+  _obFinish();
 }
 
 </script>
