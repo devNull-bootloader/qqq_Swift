@@ -1,5 +1,5 @@
-// swift-playgrounds-dev-contentType: com.apple.playgrounds.appproject
 // swift-tools-version: 5.9
+// swift-playgrounds-dev-contentType: com.apple.playgrounds.appproject
 
 import AppleProductTypes
 import PackageDescription
