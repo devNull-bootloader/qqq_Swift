@@ -1,1 +1,9 @@
 nohup.out
+
+# Swift / Xcode build artifacts
+.build/
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+.swiftpm/xcode/
+MathSpaces.swiftpm/.build/
