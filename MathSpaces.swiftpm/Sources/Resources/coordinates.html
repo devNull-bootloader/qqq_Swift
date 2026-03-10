@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MathSpaces">
+  <meta name="theme-color" content="#0a0a1a">
+  <meta name="description" content="MathSpaces – Math keyboard, coordinate system, equation solver, OCR scanner and more">
+  <title>MathSpaces – Koordinatensystem</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LOADING SCREEN
+══════════════════════════════════════════ -->
+<div id="loadingScreen">
+  <div class="ls-title">MathSpaces</div>
+  <div class="ls-version">ver 1</div>
+  <div class="ls-bar-wrap">
+    <canvas id="loadingBar" width="260" height="70"></canvas>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     INSTALL SCREEN
+     (hidden by default; loading screen shows first,
+      then JS reveals this or the main app after animation)
+══════════════════════════════════════════ -->
+<div id="installScreen" style="display:none">
+  <div class="ic">∑</div>
+  <h1>MathSpaces</h1>
+
+  <p class="sub">Mathekeyboard, Koordinatensystem &amp; Gleichungslöser</p>
+
+  <!-- Features -->
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="fi">⌨️</div>
+      <div class="ft">Mathe-Tastatur</div>
+      <div class="fd">Eigene Tastatur mit Zahlen &amp; Mathesymbolen</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">📷</div>
+      <div class="ft">Mathe-OCR</div>
+      <div class="fd">Zahlen &amp; Gleichungen aus Fotos scannen</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">📐</div>
+      <div class="ft">Koordinatensystem</div>
+      <div class="fd">Funktionen zeichnen, Punkte setzen &amp; mehr</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">🔢</div>
+      <div class="ft">Gleichungslöser</div>
+      <div class="fd">Lineare &amp; quadratische Gleichungen lösen</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">½</div>
+      <div class="ft">Bruchrechnung</div>
+      <div class="fd">Brüche addieren, subtrahieren, multiplizieren</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">📏</div>
+      <div class="ft">Lineal</div>
+      <div class="fd">Geraden mit verschiebbarem Lineal zeichnen</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">📝</div>
+      <div class="ft">Notizen</div>
+      <div class="fd">Schnellnotizen in der App speichern</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">🎓</div>
+      <div class="ft">Formeln +</div>
+      <div class="fd">Formeln, Geometrie &amp; Physikrechner</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">⏱️</div>
+      <div class="ft">Klassentimer</div>
+      <div class="fd">Countdown für Unterrichtsstunden &amp; Pausen</div>
+    </div>
+    <div class="feat-card">
+      <div class="fi">📖</div>
+      <div class="ft">Handbuch</div>
+      <div class="fd">Erklärungen zu allen Funktionen mit Glossar</div>
+    </div>
+  </div>
+
+  <!-- Install options -->
+  <div class="inst-section">
+    <div class="inst-section-title">Installation</div>
+
+    <!-- App Store – not available, crossed out -->
+    <div class="inst-option disabled">
+      <div class="io-icon">🍎</div>
+      <div class="io-body">
+        <div class="io-title">Im App Store herunterladen</div>
+        <div class="io-sub">Nicht verfügbar</div>
+      </div>
+      <div class="io-badge">Nicht verfügbar</div>
+    </div>
+
+    <!-- Web App – available -->
+    <div class="inst-option available" onclick="document.getElementById('webAppTutorial').scrollIntoView({behavior:'smooth'})">
+      <div class="io-icon">🌐</div>
+      <div class="io-body">
+        <div class="io-title">Als Web-App installieren</div>
+        <div class="io-sub">Kostenlos – als Progressive Web App installieren</div>
+      </div>
+      <div class="io-badge">Verfügbar</div>
+    </div>
+  </div>
+
+  <!-- Tutorial -->
+  <div class="box" id="webAppTutorial">
+    <h2 id="tutTitle">📲 Web-App installieren</h2>
+    <div id="iosInstr">
+      <div class="istep"><div class="isn">1</div><div class="ist">Tippe auf den <strong>Teilen-Button</strong> <span style="font-size:16px">⬆️</span> in der Safari-Symbolleiste unten</div></div>
+      <div class="istep"><div class="isn">2</div><div class="ist">Nach unten scrollen und <strong>„Zum Home-Bildschirm"</strong> 📲 antippen</div></div>
+      <div class="istep"><div class="isn">3</div><div class="ist">Oben rechts auf <strong>„Hinzufügen"</strong> tippen – fertig!</div></div>
+    </div>
+    <div id="andInstr" style="display:none">
+      <div class="istep"><div class="isn">1</div><div class="ist">Tippe auf den <strong>„Installieren"</strong>-Button unten</div></div>
+      <div class="istep"><div class="isn">2</div><div class="ist">Installation bestätigen – die App erscheint auf dem Startbildschirm</div></div>
+    </div>
+  </div>
+
+  <button id="andBtn" onclick="promptInstall()">📲 App installieren</button>
+  <p class="inote">Nach der Installation ist die App offline verfügbar.</p>
+</div>
+
+<!-- "Im Web nutzen" floating button (visible only on install screen) -->
+<button id="webUseBtn" onclick="launchApp()" title="Direkt im Browser nutzen ohne Installation">🌐 Im Browser nutzen</button>
+
+<!-- ══════════════════════════════════════════
+     WARNING MODAL
+══════════════════════════════════════════ -->
+<div id="warnOverlay" style="display:none">
+  <div id="warnModal">
+    <div class="wi">⚠️</div>
+    <h2>Hinweis: Keine Datenspeicherung</h2>
+    <p>MathSpaces <strong>speichert keine Eingaben, Rechnungen oder Zeichnungen</strong>.
+      Alle Daten gehen verloren, wenn du die App schließt. Bitte notiere wichtige Ergebnisse
+      separat, bevor du die App schließt.</p>
+    <button class="wok" onclick="dismissWarning()">Verstanden – App starten</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ONBOARDING OVERLAY
+══════════════════════════════════════════ -->
+<div id="onboardOverlay">
+  <div class="ob-logo">M</div>
+  <div class="ob-title">Willkommen bei MathSpaces</div>
+  <div class="ob-sub">Kurze Fragen, damit wir dir nur die Funktionen zeigen, die du wirklich brauchst.</div>
+
+  <!-- Step indicators -->
+  <div class="ob-step-indicator">
+    <div class="ob-dot active" id="obDot0"></div>
+    <div class="ob-dot" id="obDot1"></div>
+    <div class="ob-dot" id="obDot2"></div>
+  </div>
+
+  <!-- Step 0: Grade / Role -->
+  <div class="ob-step active" id="obStep0">
+    <div class="ob-step-title">In welcher Klasse bist du?</div>
+    <div class="ob-grade-grid">
+      <button class="ob-grade-btn" id="obG56"      onclick="obSelectGrade('5-6')">Klasse 5 – 6</button>
+      <button class="ob-grade-btn" id="obG78"      onclick="obSelectGrade('7-8')">Klasse 7 – 8</button>
+      <button class="ob-grade-btn" id="obG910"     onclick="obSelectGrade('9-10')">Klasse 9 – 10</button>
+      <button class="ob-grade-btn" id="obG1113"    onclick="obSelectGrade('11-13')">Klasse 11 – 13</button>
+      <button class="ob-grade-btn" id="obGTeacher" onclick="obSelectGrade('lehrer')" style="grid-column:span 2">👩‍🏫 Ich bin Lehrer/in</button>
+    </div>
+    <button class="ob-next-btn" id="obNext0" onclick="obGoStep1()" disabled style="opacity:.4">Weiter →</button>
+    <button class="ob-skip" onclick="obSkip()">Überspringen</button>
+  </div>
+
+  <!-- Step 1: Teacher code (only shown for grade=lehrer) -->
+  <div class="ob-step" id="obStep1">
+    <div class="ob-step-title">Lehrermodus aktivieren</div>
+    <div class="ig" style="margin-bottom:14px">
+      <div style="font-size:22px;margin-bottom:10px;text-align:center">🔑</div>
+      <div style="font-size:14px;color:var(--txt);margin-bottom:6px;font-weight:600">Lehrercode eingeben</div>
+      <div style="font-size:13px;color:var(--dim);margin-bottom:14px;line-height:1.5">
+        Der Lehrermodus schaltet alle Funktionen und Premium-Features kostenlos frei. Bitte gib den Schulcode ein.
+      </div>
+      <input id="obTeacherCodeInput" type="password" inputmode="numeric" placeholder="Code eingeben"
+        class="mi" style="text-align:center;font-size:22px;letter-spacing:6px;margin-bottom:8px"
+        oninput="obClearTeacherErr()" onkeydown="if(event.key==='Enter')obCheckTeacherCode()">
+      <div id="obTeacherErr" style="font-size:13px;color:#cc0000;min-height:18px;margin-bottom:8px;text-align:center"></div>
+    </div>
+    <button class="ob-next-btn" onclick="obCheckTeacherCode()">Lehrermodus aktivieren ✓</button>
+    <button class="ob-skip" onclick="obBack()">← Zurück</button>
+  </div>
+
+  <!-- Step 2: Features (for students) -->
+  <div class="ob-step" id="obStep2">
+    <div class="ob-step-title">Was wirst du hauptsächlich nutzen?</div>
+    <div class="ob-feat-list">
+      <label class="ob-feat-row sel" id="obFeatCalc">
+        <input type="checkbox" id="obChkCalc" value="calc" checked onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">🧮</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Rechner</div>
+          <div class="ob-feat-desc">Grundrechner, Gleichungen, Brüche, Einheiten</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatKoord">
+        <input type="checkbox" id="obChkKoord" value="koord" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">📐</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Koordinatensystem</div>
+          <div class="ob-feat-desc">Funktionen zeichnen, Punkte setzen</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatNotizen">
+        <input type="checkbox" id="obChkNotizen" value="notizen" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">📝</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Notizen</div>
+          <div class="ob-feat-desc">Schnellnotizen speichern</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatFormeln">
+        <input type="checkbox" id="obChkFormeln" value="formeln" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">🎓</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Formeln &amp; Physik</div>
+          <div class="ob-feat-desc">Formeln, Geometrie, Physikrechner</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatBild">
+        <input type="checkbox" id="obChkBild" value="bild" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">📷</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">Mathe-Scanner</div>
+          <div class="ob-feat-desc">Gleichungen aus Fotos scannen (OCR)</div>
+        </div>
+      </label>
+      <label class="ob-feat-row" id="obFeatAgent">
+        <input type="checkbox" id="obChkAgent" value="agent" onchange="obToggleFeat(this)">
+        <div class="ob-feat-icon">🤖</div>
+        <div class="ob-feat-body">
+          <div class="ob-feat-name">KI-Agent</div>
+          <div class="ob-feat-desc">Aufgaben automatisch lösen lassen</div>
+        </div>
+      </label>
+    </div>
+    <button class="ob-next-btn" onclick="obComplete()">Fertig – App starten ✓</button>
+    <button class="ob-skip" onclick="obBackToGrade()">← Zurück</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
+<button id="restoreUIBtn" onclick="openFsMenu()" title="Menü" aria-label="Menü">☰</button>
+
+<!-- ══════════════════════════════════════════
+     FULLSCREEN POPUP MENU
+══════════════════════════════════════════ -->
+<div id="fsMenuOverlay" onclick="closeFsMenu()"></div>
+<div id="fsMenu" style="display:none">
+  <h3>Ansicht wechseln</h3>
+  <div class="fsmodes">
+    <button id="fsModeRechner" onclick="fsSwitchTab('rechner')"><span>🧮</span>Rechner</button>
+    <button id="fsModeKoord" onclick="fsSwitchTab('koordinaten')"><span>📐</span>Koordinaten</button>
+    <button id="fsModeNotizen" onclick="fsSwitchTab('notizen')"><span>📝</span>Notizen</button>
+    <button id="fsModeKlasse" onclick="fsSwitchTab('klasse')"><span>🎓</span>Formeln +</button>
+    <button id="fsModeBild" onclick="fsSwitchTab('bild')"><span>📷</span>Bild</button>
+    <button id="fsModeAgent" onclick="fsSwitchTab('agent')"><span>🤖</span>Agent</button>
+    <button id="fsModeHandbuch" onclick="fsSwitchTab('handbuch')"><span>📖</span>Handbuch</button>
+  </div>
+  <div style="padding:8px 12px 0;border-top:1px solid var(--bdr);margin-top:6px">
+    <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Schnellzugriff</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="quick-access-btn" onclick="openFloatingTimer();closeFsMenu()">⏱️ Timer öffnen</button>
+      <button class="quick-access-btn" onclick="openFloatingCalc();closeFsMenu()">🧮 Rechner öffnen</button>
+    </div>
+  </div>
+  <button class="fsExit" onclick="closeFsMenuAndExit()">✕ Vollbild beenden</button>
+</div>
+
+<div id="sidebar">
+  <div class="sdhdr">
+    <h2>⚒️ Werkzeuge</h2>
+    <button class="sdclose" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sdtabs">
+    <button class="sdtab active" onclick="switchSideTab('sdMiniCalc')">Mini-Rechner</button>
+    <button class="sdtab" onclick="switchSideTab('sdTimer')">⏱️ Timer</button>
+    <button class="sdtab" onclick="switchSideTab('sdSideNotes')">Notizen</button>
+    <button class="sdtab" onclick="switchSideTab('sdLineConn')">Verbinder</button>
+  </div>
+
+  <!-- Mini Calculator -->
+  <div id="sdMiniCalc" class="sdpanel active">
+    <div style="padding:6px 10px 0;display:flex;justify-content:flex-end">
+      <button class="quick-access-btn" onclick="openFloatingCalc();closeSidebar()" title="Als schwebendes Fenster öffnen">🪟 Popup</button>
+    </div>
+    <div class="mcwrap">
+      <div class="mcdisp">
+        <div class="mcexpr" id="mcExpr"></div>
+        <div class="mcres" id="mcRes">0</div>
+      </div>
+      <div class="mcbtns">
+        <button class="mcb cl"    onclick="mcInput('AC')">AC</button>
+        <button class="mcb"       onclick="mcInput('⌫')">⌫</button>
+        <button class="mcb"       onclick="mcInput('%')">%</button>
+        <button class="mcb op"    onclick="mcInput('÷')">÷</button>
+
+        <button class="mcb"       onclick="mcInput('7')">7</button>
+        <button class="mcb"       onclick="mcInput('8')">8</button>
+        <button class="mcb"       onclick="mcInput('9')">9</button>
+        <button class="mcb op"    onclick="mcInput('×')">×</button>
+
+        <button class="mcb"       onclick="mcInput('4')">4</button>
+        <button class="mcb"       onclick="mcInput('5')">5</button>
+        <button class="mcb"       onclick="mcInput('6')">6</button>
+        <button class="mcb op"    onclick="mcInput('-')">−</button>
+
+        <button class="mcb"       onclick="mcInput('1')">1</button>
+        <button class="mcb"       onclick="mcInput('2')">2</button>
+        <button class="mcb"       onclick="mcInput('3')">3</button>
+        <button class="mcb op"    onclick="mcInput('+')">+</button>
+
+        <button class="mcb sp2"   onclick="mcInput('0')">0</button>
+        <button class="mcb"       onclick="mcInput('.')">.</button>
+        <button class="mcb eq"    onclick="mcInput('=')">= </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Timer -->
+  <div id="sdTimer" class="sdpanel">
+    <div style="padding:6px 10px 0;display:flex;justify-content:flex-end">
+      <button class="quick-access-btn" onclick="openFloatingTimer();closeSidebar()" title="Als schwebendes Fenster öffnen">🪟 Popup</button>
+    </div>
+    <div class="timer-display" id="sdTimerDisplay">00:00</div>
+    <div class="timer-label" id="sdTimerLabel">Bereit</div>
+    <div class="timer-progress-track"><div class="timer-progress-fill" id="sdTimerFill" style="width:100%"></div></div>
+    <div class="timer-presets">
+      <button class="timer-preset" onclick="sdTimerSetPreset(5)">5 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(10)">10 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(15)">15 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(20)">20 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(25)">25 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(45)">45 Min</button>
+      <button class="timer-preset" onclick="sdTimerSetPreset(90)">90 Min</button>
+    </div>
+    <div class="timer-custom-row">
+      <span>Eigene Zeit:</span>
+      <input class="timer-custom-in" id="sdTimerMin" type="number" min="0" max="999" value="5" placeholder="Min">
+      <span>Min</span>
+      <input class="timer-custom-in" id="sdTimerSec" type="number" min="0" max="59" value="0" placeholder="Sek">
+      <span>Sek</span>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn start" id="sdTimerStartBtn" onclick="sdTimerToggle()">▶ Start</button>
+      <button class="timer-btn reset" onclick="sdTimerReset()">⟲ Reset</button>
+    </div>
+  </div>
+
+  <!-- Sidebar Quick Notes -->
+  <div id="sdSideNotes" class="sdpanel">
+    <div class="sdnotes">
+      <div class="psect" style="margin-bottom:4px">Schnellnotiz</div>
+      <textarea id="sideNoteArea" placeholder="Notizen hier eingeben…"></textarea>
+    </div>
+  </div>
+
+  <!-- Line Connector -->
+  <div id="sdLineConn" class="sdpanel">
+    <div class="lcwrap">
+      <button id="lcActivateBtn" onclick="toggleLineConnectMode()">🔗 Linienverbinder aktivieren</button>
+      <div class="lc-hint" id="lcHint">Wechsle zum Koordinatensystem, aktiviere den Verbinder und klicke Punkte an.</div>
+      <div>
+        <div class="psect" style="margin-bottom:6px">Verbindungstyp</div>
+        <div class="lc-type-row" id="lcTypeRow">
+          <button class="lc-type-btn active" id="lcTypeStraight" onclick="setLcType('straight')">━ Gerade</button>
+          <button class="lc-type-btn" id="lcTypeCurved" onclick="setLcType('curved')">∿ Kurve</button>
+          <button class="lc-type-btn" id="lcTypeHyperbola" onclick="setLcType('hyperbola')">⋈ Hyperbel</button>
+        </div>
+      </div>
+      <div>
+        <div class="psect" style="margin-bottom:6px">Linienfarbe</div>
+        <div class="lc-colrow" id="lcColorRow"></div>
+      </div>
+      <div>
+        <div class="psect" style="margin-bottom:6px">Aktuelle Auswahl</div>
+        <div id="lcPointList"></div>
+        <div class="lc-actions" style="margin-top:6px">
+          <button class="lc-btn ok" onclick="finishConnector()">✓ Verbinden</button>
+          <button class="lc-btn" onclick="clearCurrentConnector()">✕ Zurücksetzen</button>
+        </div>
+      </div>
+      <div>
+        <div class="psect" style="margin-bottom:6px">Gespeicherte Verbindungen</div>
+        <div id="lcConnectors"></div>
+        <button class="lc-btn" style="width:100%;margin-top:4px" onclick="clearAllConnectors()">Alle löschen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FLOATING WIDGETS
+══════════════════════════════════════════ -->
+<!-- Floating Timer -->
+<div id="floatingTimer" class="floating-widget" style="width:280px;top:80px;left:50%;transform:translateX(-50%)">
+  <div class="fw-handle" id="floatingTimerHandle">
+    <span style="font-size:16px">⏱️</span>
+    <span class="fw-handle-title">Klassentimer</span>
+    <button class="fw-close" onclick="closeFloatingTimer()">✕</button>
+  </div>
+  <div class="fw-body">
+    <div class="timer-display" id="ftTimerDisplay">00:00</div>
+    <div class="timer-label" id="ftTimerLabel">Bereit</div>
+    <div class="timer-progress-track"><div class="timer-progress-fill" id="ftTimerFill" style="width:100%"></div></div>
+    <div class="timer-presets">
+      <button class="timer-preset" onclick="ftTimerSetPreset(5)">5 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(10)">10 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(15)">15 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(20)">20 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(25)">25 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(45)">45 Min</button>
+      <button class="timer-preset" onclick="ftTimerSetPreset(90)">90 Min</button>
+    </div>
+    <div class="timer-custom-row">
+      <span>Zeit:</span>
+      <input class="timer-custom-in" id="ftTimerMin" type="number" min="0" max="999" value="5" placeholder="Min">
+      <span>Min</span>
+      <input class="timer-custom-in" id="ftTimerSec" type="number" min="0" max="59" value="0" placeholder="Sek">
+      <span>Sek</span>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn start" id="ftTimerStartBtn" onclick="ftTimerToggle()">▶ Start</button>
+      <button class="timer-btn reset" onclick="ftTimerReset()">⟲ Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Mini Calculator -->
+<div id="floatingCalc" class="floating-widget" style="width:260px;top:80px;right:10px">
+  <div class="fw-handle" id="floatingCalcHandle">
+    <span style="font-size:16px">🧮</span>
+    <span class="fw-handle-title">Mini-Rechner</span>
+    <button class="fw-close" onclick="closeFloatingCalc()">✕</button>
+  </div>
+  <div class="fw-body">
+    <div class="mcwrap" style="padding:6px">
+      <div class="mcdisp">
+        <div class="mcexpr" id="fmcExpr"></div>
+        <div class="mcres" id="fmcRes">0</div>
+      </div>
+      <div class="mcbtns">
+        <button class="mcb cl"    onclick="fmcInput('AC')">AC</button>
+        <button class="mcb"       onclick="fmcInput('⌫')">⌫</button>
+        <button class="mcb"       onclick="fmcInput('%')">%</button>
+        <button class="mcb op"    onclick="fmcInput('÷')">÷</button>
+        <button class="mcb"       onclick="fmcInput('7')">7</button>
+        <button class="mcb"       onclick="fmcInput('8')">8</button>
+        <button class="mcb"       onclick="fmcInput('9')">9</button>
+        <button class="mcb op"    onclick="fmcInput('×')">×</button>
+        <button class="mcb"       onclick="fmcInput('4')">4</button>
+        <button class="mcb"       onclick="fmcInput('5')">5</button>
+        <button class="mcb"       onclick="fmcInput('6')">6</button>
+        <button class="mcb op"    onclick="fmcInput('-')">−</button>
+        <button class="mcb"       onclick="fmcInput('1')">1</button>
+        <button class="mcb"       onclick="fmcInput('2')">2</button>
+        <button class="mcb"       onclick="fmcInput('3')">3</button>
+        <button class="mcb op"    onclick="fmcInput('+')">+</button>
+        <button class="mcb sp2"   onclick="fmcInput('0')">0</button>
+        <button class="mcb"       onclick="fmcInput('.')">.</button>
+        <button class="mcb eq"    onclick="fmcInput('=')">= </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Glossary Tooltip -->
+<div id="glossaryTooltip">
+  <div class="gt-term" id="gtTerm"></div>
+  <div class="gt-def" id="gtDef"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════ -->
+<div id="app" style="display:none">
+  <!-- Limited mode banner (hidden when licensed) -->
+  <div id="limitedBanner" style="display:none" onclick="openLicenseGate()">
+    <span class="lb-text">⚠️ Eingeschränkter Modus – Nur Grundrechner verfügbar</span>
+    <button class="lb-btn" onclick="event.stopPropagation();openLicenseGate()">🔑 Lizenz aktivieren</button>
+  </div>
+  <header id="appHdr">
+    <button id="sidebarToggle" onclick="toggleSidebar()" title="Sidebar ein/ausblenden" aria-label="Sidebar ein/ausblenden">☰</button>
+    <div class="logo" style="font-size:20px;font-weight:900;color:white;font-family:inherit">M</div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <h1>MathSpaces</h1>
+    </div>
+    <div id="teacherBadge" style="display:none;background:#1a7a1a;color:white;font-size:11px;font-weight:700;padding:3px 8px;letter-spacing:.5px;flex-shrink:0">LEHRER</div>
+    <button id="hideUIBtn" onclick="toggleHideUI()">UI aus</button>
+  </header>
+
+  <div id="content">
+
+    <!-- ════════ TAB: RECHNER ════════ -->
+    <div id="tabRechner" class="panel active">
+      <div class="stabs">
+        <button class="stab active" onclick="switchSub('grundrechner')" aria-label="Grundrechner"><span class="si" aria-hidden="true">🧮</span>Rechner</button>
+        <button class="stab" onclick="switchSub('gleichungen')" aria-label="Gleichungen"><span class="si" aria-hidden="true">⚖️</span>Gleichung</button>
+        <button class="stab" onclick="switchSub('brueche')" aria-label="Brüche"><span class="si" aria-hidden="true">½</span>Brüche</button>
+        <button class="stab" onclick="switchSub('einheiten')" aria-label="Einheiten"><span class="si" aria-hidden="true">📏</span>Einheiten</button>
+      </div>
+      <div class="spanels-wrap">
+      <div id="grundrechner" class="spanel active">
+        <!-- x and y variable inputs -->
+        <div id="calcVarRow" style="display:flex;gap:6px;padding:8px 10px 0;align-items:center;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.5px">Variablen:</span>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--txt)">x =
+            <input id="calcVarX" type="number" value="0" step="any"
+              style="width:60px;background:var(--card);border:1px solid var(--bdr);border-radius:0;color:var(--txt);font-size:13px;padding:3px 6px;text-align:center;outline:none;font-family:inherit"
+              oninput="updateCalcVars()" title="Wert für x">
+          </label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--txt)">y =
+            <input id="calcVarY" type="number" value="0" step="any"
+              style="width:60px;background:var(--card);border:1px solid var(--bdr);border-radius:0;color:var(--txt);font-size:13px;padding:3px 6px;text-align:center;outline:none;font-family:inherit"
+              oninput="updateCalcVars()" title="Wert für y">
+          </label>
+          <button onclick="calcInput('x')" class="cb sec" style="padding:3px 10px;font-size:13px;height:auto">x</button>
+          <button onclick="calcInput('y')" class="cb sec" style="padding:3px 10px;font-size:13px;height:auto">y</button>
+        </div>
+        <div class="cdisp">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+            <button id="sciToggleBtn" onclick="toggleSciMode()">SCI</button>
+            <button id="angleBtn" class="cb ang" onclick="toggleAngle()" style="width:auto;padding:3px 10px;font-size:11px;border-radius:0;display:none">DEG</button>
+          </div>
+          <div class="chist" id="calcHist"></div>
+          <div class="cexpr" id="calcExpr"></div>
+          <div class="cres" id="calcRes">0</div>
+        </div>
+        <!-- Scientific rows (hidden until SCI toggled) -->
+        <div id="sciRows" style="display:none">
+          <div class="cbtns">
+            <button class="cb sci" onclick="calcInput('sin(')">sin</button>
+            <button class="cb sci" onclick="calcInput('cos(')">cos</button>
+            <button class="cb sci" onclick="calcInput('tan(')">tan</button>
+            <button class="cb sci" onclick="calcInput('asin(')">sin⁻¹</button>
+            <button class="cb sci" onclick="calcInput('log(')">log</button>
+            <button class="cb sci" onclick="calcInput('ln(')">ln</button>
+            <button class="cb sci" onclick="calcInput('π')">π</button>
+            <button class="cb sci" onclick="calcInput('exp(')">eˣ</button>
+          </div>
+        </div>
+        <div class="cbtns">
+          <button class="cb cl" onclick="calcClear()">AC</button>
+          <button class="cb sec" onclick="calcBackspace()">⌫</button>
+          <button class="cb sec" onclick="calcInput('(')">( )</button>
+          <button class="cb op" onclick="calcInput('÷')">÷</button>
+
+          <button class="cb sec" onclick="calcInput('√')">√</button>
+          <button class="cb sec" onclick="calcInput('%')">%</button>
+          <button class="cb sec" onclick="calcInput('^')">xʸ</button>
+          <button class="cb op" onclick="calcInput('×')">×</button>
+
+          <button class="cb" onclick="calcInput('7')">7</button>
+          <button class="cb" onclick="calcInput('8')">8</button>
+          <button class="cb" onclick="calcInput('9')">9</button>
+          <button class="cb op" onclick="calcInput('-')">−</button>
+
+          <button class="cb" onclick="calcInput('4')">4</button>
+          <button class="cb" onclick="calcInput('5')">5</button>
+          <button class="cb" onclick="calcInput('6')">6</button>
+          <button class="cb op" onclick="calcInput('+')">+</button>
+
+          <button class="cb" onclick="calcInput('1')">1</button>
+          <button class="cb" onclick="calcInput('2')">2</button>
+          <button class="cb" onclick="calcInput('3')">3</button>
+          <button class="cb eq" style="grid-row:span 2" onclick="calcEval()">=</button>
+
+          <button class="cb sp2" onclick="calcInput('0')">0</button>
+          <button class="cb" onclick="calcInput('.')">.</button>
+        </div>
+      </div><!-- end grundrechner -->
+
+      <!-- ── Gleichungen ── -->
+      <div id="gleichungen" class="spanel">
+        <div class="ig" style="margin:14px 14px 0">
+          <div class="sect">Gleichung eingeben</div>
+          <label>Lineare oder quadratische Gleichung (z.B. 2x+3=7 oder x^2+5x+6=0)</label>
+          <input class="mi" id="eqInput" type="text" placeholder="z.B.  2x + 3 = 7" autocorrect="off" autocapitalize="off" spellcheck="false" data-mk-confirm="solve">
+        </div>
+        <div style="padding:0 14px 10px; margin-top:10px">
+          <button class="sbtn" onclick="solveEquation()">🔍 Gleichung lösen</button>
+        </div>
+        <div class="sol" id="eqSol" style="margin:0 14px 14px"></div>
+      </div><!-- end gleichungen -->
+
+      <!-- ── Brüche ── -->
+      <div id="brueche" class="spanel">
+        <div style="padding:14px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px">
+          <div class="ig">
+            <div class="sect">Bruchrechnung</div>
+            <div class="frow" style="margin-top:8px">
+              <div class="fdisplay">
+                <input class="fni" id="fn1" type="number" placeholder="Zähler" value="1">
+                <div class="fline"></div>
+                <input class="fni" id="fd1" type="number" placeholder="Nenner" value="2">
+              </div>
+              <div class="opsel">
+                <button class="opb sel" id="opAdd" onclick="setFracOp('+')">+</button>
+                <button class="opb" id="opSub" onclick="setFracOp('-')">−</button>
+                <button class="opb" id="opMul" onclick="setFracOp('*')">×</button>
+                <button class="opb" id="opDiv" onclick="setFracOp('/')">÷</button>
+              </div>
+              <div class="fdisplay">
+                <input class="fni" id="fn2" type="number" placeholder="Zähler" value="1">
+                <div class="fline"></div>
+                <input class="fni" id="fd2" type="number" placeholder="Nenner" value="3">
+              </div>
+            </div>
+          </div>
+          <button class="sbtn" onclick="solveFraction()">📐 Berechnen</button>
+          <div class="sol" id="fracSol"></div>
+        </div>
+      </div><!-- end brueche -->
+
+      <!-- ── Einheiten (Unit Converter) ── -->
+      <div id="einheiten" class="spanel">
+        <div style="padding:14px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px">
+          <div class="ig">
+            <div class="sect">Kategorie</div>
+            <div class="modbtns" id="ucatBtns" style="flex-wrap:wrap">
+              <button class="modbtn active" onclick="setUCat('length')">Länge</button>
+              <button class="modbtn" onclick="setUCat('weight')">Gewicht</button>
+              <button class="modbtn" onclick="setUCat('temp')">Temp.</button>
+              <button class="modbtn" onclick="setUCat('area')">Fläche</button>
+              <button class="modbtn" onclick="setUCat('speed')">Geschw.</button>
+            </div>
+          </div>
+          <div class="ig">
+            <div class="sect">Umrechnen</div>
+            <div class="urow">
+              <label style="font-size:12px;color:var(--dim)">Von</label>
+              <select class="usel" id="ucFromUnit" onchange="doUnitConvert()"></select>
+            </div>
+            <div class="srow" style="margin-bottom:8px">
+              <span class="slbl">Wert</span>
+              <input class="mi" id="ucValue" type="number" placeholder="Wert eingeben" oninput="doUnitConvert()" style="font-size:17px">
+            </div>
+            <div class="uarrow">↓</div>
+            <div class="urow" style="margin-top:6px">
+              <label style="font-size:12px;color:var(--dim)">Nach</label>
+              <select class="usel" id="ucToUnit" onchange="doUnitConvert()"></select>
+            </div>
+            <div class="ures" id="ucResult">
+              <div class="rl">Ergebnis</div>
+              <div class="rv" id="ucResultVal">—</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- end einheiten -->
+      </div><!-- end spanels-wrap -->
+    </div><!-- end tabRechner -->
+
+    <!-- ════════ TAB: KOORDINATENSYSTEM ════════ -->
+    <div id="tabKoord" class="panel">
+      <!-- Multiple coordinate systems tab bar (two rows: tabs + function quick-input) -->
+      <div id="coordSysBar" style="position:absolute;top:0;left:0;right:0;z-index:11;background:var(--bg2);border-bottom:1px solid var(--bdr);height:var(--csys-bar-h)">
+        <!-- Row 1: system tabs -->
+        <div id="coordSysTabRow">
+          <div id="coordSysTabs" style="display:flex;gap:4px;flex:1;overflow-x:auto"></div>
+          <button onclick="addCoordSystem()" title="Neues Koordinatensystem" style="flex-shrink:0;width:28px;height:28px;background:var(--acc);border:none;border-radius:0;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+        </div>
+        <!-- Row 2: function quick-input -->
+        <div id="coordFnBar">
+          <span style="font-size:12px;color:var(--dim);font-weight:600;white-space:nowrap">y =</span>
+          <input id="coordFnInput" placeholder="z.B. x^2 oder sin(x)" autocorrect="off" autocapitalize="off"
+            aria-label="Funktionsausdruck eingeben"
+            onkeydown="if(event.key==='Enter')quickAddFn()">
+          <button id="coordFnAddBtn" onclick="quickAddFn()" title="Funktion hinzufügen">+</button>
+          <div id="coordFnChips"></div>
+        </div>
+      </div>
+      <canvas id="cvs"></canvas>
+
+      <!-- Right toolbar (horizontal, bottom of canvas) -->
+      <div id="rtoolbar">
+        <button class="tbtn" id="rtoolbarCollapseBtn" title="Werkzeuge ein/ausblenden" onclick="toggleRtoolbar()">‹</button>
+        <button class="tbtn" title="Vergrößern" onclick="zoomBy(1.25)">+</button>
+        <button class="tbtn" title="Verkleinern" onclick="zoomBy(0.8)">−</button>
+        <button class="tbtn" title="Ansicht zurücksetzen" onclick="resetView()">⊙</button>
+        <button class="tbtn" title="Screenshot" onclick="saveCanvas()">📷</button>
+        <button class="tbtn" id="lockBtn" title="Koordinatensystem sperren" onclick="toggleLock()">🔓</button>
+        <button class="tbtn" id="rulerBtn" title="Koordinatenlineal ein/aus" onclick="toggleRuler()">📏</button>
+        <button class="tbtn" id="physRulerBtn" title="Physisches Lineal für Geraden" onclick="togglePhysRuler()">📐</button>
+        <button class="tbtn" id="quadBtn" title="Quadrant-Ansicht" onclick="toggleQuadPanel()">⊞</button>
+        <button class="tbtn" id="lcQuickBtn" title="Linienverbinder ein/aus" onclick="toggleLineConnectModeQuick()">🔗</button>
+        <button class="tbtn" title="Mini-Timer öffnen" onclick="openFloatingTimer()">⏱️</button>
+        <button class="tbtn" title="Mini-Rechner öffnen" onclick="openFloatingCalc()">🧮</button>
+      </div>
+
+      <!-- Left draw toolbar -->
+      <div id="ltoolbar">
+        <button class="tbtn" id="ltoolbarCollapseBtn" title="Modi ein/ausblenden" onclick="toggleLtoolbar()">‹</button>
+        <button class="tbtn act" id="modePanBtn" title="Verschieben (Pan)" onclick="setCanvasMode('pan')">✋</button>
+        <button class="tbtn" id="modeSelectBtn" title="Punkte verschieben (Select)" onclick="setCanvasMode('select')">↖</button>
+        <button class="tbtn" id="modeDrawBtn" title="Freies Zeichnen" onclick="setCanvasMode('draw')">✏️</button>
+        <button class="tbtn" id="modeSnapBtn" title="Eingerastet Zeichnen" onclick="setCanvasMode('snap')">⊞</button>
+        <button class="tbtn" id="modeTextBtn" title="Text einfügen" onclick="setCanvasMode('text')">T</button>
+        <button class="tbtn" id="modeDeleteBtn" title="Element löschen (Klicken)" onclick="setCanvasMode('delete')">🗑</button>
+        <button class="tbtn" id="modeEditBtn" title="Punkt bearbeiten" onclick="setCanvasMode('edit')">✎</button>
+        <button class="tbtn" title="Rückgängig" onclick="undoStroke()">↩</button>
+      </div>
+
+      <!-- Point edit overlay -->
+      <div id="ptEditOverlay">
+        <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px" id="ptEditName">Punkt</div>
+        <div class="pte-row"><span class="pte-lbl">x</span><input class="pte-in" id="ptEditX" type="number" step="0.1"></div>
+        <div class="pte-row"><span class="pte-lbl">y</span><input class="pte-in" id="ptEditY" type="number" step="0.1"></div>
+        <div class="pte-actions">
+          <button class="pte-btn ok" onclick="applyPtEdit()">✓</button>
+          <button class="pte-btn cancel" onclick="closePtEdit()">✕</button>
+        </div>
+      </div>
+
+      <!-- Ruler overlays -->
+      <div id="rulerCorner"></div>
+      <canvas id="rulerH"></canvas>
+      <canvas id="rulerV"></canvas>
+
+      <!-- Physical Ruler overlay (draggable + rotatable) -->
+      <div id="physRuler">
+        <canvas id="physRulerCanvas"></canvas>
+        <div id="physRulerHandle" title="Drag to move ruler">⠿</div>
+      </div>
+
+      <!-- Quadrant panel -->
+      <div id="quadrantPanel">
+        <div style="font-size:10px; color:var(--dim); text-align:center; padding:2px 4px">Quadrant</div>
+        <div class="qgrid">
+          <button class="qbtn" id="qII"  onclick="setQuadrant(2)">II</button>
+          <button class="qbtn" id="qI"   onclick="setQuadrant(1)">I</button>
+          <button class="qbtn" id="qIII" onclick="setQuadrant(3)">III</button>
+          <button class="qbtn" id="qIV"  onclick="setQuadrant(4)">IV</button>
+        </div>
+        <button class="qbtn" style="width:100%; margin-top:2px" onclick="setQuadrant(0)" id="qAll">Alle</button>
+      </div>
+
+      <!-- Coordinates display -->
+      <div id="coordInfo">x=0.0 y=0.0</div>
+
+      <!-- Slide-up Panel -->
+      <!-- Floating "open panel" button (shown when panel is fully hidden) -->
+      <button id="kOpenBtn" onclick="openPanelFromBtn()">📋 Panel öffnen</button>
+
+      <div id="kpanel">
+        <div id="khandle" onclick="togglePanel()">
+          <div class="hbar"></div>
+          <span>Funktionen &amp; Einstellungen</span>
+          <button id="kCloseBtn" onclick="event.stopPropagation();closePanelFully()" title="Panel verbergen">✕</button>
+        </div>
+        <div class="kcontent">
+          <!-- Panel tabs -->
+          <div class="ptabs">
+            <button class="ptab active" onclick="switchPTab('pFunktionen')">Funktionen</button>
+            <button class="ptab" onclick="switchPTab('pPunkte')">Punkte</button>
+            <button class="ptab" onclick="switchPTab('pVorlagen')">Vorlagen</button>
+            <button class="ptab" onclick="switchPTab('pZeichnen')">Zeichnen</button>
+            <button class="ptab" onclick="switchPTab('pTabelle')">Tabelle</button>
+            <button class="ptab" onclick="switchPTab('pEinst')">Einstellungen</button>
+          </div>
+
+          <!-- Funktionen -->
+          <div id="pFunktionen" class="psec active">
+            <div class="psect">Funktion hinzufügen</div>
+            <div class="finput-row">
+              <input class="finput" id="fnInput" placeholder="z.B.  1x+4  oder  x^2-2x+1" autocorrect="off" autocapitalize="off">
+              <button class="addbtn" onclick="addFunction()">+</button>
+            </div>
+            <div class="errmsg" id="fnErr" style="display:none"></div>
+            <div class="psect" style="margin-top:10px">Aktive Funktionen</div>
+            <div id="fnList"></div>
+          </div>
+
+          <!-- Punkte -->
+          <div id="pPunkte" class="psec">
+            <div class="psect">Punkt hinzufügen</div>
+            <div class="ptrow">
+              <input class="ptinput" id="ptName" placeholder="Name (z.B. A)" maxlength="4">
+              <input class="ptinput" id="ptX" type="number" placeholder="x" step="0.1">
+              <input class="ptinput" id="ptY" type="number" placeholder="y" step="0.1">
+              <button class="addbtn" onclick="addPoint()">+</button>
+            </div>
+            <div class="errmsg" id="ptErr" style="display:none"></div>
+            <div class="psect" style="margin-top:10px">Punkte</div>
+            <div id="ptList"></div>
+          </div>
+
+          <!-- Vorlagen -->
+          <div id="pVorlagen" class="psec">
+            <div class="psect">Funktions-Vorlagen</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="x"></canvas><span class="vtpl-lbl">📈 Linear &nbsp;<small>y = x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="2x+1"></canvas><span class="vtpl-lbl">📐 Gerade &nbsp;<small>y = 2x+1</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('2x+1')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="x^2"></canvas><span class="vtpl-lbl">🔴 Parabel &nbsp;<small>y = x²</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^2')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="x^3"></canvas><span class="vtpl-lbl">🔵 Kubisch &nbsp;<small>y = x³</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^3')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="-x^2"></canvas><span class="vtpl-lbl">📉 Negat. Parabel &nbsp;<small>y = −x²</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('-x^2')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="sin(x)"></canvas><span class="vtpl-lbl">〰️ Sinus &nbsp;<small>y = sin(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('sin(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="cos(x)"></canvas><span class="vtpl-lbl">〰️ Kosinus &nbsp;<small>y = cos(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('cos(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="tan(x)"></canvas><span class="vtpl-lbl">📊 Tangens &nbsp;<small>y = tan(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('tan(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="abs(x)"></canvas><span class="vtpl-lbl">📦 Betrag &nbsp;<small>y = |x|</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('abs(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="1/x"></canvas><span class="vtpl-lbl">🔀 Hyperbel &nbsp;<small>y = 1/x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('1/x')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="sqrt(x)"></canvas><span class="vtpl-lbl">√ Wurzel &nbsp;<small>y = √x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('sqrt(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="exp(x)"></canvas><span class="vtpl-lbl">📈 Exponential &nbsp;<small>y = eˣ</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('exp(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="log(x)"></canvas><span class="vtpl-lbl">📉 Logarithmus &nbsp;<small>y = ln(x)</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('log(x)')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="x^2-2x+1"></canvas><span class="vtpl-lbl">🔵 Quadrat-komplett &nbsp;<small>y = x²−2x+1</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^2-2x+1')">→ Einfügen</button></div>
+              <div class="vtpl-row"><canvas class="vtpl-prev" data-expr="x^3-3x"></canvas><span class="vtpl-lbl">🔴 Kubisch-verschob. &nbsp;<small>y = x³−3x</small></span><button class="vtpl-btn" onclick="insertCoordTemplate('x^3-3x')">→ Einfügen</button></div>
+            </div>
+            <div class="psect" style="margin-top:14px">Benutzerdefinierte Vorlage</div>
+            <div style="display:flex;gap:7px;margin-bottom:7px">
+              <input class="finput" id="vtplCustomInput" placeholder="z.B. 2x^2-x+3" autocorrect="off" autocapitalize="off" style="-webkit-user-select:text;user-select:text">
+              <button class="addbtn" onclick="insertCoordTemplateCustom()">→</button>
+            </div>
+            <div class="errmsg" id="vtplErr" style="display:none"></div>
+            <div class="psect" style="margin-top:14px">Punkte-Vorlagen</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="vtpl-row"><span class="vtpl-lbl">⊙ Ursprung &nbsp;<small>(0, 0)</small></span><button class="vtpl-btn" onclick="insertCoordPoint(0,0,'O')">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">➕ Einheitspunkte &nbsp;<small>(1,0), (0,1)</small></span><button class="vtpl-btn" onclick="insertUnitPoints()">→ Einfügen</button></div>
+              <div class="vtpl-row"><span class="vtpl-lbl">🔵 Einheitskreis-Punkte &nbsp;<small>N, E, S, W</small></span><button class="vtpl-btn" onclick="insertUnitCirclePoints()">→ Einfügen</button></div>
+            </div>
+
+            <!-- 3D Models – Premium -->
+            <div class="psect" style="margin-top:14px">3D-Modelle <span class="pro-badge">PRO</span> <span style="background:#0055cc;color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:0;vertical-align:middle;margin-left:2px;letter-spacing:.5px">BETA</span></div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="vtpl-row vtpl-row-premium"><span class="vtpl-lbl vtpl-crown"><span class="vtpl-crown-badge">👑</span>Paraboloid &nbsp;<small>z = x²+y²</small></span><button class="vtpl-btn" onclick="open3DModel('paraboloid')">→ Öffnen</button></div>
+              <div class="vtpl-row vtpl-row-premium"><span class="vtpl-lbl vtpl-crown"><span class="vtpl-crown-badge">👑</span>Sattelfläche &nbsp;<small>z = x²−y²</small></span><button class="vtpl-btn" onclick="open3DModel('saddle')">→ Öffnen</button></div>
+              <div class="vtpl-row vtpl-row-premium"><span class="vtpl-lbl vtpl-crown"><span class="vtpl-crown-badge">👑</span>Kegel &nbsp;<small>z = √(x²+y²)</small></span><button class="vtpl-btn" onclick="open3DModel('cone')">→ Öffnen</button></div>
+              <div class="vtpl-row vtpl-row-premium"><span class="vtpl-lbl vtpl-crown"><span class="vtpl-crown-badge">👑</span>Sinus-Fläche &nbsp;<small>z = sin(x)·cos(y)</small></span><button class="vtpl-btn" onclick="open3DModel('sincos')">→ Öffnen</button></div>
+              <div class="vtpl-row vtpl-row-premium"><span class="vtpl-lbl vtpl-crown"><span class="vtpl-crown-badge">👑</span>Ebene &nbsp;<small>z = x+y</small></span><button class="vtpl-btn" onclick="open3DModel('plane')">→ Öffnen</button></div>
+            </div>
+          </div>
+
+          <!-- Zeichnen -->
+          <div id="pZeichnen" class="psec">
+            <div class="psect">Zeichenmodus</div>
+            <div class="modbtns">
+              <button class="modbtn active" id="modeNone" onclick="setDrawMode('none')">Kein Zeichnen</button>
+              <button class="modbtn" id="modeFree" onclick="setDrawMode('free')">Freies Zeichnen</button>
+              <button class="modbtn" id="modeSnap" onclick="setDrawMode('snap')">Eingerastert</button>
+            </div>
+            <div class="psect">Farbe</div>
+            <div class="colrow" id="colorRow"></div>
+            <div class="psect">Linienstärke</div>
+            <input type="range" class="wslider" id="lineWidth" min="1" max="12" value="3" oninput="drawCanvas()">
+          </div>
+
+          <!-- Einstellungen -->
+          <div id="pEinst" class="psec">
+            <div class="psect">Anzeigebereich</div>
+            <div class="srow"><span class="slbl">X Minimum</span><input class="sinput" id="xMin" type="number" value="-10" onchange="applyRangeSettings()"></div>
+            <div class="srow"><span class="slbl">X Maximum</span><input class="sinput" id="xMax" type="number" value="10" onchange="applyRangeSettings()"></div>
+            <div class="srow"><span class="slbl">Y Minimum</span><input class="sinput" id="yMin" type="number" value="-8" onchange="applyRangeSettings()"></div>
+            <div class="srow"><span class="slbl">Y Maximum</span><input class="sinput" id="yMax" type="number" value="8" onchange="applyRangeSettings()"></div>
+            <div class="srow"><span class="slbl">Gitterabstand</span><input class="sinput" id="gridStep" type="number" value="1" min="0.1" step="0.1" onchange="drawCanvas()"></div>
+            <div class="psect" style="margin-top:10px">Anzeige</div>
+            <div class="togrow">
+              <button class="togbtn active" id="togGrid" onclick="toggleSetting('grid')">Gitter</button>
+              <button class="togbtn active" id="togLabels" onclick="toggleSetting('labels')">Beschriftung</button>
+              <button class="togbtn active" id="togAxes" onclick="toggleSetting('axes')">Achsen</button>
+            </div>
+            <div class="psect" style="margin-top:10px">Verbinder-Optionen</div>
+            <div class="togrow">
+              <button class="togbtn active" id="togConnDots" onclick="toggleConnectorDots()">Punkt-Kreise</button>
+            </div>
+            <div class="psect" style="margin-top:10px">Verhältnis (Pixel/Einheit)</div>
+            <div class="srow">
+              <span class="slbl">Skalierung</span>
+              <input class="sinput" id="scaleInput" type="number" value="50" min="5" onchange="applyScaleInput()">
+            </div>
+            <button class="sbtn" style="margin-top:10px" onclick="resetView()">Ansicht zurücksetzen</button>
+          </div>
+
+          <!-- Tabelle -->
+          <div id="pTabelle" class="psec">
+            <div class="psect">Wertetabelle <span style="font-size:10px;color:var(--dim);font-weight:400">(automatisch synchronisiert)</span></div>
+            <div class="srow">
+              <span class="slbl">x von</span>
+              <input class="sinput" id="tblXFrom" type="number" value="-5" step="1" oninput="generateTable()">
+            </div>
+            <div class="srow">
+              <span class="slbl">x bis</span>
+              <input class="sinput" id="tblXTo" type="number" value="5" step="1" oninput="generateTable()">
+            </div>
+            <div class="srow">
+              <span class="slbl">Schrittweite</span>
+              <input class="sinput" id="tblStep" type="number" value="1" min="0.001" step="0.5" oninput="generateTable()">
+            </div>
+            <button class="sbtn" style="margin-bottom:10px" onclick="generateTable()" aria-label="Tabelle erstellen">📊 Tabelle erstellen</button>
+            <div class="errmsg" id="tblErr" style="display:none"></div>
+            <div id="tblOutput"></div>
+          </div>
+
+        </div><!-- kcontent -->
+      </div><!-- kpanel -->
+
+    </div><!-- end tabKoord -->
+
+    <!-- ════════ TAB: NOTIZEN ════════ -->
+    <div id="tabNotizen" class="panel">
+      <div id="notesList" class="notes-grid"></div>
+      <button class="sbtn add-note-btn" onclick="addNote()">+ Neue Notiz</button>
+    </div>
+
+    <!-- ════════ TAB: FORMELN + ════════ -->
+    <div id="tabKlasse" class="panel">
+      <!-- Klasse sub-tabs -->
+      <div class="stabs">
+        <button class="stab active" onclick="switchKlasseSub('kFormeln')">Formeln</button>
+        <button class="stab" onclick="switchKlasseSub('kVorlagen')">Vorlagen</button>
+        <button class="stab" onclick="switchKlasseSub('kGeometrie')">Geometrie</button>
+        <button class="stab" onclick="switchKlasseSub('kPhysik')">Physik</button>
+        <button class="stab" onclick="switchKlasseSub('k3D')">3D</button>
+      </div>
+
+      <!-- Formeln -->
+      <div id="kFormeln" class="spanel active" style="overflow-y:auto; padding:14px; gap:10px">
+        <div class="klasse-card">
+          <h3>📐 Algebra</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Quadratische Formel</span><span class="kf-val">x = (−b ± √(b²−4ac)) / 2a</span></div>
+            <div class="kf-item"><span class="kf-name">Binomische Formel 1</span><span class="kf-val">(a+b)² = a²+2ab+b²</span></div>
+            <div class="kf-item"><span class="kf-name">Binomische Formel 2</span><span class="kf-val">(a−b)² = a²−2ab+b²</span></div>
+            <div class="kf-item"><span class="kf-name">Binomische Formel 3</span><span class="kf-val">(a+b)(a−b) = a²−b²</span></div>
+            <div class="kf-item"><span class="kf-name">Steigung</span><span class="kf-val">m = (y₂−y₁)/(x₂−x₁)</span></div>
+            <div class="kf-item"><span class="kf-name">Geradengleichung</span><span class="kf-val">y = mx + b</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc)">
+          <h3>📊 Statistik</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Mittelwert</span><span class="kf-val">x̄ = (Σxᵢ) / n</span></div>
+            <div class="kf-item"><span class="kf-name">Varianz</span><span class="kf-val">σ² = Σ(xᵢ−x̄)² / n</span></div>
+            <div class="kf-item"><span class="kf-name">Standardabw.</span><span class="kf-val">σ = √(Σ(xᵢ−x̄)²/n)</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc2)">
+          <h3>🔢 Zahlentheorie</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">ggT(a,b)</span><span class="kf-val">Euklidischer Algorithmus</span></div>
+            <div class="kf-item"><span class="kf-name">kgV(a,b)</span><span class="kf-val">a·b / ggT(a,b)</span></div>
+            <div class="kf-item"><span class="kf-name">Potenzgesetz</span><span class="kf-val">aⁿ·aᵐ = aⁿ⁺ᵐ</span></div>
+            <div class="kf-item"><span class="kf-name">Logarithmusgesetz</span><span class="kf-val">log(a·b) = log(a)+log(b)</span></div>
+          </div>
+        </div>
+        <!-- Custom class calculator -->
+        <div class="ig">
+          <div class="sect">Mittelwert-Rechner</div>
+          <label>Zahlen eingeben (kommagetrennt):</label>
+          <input class="mi" id="statInput" type="text" placeholder="z.B. 4, 7, 2, 9, 5" autocorrect="off">
+          <button class="sbtn" style="margin-top:8px" onclick="calcStat()">📊 Berechnen</button>
+          <div class="sol" id="statSol" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- Geometrie -->
+      <div id="kVorlagen" class="spanel" style="overflow-y:auto; padding:14px; gap:10px">
+        <div class="ig">
+          <div class="sect">📐 Quadratische Gleichung  ax²+bx+c=0</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtQa" type="number" placeholder="a" style="flex:1" oninput="calcVorlagen('quad')">
+            <input class="mi" id="vtQb" type="number" placeholder="b" style="flex:1" oninput="calcVorlagen('quad')">
+            <input class="mi" id="vtQc" type="number" placeholder="c" style="flex:1" oninput="calcVorlagen('quad')">
+          </div>
+          <div class="ures vis" id="vtQRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📏 Lineare Gleichung  ax+b=0</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtLa" type="number" placeholder="a" style="flex:1" oninput="calcVorlagen('lin')">
+            <input class="mi" id="vtLb" type="number" placeholder="b" style="flex:1" oninput="calcVorlagen('lin')">
+          </div>
+          <div class="ures vis" id="vtLRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📍 Abstand zweier Punkte</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+            <input class="mi" id="vtDx1" type="number" placeholder="x₁" style="flex:1;min-width:56px" oninput="calcVorlagen('dist')">
+            <input class="mi" id="vtDy1" type="number" placeholder="y₁" style="flex:1;min-width:56px" oninput="calcVorlagen('dist')">
+            <input class="mi" id="vtDx2" type="number" placeholder="x₂" style="flex:1;min-width:56px" oninput="calcVorlagen('dist')">
+            <input class="mi" id="vtDy2" type="number" placeholder="y₂" style="flex:1;min-width:56px" oninput="calcVorlagen('dist')">
+          </div>
+          <div class="ures vis" id="vtDRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🔢 Mittelpunkt zweier Punkte</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+            <input class="mi" id="vtMx1" type="number" placeholder="x₁" style="flex:1;min-width:56px" oninput="calcVorlagen('mid')">
+            <input class="mi" id="vtMy1" type="number" placeholder="y₁" style="flex:1;min-width:56px" oninput="calcVorlagen('mid')">
+            <input class="mi" id="vtMx2" type="number" placeholder="x₂" style="flex:1;min-width:56px" oninput="calcVorlagen('mid')">
+            <input class="mi" id="vtMy2" type="number" placeholder="y₂" style="flex:1;min-width:56px" oninput="calcVorlagen('mid')">
+          </div>
+          <div class="ures vis" id="vtMRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📊 Prozentrechnung  (Prozentwert)</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtPG" type="number" placeholder="Grundwert" style="flex:2" oninput="calcVorlagen('pct')">
+            <input class="mi" id="vtPP" type="number" placeholder="%" style="flex:1" oninput="calcVorlagen('pct')">
+          </div>
+          <div class="ures vis" id="vtPRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📈 Prozentuale Änderung</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtCO" type="number" placeholder="Alt" style="flex:1" oninput="calcVorlagen('chg')">
+            <input class="mi" id="vtCN" type="number" placeholder="Neu" style="flex:1" oninput="calcVorlagen('chg')">
+          </div>
+          <div class="ures vis" id="vtCRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">💰 Einfache Zinsen  I = P·r·t</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtSIP" type="number" placeholder="Kapital P" style="flex:2" oninput="calcVorlagen('si')">
+            <input class="mi" id="vtSIR" type="number" placeholder="Zins r%" style="flex:1" oninput="calcVorlagen('si')">
+            <input class="mi" id="vtSIT" type="number" placeholder="Jahre t" style="flex:1" oninput="calcVorlagen('si')">
+          </div>
+          <div class="ures vis" id="vtSIRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📦 Zinseszins  A = P·(1+r)^t</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtCIP" type="number" placeholder="Kapital P" style="flex:2" oninput="calcVorlagen('ci')">
+            <input class="mi" id="vtCIR" type="number" placeholder="Zins r%" style="flex:1" oninput="calcVorlagen('ci')">
+            <input class="mi" id="vtCIT" type="number" placeholder="Jahre t" style="flex:1" oninput="calcVorlagen('ci')">
+          </div>
+          <div class="ures vis" id="vtCIRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📐 Pythagoras  c²=a²+b²</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtPya" type="number" placeholder="a" style="flex:1" oninput="calcVorlagen('pyth')">
+            <input class="mi" id="vtPyb" type="number" placeholder="b" style="flex:1" oninput="calcVorlagen('pyth')">
+          </div>
+          <div class="ures vis" id="vtPyRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">⭕ Kreis  A=πr², U=2πr</div>
+          <input class="mi" id="vtCR" type="number" placeholder="Radius r" oninput="calcVorlagen('circ')">
+          <div class="ures vis" id="vtCRRes" style="display:block;min-height:36px;margin-top:6px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🏥 BMI  Gewicht / Größe²</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtBMIw" type="number" placeholder="Gewicht (kg)" style="flex:2" oninput="calcVorlagen('bmi')">
+            <input class="mi" id="vtBMIh" type="number" placeholder="Größe (m)" style="flex:1" oninput="calcVorlagen('bmi')">
+          </div>
+          <div class="ures vis" id="vtBMIRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">⚡ Ohmsches Gesetz  U=R·I</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtOhmU" type="number" placeholder="U (V) leer lassen" style="flex:1" oninput="calcVorlagen('ohm')">
+            <input class="mi" id="vtOhmR" type="number" placeholder="R (Ω)" style="flex:1" oninput="calcVorlagen('ohm')">
+            <input class="mi" id="vtOhmI" type="number" placeholder="I (A)" style="flex:1" oninput="calcVorlagen('ohm')">
+          </div>
+          <div class="ures vis" id="vtOhmRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🚀 Geschwindigkeit  v=s/t</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtVs" type="number" placeholder="Strecke s (m)" style="flex:2" oninput="calcVorlagen('speed')">
+            <input class="mi" id="vtVt" type="number" placeholder="Zeit t (s)" style="flex:1" oninput="calcVorlagen('speed')">
+          </div>
+          <div class="ures vis" id="vtVRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🔥 Kinetische Energie  E=½mv²</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtKEm" type="number" placeholder="Masse m (kg)" style="flex:1" oninput="calcVorlagen('ke')">
+            <input class="mi" id="vtKEv" type="number" placeholder="v (m/s)" style="flex:1" oninput="calcVorlagen('ke')">
+          </div>
+          <div class="ures vis" id="vtKERes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🌍 Potenzielle Energie  E=mgh</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtPEm" type="number" placeholder="m (kg)" style="flex:1" oninput="calcVorlagen('pe')">
+            <input class="mi" id="vtPEh" type="number" placeholder="h (m)" style="flex:1" oninput="calcVorlagen('pe')">
+          </div>
+          <div class="ures vis" id="vtPERes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🌡️ Temperatur-Umrechnung</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtTempIn" type="number" placeholder="Wert" style="flex:2" oninput="calcVorlagen('temp')">
+            <select class="mi" id="vtTempUnit" style="flex:1;font-size:15px" onchange="calcVorlagen('temp')">
+              <option value="C">°C →</option>
+              <option value="F">°F →</option>
+              <option value="K">K →</option>
+            </select>
+          </div>
+          <div class="ures vis" id="vtTempRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📉 Gewinn/Verlust in %</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtGLbuy" type="number" placeholder="Kaufpreis" style="flex:1" oninput="calcVorlagen('gl')">
+            <input class="mi" id="vtGLsell" type="number" placeholder="Verkaufspreis" style="flex:1" oninput="calcVorlagen('gl')">
+          </div>
+          <div class="ures vis" id="vtGLRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">📦 Zylinder  V=πr²h</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtCylR" type="number" placeholder="Radius r" style="flex:1" oninput="calcVorlagen('cyl')">
+            <input class="mi" id="vtCylH" type="number" placeholder="Höhe h" style="flex:1" oninput="calcVorlagen('cyl')">
+          </div>
+          <div class="ures vis" id="vtCylRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🌐 Kugelvolumen  V=(4/3)πr³</div>
+          <input class="mi" id="vtSphR" type="number" placeholder="Radius r" oninput="calcVorlagen('sph')">
+          <div class="ures vis" id="vtSphRes" style="display:block;min-height:36px;margin-top:6px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🔺 Dreieck Fläche  A=(g·h)/2</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtTriG" type="number" placeholder="Grundlinie g" style="flex:1" oninput="calcVorlagen('tri')">
+            <input class="mi" id="vtTriH" type="number" placeholder="Höhe h" style="flex:1" oninput="calcVorlagen('tri')">
+          </div>
+          <div class="ures vis" id="vtTriRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🔢 Steigung  m=(y₂−y₁)/(x₂−x₁)</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+            <input class="mi" id="vtSlx1" type="number" placeholder="x₁" style="flex:1;min-width:56px" oninput="calcVorlagen('slope')">
+            <input class="mi" id="vtSly1" type="number" placeholder="y₁" style="flex:1;min-width:56px" oninput="calcVorlagen('slope')">
+            <input class="mi" id="vtSlx2" type="number" placeholder="x₂" style="flex:1;min-width:56px" oninput="calcVorlagen('slope')">
+            <input class="mi" id="vtSly2" type="number" placeholder="y₂" style="flex:1;min-width:56px" oninput="calcVorlagen('slope')">
+          </div>
+          <div class="ures vis" id="vtSlRes" style="display:block;min-height:36px"></div>
+        </div>
+        <div class="ig">
+          <div class="sect">🔵 Kreissektor  (Bogenlänge & Fläche)</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="vtSecR" type="number" placeholder="Radius r" style="flex:1" oninput="calcVorlagen('sec')">
+            <input class="mi" id="vtSecA" type="number" placeholder="Winkel α (°)" style="flex:1" oninput="calcVorlagen('sec')">
+          </div>
+          <div class="ures vis" id="vtSecRes" style="display:block;min-height:36px"></div>
+        </div>
+      </div>
+
+      <!-- Geometrie -->
+      <div id="kGeometrie" class="spanel" style="overflow-y:auto; padding:14px; gap:10px">
+        <div class="klasse-card">
+          <h3>⬜ Viereck & Dreieck</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Rechteck Fläche</span><span class="kf-val">A = a · b</span></div>
+            <div class="kf-item"><span class="kf-name">Quadrat Fläche</span><span class="kf-val">A = a²</span></div>
+            <div class="kf-item"><span class="kf-name">Dreieck Fläche</span><span class="kf-val">A = (g · h) / 2</span></div>
+            <div class="kf-item"><span class="kf-name">Pythagoras</span><span class="kf-val">c² = a² + b²</span></div>
+            <div class="kf-item"><span class="kf-name">Trapez Fläche</span><span class="kf-val">A = (a+c)/2 · h</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc)">
+          <h3>⭕ Kreis</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Fläche</span><span class="kf-val">A = π · r²</span></div>
+            <div class="kf-item"><span class="kf-name">Umfang</span><span class="kf-val">U = 2 · π · r</span></div>
+            <div class="kf-item"><span class="kf-name">Durchmesser</span><span class="kf-val">d = 2r</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc2)">
+          <h3>📦 Körper</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Würfel V</span><span class="kf-val">V = a³</span></div>
+            <div class="kf-item"><span class="kf-name">Quader V</span><span class="kf-val">V = a · b · c</span></div>
+            <div class="kf-item"><span class="kf-name">Zylinder V</span><span class="kf-val">V = π · r² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Kugel V</span><span class="kf-val">V = (4/3) · π · r³</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel V</span><span class="kf-val">V = (1/3) · π · r² · h</span></div>
+          </div>
+        </div>
+        <!-- Geometry calculator -->
+        <div class="ig">
+          <div class="sect">Geometrie-Rechner</div>
+          <div class="modbtns" id="geoBtns" style="flex-wrap:wrap">
+            <button class="modbtn active" onclick="setGeoMode('kreis')">Kreis</button>
+            <button class="modbtn" onclick="setGeoMode('rechteck')">Rechteck</button>
+            <button class="modbtn" onclick="setGeoMode('dreieck')">Dreieck</button>
+            <button class="modbtn" onclick="setGeoMode('zylinder')">Zylinder</button>
+          </div>
+          <div id="geoInputs" style="margin-top:8px; display:flex; flex-direction:column; gap:6px"></div>
+          <button class="sbtn" style="margin-top:8px" onclick="calcGeo()">📐 Berechnen</button>
+          <div class="sol" id="geoSol" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- Physik -->
+      <div id="kPhysik" class="spanel" style="overflow-y:auto; padding:14px; gap:10px">
+        <div class="klasse-card">
+          <h3>⚡ Mechanik</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Kraft</span><span class="kf-val">F = m · a  [N]</span></div>
+            <div class="kf-item"><span class="kf-name">Arbeit</span><span class="kf-val">W = F · s  [J]</span></div>
+            <div class="kf-item"><span class="kf-name">Leistung</span><span class="kf-val">P = W / t  [W]</span></div>
+            <div class="kf-item"><span class="kf-name">Energie (kin.)</span><span class="kf-val">E = ½mv²  [J]</span></div>
+            <div class="kf-item"><span class="kf-name">Energie (pot.)</span><span class="kf-val">E = mgh  [J]</span></div>
+            <div class="kf-item"><span class="kf-name">Geschwindigkeit</span><span class="kf-val">v = s / t  [m/s]</span></div>
+            <div class="kf-item"><span class="kf-name">Beschleunigung</span><span class="kf-val">a = Δv / Δt  [m/s²]</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc4)">
+          <h3>🔋 Elektrizität</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Ohmsches Gesetz</span><span class="kf-val">U = R · I  [V]</span></div>
+            <div class="kf-item"><span class="kf-name">Elektrische Leistung</span><span class="kf-val">P = U · I  [W]</span></div>
+            <div class="kf-item"><span class="kf-name">Widerstand (Reihe)</span><span class="kf-val">R = R₁ + R₂</span></div>
+            <div class="kf-item"><span class="kf-name">Widerstand (Parallel)</span><span class="kf-val">1/R = 1/R₁ + 1/R₂</span></div>
+          </div>
+        </div>
+        <!-- Physik calculator -->
+        <div class="ig">
+          <div class="sect">Physik-Rechner</div>
+          <div class="modbtns" id="physBtns" style="flex-wrap:wrap">
+            <button class="modbtn active" onclick="setPhysMode('kraft')">Kraft</button>
+            <button class="modbtn" onclick="setPhysMode('arbeit')">Arbeit</button>
+            <button class="modbtn" onclick="setPhysMode('leistung')">Leistung</button>
+            <button class="modbtn" onclick="setPhysMode('geschw')">Geschw.</button>
+          </div>
+          <div id="physInputs" style="margin-top:8px; display:flex; flex-direction:column; gap:6px"></div>
+          <button class="sbtn" style="margin-top:8px" onclick="calcPhys()">⚡ Berechnen</button>
+          <div class="sol" id="physSol" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- 3D -->
+      <div id="k3D" class="spanel" style="overflow-y:auto; padding:14px; gap:10px">
+        <div class="klasse-card">
+          <h3>📦 Würfel &amp; Quader</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Würfel V</span><span class="kf-val">V = a³</span></div>
+            <div class="kf-item"><span class="kf-name">Würfel O</span><span class="kf-val">O = 6 · a²</span></div>
+            <div class="kf-item"><span class="kf-name">Quader V</span><span class="kf-val">V = a · b · c</span></div>
+            <div class="kf-item"><span class="kf-name">Quader O</span><span class="kf-val">O = 2(ab + bc + ac)</span></div>
+            <div class="kf-item"><span class="kf-name">Raumdiagonale</span><span class="kf-val">d = √(a²+b²+c²)</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc)">
+          <h3>🔵 Zylinder &amp; Kegel</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Zylinder V</span><span class="kf-val">V = π · r² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Zylinder O</span><span class="kf-val">O = 2πr² + 2πrh</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel V</span><span class="kf-val">V = ⅓ · π · r² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel O</span><span class="kf-val">O = πr² + πrs</span></div>
+            <div class="kf-item"><span class="kf-name">Kegel Mantellinie</span><span class="kf-val">s = √(r²+h²)</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc2)">
+          <h3>🌐 Kugel &amp; Pyramide</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Kugel V</span><span class="kf-val">V = (4/3) · π · r³</span></div>
+            <div class="kf-item"><span class="kf-name">Kugel O</span><span class="kf-val">O = 4 · π · r²</span></div>
+            <div class="kf-item"><span class="kf-name">Pyramide V (quad.)</span><span class="kf-val">V = ⅓ · a² · h</span></div>
+            <div class="kf-item"><span class="kf-name">Pyramide O (quad.)</span><span class="kf-val">O = a² + 2as</span></div>
+          </div>
+        </div>
+        <div class="klasse-card" style="border-left-color:var(--acc4)">
+          <h3>📐 3D Koordinaten</h3>
+          <div class="kc-body">
+            <div class="kf-item"><span class="kf-name">Abstand P₁P₂</span><span class="kf-val">d = √(Δx²+Δy²+Δz²)</span></div>
+            <div class="kf-item"><span class="kf-name">Mittelpunkt</span><span class="kf-val">M = ((x₁+x₂)/2, (y₁+y₂)/2, (z₁+z₂)/2)</span></div>
+            <div class="kf-item"><span class="kf-name">Betrag Vektor</span><span class="kf-val">|v| = √(v_x²+v_y²+v_z²)</span></div>
+            <div class="kf-item"><span class="kf-name">Skalarprodukt</span><span class="kf-val">a·b = a_x·b_x + a_y·b_y + a_z·b_z</span></div>
+          </div>
+        </div>
+        <!-- 3D Calculator -->
+        <div class="ig">
+          <div class="sect">3D-Rechner</div>
+          <div class="modbtns" id="btn3D" style="flex-wrap:wrap">
+            <button class="modbtn active" onclick="set3DMode('wuerfel')">Würfel</button>
+            <button class="modbtn" onclick="set3DMode('quader')">Quader</button>
+            <button class="modbtn" onclick="set3DMode('zylinder3d')">Zylinder</button>
+            <button class="modbtn" onclick="set3DMode('kegel')">Kegel</button>
+            <button class="modbtn" onclick="set3DMode('kugel3d')">Kugel</button>
+            <button class="modbtn" onclick="set3DMode('pyramide')">Pyramide</button>
+          </div>
+          <div id="inp3D" style="margin-top:8px; display:flex; flex-direction:column; gap:6px"></div>
+          <button class="sbtn" style="margin-top:8px" onclick="calc3D()">📦 Berechnen</button>
+          <div class="sol" id="sol3D" style="margin-top:8px"></div>
+        </div>
+        <!-- 3D Koordinaten Rechner -->
+        <div class="ig">
+          <div class="sect">3D Koordinaten-Rechner</div>
+          <div class="psect" style="margin-top:4px">Punkt P₁</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="p3x1" type="number" placeholder="x₁" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3y1" type="number" placeholder="y₁" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3z1" type="number" placeholder="z₁" style="flex:1" oninput="calc3DCoord()">
+          </div>
+          <div class="psect">Punkt P₂</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input class="mi" id="p3x2" type="number" placeholder="x₂" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3y2" type="number" placeholder="y₂" style="flex:1" oninput="calc3DCoord()">
+            <input class="mi" id="p3z2" type="number" placeholder="z₂" style="flex:1" oninput="calc3DCoord()">
+          </div>
+          <div class="ures vis" id="res3DCoord" style="display:block;min-height:36px"></div>
+        </div>
+      </div>
+    </div><!-- end tabKlasse -->
+
+    <!-- ════════ TAB: BILD-SCANNER ════════ -->
+    <div id="tabBild" class="panel">
+      <!-- Drop zone / upload area -->
+      <div class="iu-dropzone" id="bildDropZone">
+        <div class="iu-icon">📷</div>
+        <div class="iu-title">Bild hochladen</div>
+        <div class="iu-sub">Hier tippen oder Foto hineinziehen</div>
+        <input type="file" id="bildFileInput" accept="image/*" style="display:none">
+      </div>
+      <!-- Image preview -->
+      <div id="bildPreviewWrap">
+        <img id="bildPreview" alt="Preview">
+        <button id="bildClearBtn" onclick="bildClear()">✕</button>
+      </div>
+      <!-- Scan button -->
+      <button class="sbtn" id="bildScanBtn" onclick="bildScan()" style="margin:0 14px 10px;display:none">🔍 Zahlen &amp; Mathe scannen</button>
+      <!-- Status / progress -->
+      <div class="bild-status" id="bildStatus">
+        <span id="bildStatusText">Bereit</span>
+        <div class="bild-progress"><div class="bild-progress-bar" id="bildProgressBar" style="width:0%"></div></div>
+      </div>
+      <!-- Results -->
+      <div id="bildResults"></div>
+    </div><!-- end tabBild -->
+
+    <!-- ════════ TAB: MATH AGENT ════════ -->
+    <div id="tabAgent" class="panel">
+      <div class="agent-hdr">
+        <div class="agent-hdr-title">🤖 Math Agent</div>
+        <span class="agent-counter" id="agentCounter">0 / 5</span>
+        <button class="agent-add-task" onclick="agentAddTask()">+ Aufgabe</button>
+        <button class="agent-run-btn" id="agentRunBtn" onclick="agentRun()">▶ Agent starten</button>
+      </div>
+      <!-- Status / progress -->
+      <div class="agent-status-bar" id="agentStatus">
+        <span id="agentStatusText">Bereit</span>
+        <div class="agent-progress"><div class="agent-progress-bar" id="agentProgressBar" style="width:0%"></div></div>
+      </div>
+      <!-- Task list -->
+      <div class="agent-tasks-wrap" id="agentTasksWrap">
+        <div class="agent-empty" id="agentEmpty">
+          <div style="font-size:32px;margin-bottom:8px">🤖</div>
+          <div>Noch keine Aufgaben.</div>
+          <div style="font-size:12px;margin-top:4px;color:var(--dim)">Tippe auf „+ Aufgabe" um zu beginnen.</div>
+        </div>
+      </div>
+      <!-- Results -->
+      <div id="agentResultsWrap"></div>
+    </div><!-- end tabAgent -->
+
+    <!-- ══════════════════════════════════════════
+         HANDBUCH PANEL
+    ══════════════════════════════════════════ -->
+    <div id="tabHandbuch" class="panel">
+      <div style="padding:12px 14px 8px;background:var(--bg2);border-bottom:1px solid var(--bdr);flex-shrink:0">
+        <input class="hb-search" id="hbSearch" type="text" placeholder="🔍 Suche im Handbuch…" oninput="hbFilter()" autocorrect="off" autocapitalize="off">
+        <div class="hb-toc">
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekRechner')">🧮 Rechner</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekKoord')">📐 Koordinaten</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekFormeln')">🎓 Formeln</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekTimer')">⏱️ Timer</button>
+          <button class="hb-toc-btn" onclick="hbScrollTo('hbSekGlossar')">📚 Glossar</button>
+        </div>
+      </div>
+      <div id="hbContent" style="flex:1;overflow-y:auto">
+
+        <!-- Rechner -->
+        <div class="hb-section" id="hbSekRechner">
+          <div class="hb-section-title">🧮 Rechner</div>
+          <div class="hb-section-sub">Der Rechner ermöglicht das Berechnen von mathematischen <span class="hw" data-term="Ausdruck">Ausdrücken</span>. Er unterstützt einfache Grundrechenarten bis hin zu <span class="hw" data-term="Trigonometrie">trigonometrischen</span> Funktionen.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔢 Grundrechner</div>
+            <div class="hb-fn-desc">Der Grundrechner führt <span class="hw" data-term="Addition">Addition</span> (+), <span class="hw" data-term="Subtraktion">Subtraktion</span> (−), <span class="hw" data-term="Multiplikation">Multiplikation</span> (×) und <span class="hw" data-term="Division">Division</span> (÷) durch. Gib einen Ausdruck ein und tippe auf <strong>=</strong> für das Ergebnis. Mit <strong>AC</strong> wird alles gelöscht, <strong>⌫</strong> löscht das letzte Zeichen.</div>
+            <div class="hb-fn-example">Beispiel: 12 × 3 + 5 = 41</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔬 Wissenschaftlicher Modus (SCI)</div>
+            <div class="hb-fn-desc">Aktiviere den wissenschaftlichen Modus mit dem <strong>SCI</strong>-Knopf oben rechts im Rechner. Dann erscheinen zusätzliche Funktionen wie <span class="hw" data-term="Sinus">sin</span>, <span class="hw" data-term="Kosinus">cos</span>, <span class="hw" data-term="Tangens">tan</span>, <span class="hw" data-term="Logarithmus">log</span>, <span class="hw" data-term="Wurzel">√</span> und <span class="hw" data-term="Potenz">x²</span>. Mit <strong>DEG/RAD</strong> wechselst du zwischen <span class="hw" data-term="Grad">Grad</span> und <span class="hw" data-term="Bogenmass">Bogenmass</span>.</div>
+            <div class="hb-fn-example">Beispiel: sin(30°) = 0.5</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">⚖️ Gleichungslöser</div>
+            <div class="hb-fn-desc">Löst <span class="hw" data-term="LineareGleichung">lineare Gleichungen</span> (z.B. 2x+3=7 → x=2) und <span class="hw" data-term="QuadratischeGleichung">quadratische Gleichungen</span> (z.B. x²−5x+6=0 → x=2, x=3). Gib die Gleichung in der Form „ax+b=c" oder „ax²+bx+c=0" ein. Die Lösung wird schrittweise angezeigt.</div>
+            <div class="hb-fn-example">Beispiel: 3x - 6 = 0 → x = 2</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">½ Bruchrechner</div>
+            <div class="hb-fn-desc">Rechnet mit <span class="hw" data-term="Bruch">Brüchen</span>. Gib <span class="hw" data-term="Zaehler">Zähler</span> und <span class="hw" data-term="Nenner">Nenner</span> zweier Brüche ein, wähle eine Rechenart (+, −, ×, ÷) und tippe auf <strong>Berechnen</strong>. Das Ergebnis wird <span class="hw" data-term="Kuerzen">gekürzt</span> angezeigt.</div>
+            <div class="hb-fn-example">Beispiel: 1/2 + 1/3 = 5/6</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📏 Einheitenumrechner</div>
+            <div class="hb-fn-desc">Rechnet Einheiten um, z.B. Längen, Gewichte, Temperaturen, Flächen, Volumen, Geschwindigkeit und Zeit. Wähle eine Kategorie, gib den Wert ein und wähle Quell- und Zieleinheit.</div>
+            <div class="hb-fn-example">Beispiel: 100 km/h → 27,78 m/s</div>
+          </div>
+        </div>
+
+        <!-- Koordinaten -->
+        <div class="hb-section" id="hbSekKoord">
+          <div class="hb-section-title">📐 Koordinatensystem</div>
+          <div class="hb-section-sub">Das Koordinatensystem zeigt ein <span class="hw" data-term="KartesischesKS">kartesisches Koordinatensystem</span>. Du kannst Funktionen zeichnen, Punkte setzen und das System verschieben/zoomen.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📈 Funktionen zeichnen</div>
+            <div class="hb-fn-desc">Gib im linken Bereich eine Funktion ein (z.B. <code>x^2</code> oder <code>sin(x)</code>) und tippe auf <strong>+</strong>. Die Funktion wird sofort im Koordinatensystem gezeichnet. Du kannst mehrere Funktionen gleichzeitig anzeigen und jede einzeln löschen oder ausblenden.</div>
+            <div class="hb-fn-example">Beispiel: x^2-2x+1 → Parabel</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📍 Punkte setzen</div>
+            <div class="hb-fn-desc">Im Tab <strong>Punkte</strong> kannst du benannte Punkte mit x- und y-Koordinaten setzen. Diese werden im Koordinatensystem mit ihrem Namen beschriftet. Du kannst Punkte auch direkt auf dem Bildschirm antippen, wenn der <span class="hw" data-term="Tippen">Tipp-Modus</span> aktiv ist.</div>
+            <div class="hb-fn-example">Beispiel: Punkt A bei (3, 4)</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔍 Zoom und Navigation</div>
+            <div class="hb-fn-desc">Mit zwei Fingern zoomen (Pinch-to-Zoom) oder mit den Zoom-Tasten (+/−) vergrößern/verkleinern. Mit einem Finger (oder Maus) verschieben, wenn der Panning-Modus aktiv ist. Mit dem 🏠-Knopf zu Standardansicht zurückkehren.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📏 Lineal</div>
+            <div class="hb-fn-desc">Das physische Lineal ermöglicht das Zeichnen gerader Linien. Aktiviere es mit dem 📐-Knopf, dann erscheint ein drehbares Lineal im Koordinatensystem. Zeichne entlang des Lineals für eine gerade Linie.</div>
+          </div>
+        </div>
+
+        <!-- Formeln -->
+        <div class="hb-section" id="hbSekFormeln">
+          <div class="hb-section-title">🎓 Formeln &amp; Klasse</div>
+          <div class="hb-section-sub">Der Bereich <strong>Formeln+</strong> enthält mathematische Formeln, Vorlagen, Geometrie- und Physikrechner.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📋 Formelsammlung</div>
+            <div class="hb-fn-desc">Schnelle Übersicht über wichtige Formeln: <span class="hw" data-term="QuadratischeFormel">Quadratische Formel</span>, <span class="hw" data-term="BinomischeFormeln">Binomische Formeln</span>, <span class="hw" data-term="Steigung">Steigung</span>, <span class="hw" data-term="Statistik">Statistik</span> (Mittelwert, <span class="hw" data-term="Varianz">Varianz</span>, <span class="hw" data-term="Standardabweichung">Standardabweichung</span>) und <span class="hw" data-term="Zahlentheorie">Zahlentheorie</span>.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔧 Vorlagen-Rechner</div>
+            <div class="hb-fn-desc">Vorlagen für häufige Berechnungen: <span class="hw" data-term="Pythagoras">Pythagoras</span> (c = √(a²+b²)), <span class="hw" data-term="Prozentrechnung">Prozentrechnung</span>, <span class="hw" data-term="Zinsrechnung">Zinsrechnung</span>, <span class="hw" data-term="BMI">BMI</span>, <span class="hw" data-term="OhmschesGesetz">Ohmsches Gesetz</span>, Kreisberechnung und mehr.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📐 Geometrie</div>
+            <div class="hb-fn-desc">Berechne Flächen und Umfänge von Formen: Kreis, Rechteck, Dreieck, Trapez, Parallelogramm, Rhombus und mehr. Auch 3D-Körper: Zylinder, Kugel, Würfel, Quader, Kegel.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">⚡ Physik</div>
+            <div class="hb-fn-desc">Physikalische Berechnungen: <span class="hw" data-term="Kraft">Kraft</span> (F=m×a), <span class="hw" data-term="kinetischeEnergie">Kinetische Energie</span> (Ekin=½mv²), <span class="hw" data-term="potentielleEnergie">Potentielle Energie</span>, Leistung, <span class="hw" data-term="OhmschesGesetz">Ohmsches Gesetz</span>, Geschwindigkeit, Druck und Wärme.</div>
+          </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="hb-section" id="hbSekTimer">
+          <div class="hb-section-title">⏱️ Klassentimer</div>
+          <div class="hb-section-sub">Der Klassentimer hilft beim Zeitmanagement im Unterricht. Er kann als <span class="hw" data-term="Countdown">Countdown</span> für Aufgaben, Pausen oder ganze Unterrichtsstunden verwendet werden.</div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">▶ Timer starten</div>
+            <div class="hb-fn-desc">Wähle eine voreingestellte Zeit (5, 10, 15, 20, 25, 45 oder 90 Minuten) oder gib eine eigene Zeit in Minuten und Sekunden ein. Tippe auf <strong>▶ Start</strong>, um den Countdown zu beginnen. Mit <strong>⏸ Pause</strong> anhaltbar, mit <strong>⟲ Reset</strong> zurücksetzen.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">🔔 Alarmsignal</div>
+            <div class="hb-fn-desc">Wenn der Timer abläuft, wird ein akustisches Signal ausgegeben (sofern der Ton nicht stummgeschaltet ist) und die Anzeige blinkt rot. Der Timer wechselt in den Zustand <strong>Zeit abgelaufen!</strong>.</div>
+          </div>
+
+          <div class="hb-fn">
+            <div class="hb-fn-name">📌 Schwebender Timer</div>
+            <div class="hb-fn-desc">Öffne den Timer als schwebende, verschiebbare Karte über den Schnellmenü-Knopf oder das Schnellmenü. Das Fenster kann frei verschoben (Titelleiste ziehen) und in der Größe verändert (Ecke/Rand ziehen) werden.</div>
+          </div>
+        </div>
+
+        <!-- Glossar -->
+        <div class="hb-section" id="hbSekGlossar">
+          <div class="hb-section-title">📚 Glossar – Erklärung von Fachbegriffen</div>
+          <div class="hb-section-sub">Blaue unterstrichene Begriffe im Handbuch sind <span class="hw" data-term="Fachbegriff">Fachbegriffe</span>. Tippe darauf, um die Erklärung zu sehen. Hier findest du alle Begriffe auf einen Blick.</div>
+          <div id="hbGlossarList" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+        </div>
+
+      </div>
+    </div><!-- end tabHandbuch -->
+
+    <div id="tabSettings" class="panel">
+      <div class="stabs">
+        <button class="stab active" onclick="switchSettingsTab('settGeneral')">Allgemein</button>
+        <button class="stab" onclick="switchSettingsTab('settAdvanced')">Erweitert</button>
+        <button class="stab" onclick="switchSettingsTab('settLicenses')">🔑 Lizenz</button>
+      </div>
+
+      <!-- General tab -->
+      <div id="settGeneral" class="spanel active" style="overflow-y:auto;padding:14px;gap:12px">
+
+        <div class="sect">Mein Profil</div>
+        <div class="ig">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--txt)" id="settRoleLabel">Schüler/in</div>
+              <div style="font-size:12px;color:var(--dim);margin-top:2px" id="settGradeLabel">Klasse nicht gesetzt</div>
+            </div>
+            <div id="settTeacherBadgeLbl" style="display:none;background:#1a7a1a;color:white;font-size:11px;font-weight:700;padding:3px 8px">LEHRER</div>
+          </div>
+          <button class="sbtn" onclick="showOnboarding(true)" style="margin-top:4px">Präferenzen ändern</button>
+        </div>
+
+        <div class="sect">Darstellung</div>
+        <div class="ig">
+          <label>Farbschema</label>
+          <select class="mi" id="themeSelect" onchange="applyTheme(this.value)" style="border-radius:0">
+            <option value="light">Hell</option>
+            <option value="dark">Dunkel</option>
+          </select>
+        </div>
+        <div class="ig">
+          <label>Akzentfarbe</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+            <button onclick="setAccentColor('#cc0000')" style="width:32px;height:32px;background:#cc0000;border:2px solid var(--bdr);cursor:pointer" title="Rot"></button>
+            <button onclick="setAccentColor('#0055cc')" style="width:32px;height:32px;background:#0055cc;border:2px solid var(--bdr);cursor:pointer" title="Blau"></button>
+            <button onclick="setAccentColor('#007700')" style="width:32px;height:32px;background:#007700;border:2px solid var(--bdr);cursor:pointer" title="Grün"></button>
+            <button onclick="setAccentColor('#884400')" style="width:32px;height:32px;background:#884400;border:2px solid var(--bdr);cursor:pointer" title="Orange"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced tab -->
+      <div id="settAdvanced" class="spanel" style="overflow-y:auto;padding:14px;gap:12px">
+
+        <div class="sect">Lehrermodus</div>
+        <div id="settTeacherActive" style="display:none">
+          <div class="ig" style="border-left:3px solid #1a7a1a">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="font-size:20px">✅</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:#1a7a1a">Lehrermodus aktiv</div>
+                <div style="font-size:12px;color:var(--dim);margin-top:2px">Alle Funktionen &amp; Premium freigeschaltet</div>
+              </div>
+            </div>
+            <button class="sbtn" onclick="deactivateTeacherMode()" style="background:#555">Lehrermodus beenden</button>
+          </div>
+        </div>
+        <div id="settTeacherInactive">
+          <div class="ig">
+            <div style="font-size:13px;color:var(--dim);margin-bottom:12px;line-height:1.5">
+              Lehrerinnen und Lehrer erhalten Zugriff auf alle Funktionen und Premium-Features kostenlos.
+            </div>
+            <label style="font-size:12px;color:var(--dim);margin-bottom:6px;display:block">Lehrercode eingeben</label>
+            <input id="settTeacherCodeInput" type="password" inputmode="numeric" placeholder="Code"
+              class="mi" style="text-align:center;font-size:20px;letter-spacing:6px;margin-bottom:8px"
+              oninput="document.getElementById('settTeacherErr').textContent=''"
+              onkeydown="if(event.key==='Enter')activateTeacherFromSettings()">
+            <div id="settTeacherErr" style="font-size:13px;color:#cc0000;min-height:18px;margin-bottom:8px"></div>
+            <button class="sbtn" onclick="activateTeacherFromSettings()">🔑 Lehrermodus aktivieren</button>
+          </div>
+        </div>
+
+        <div class="sect" style="margin-top:14px">Erweiterter Modus</div>
+        <div class="ig">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--txt)">Erweiterter Modus</div>
+              <div style="font-size:12px;color:var(--dim);margin-top:2px">Zeigt Agent, Handbuch und weitere Profi-Tabs</div>
+            </div>
+            <label class="toggle-switch" aria-label="Erweiterter Modus ein-/ausschalten">
+              <input type="checkbox" id="advancedModeToggle" onchange="toggleAdvancedMode(this.checked)" aria-label="Erweiterter Modus">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="sect" style="margin-top:14px">Daten</div>
+        <div class="ig">
+          <div style="font-size:13px;color:var(--dim);margin-bottom:10px">Alle Notizen, Einstellungen und gespeicherten Daten zurücksetzen.</div>
+          <button class="sbtn" style="background:var(--acc)" onclick="if(confirm('Alle Daten zurücksetzen?')){localStorage.clear();location.reload()}">Alle Daten zurücksetzen</button>
+        </div>
+
+      </div>
+
+      <!-- Licenses tab -->
+      <div id="settLicenses" class="spanel" style="overflow-y:auto;padding:14px;gap:12px">
+
+        <div class="sect">Lizenzstatus</div>
+        <div id="licStatusBox" class="lic-status-box">
+          <div class="ls-icon">🔓</div>
+          <div>
+            <div class="ls-title">Freier Modus <span class="lic-badge lic-badge-free">FREE</span></div>
+            <div class="ls-sub" id="licStatusSub">Nur Grundrechner verfügbar</div>
+          </div>
+        </div>
+        <div id="licKeyDisplay" style="display:none;font-size:11px;color:var(--dim);font-family:monospace;word-break:break-all;margin-bottom:8px"></div>
+        <button class="sbtn" onclick="openLicenseGate()">🔑 Lizenzschlüssel eingeben</button>
+        <button id="licDeactivateBtn" class="sbtn" style="display:none;background:#555;margin-top:6px" onclick="deactivateLicense()">Lizenz entfernen</button>
+
+        <!-- Teacher: Class Management -->
+        <div id="settTeacherClass" style="display:none">
+          <div class="sect" style="margin-top:14px">Meine Klasse</div>
+          <div class="ig">
+            <div style="font-size:13px;color:var(--dim);margin-bottom:10px">
+              Verwalte die Schüler-Keys deiner Klasse. Du kannst Schüler sperren oder freigeben und Features einschränken.
+            </div>
+            <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">
+              Klassen-ID: <span id="teacherClassIdDisplay" style="color:var(--txt);font-family:monospace"></span>
+            </div>
+
+            <!-- Feature restrictions -->
+            <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:8px">🎛️ Feature-Einschränkungen für Schüler</div>
+            <div id="teacherFeatToggles"></div>
+            <button class="sbtn" style="margin-top:10px" onclick="saveTeacherRestrictions()">💾 Einschränkungen speichern</button>
+
+            <!-- Generate student keys -->
+            <div style="font-size:13px;font-weight:700;color:var(--txt);margin:14px 0 8px">➕ Schüler-Keys generieren</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input id="genStuName" placeholder="Schüler-Name (optional)" class="mi" style="flex:1;min-width:140px">
+              <input id="genStuCount" type="number" value="1" min="1" max="50" class="mi" style="width:70px">
+              <button class="sbtn" onclick="teacherGenerateStudentKeys()">Generieren</button>
+            </div>
+            <div id="genStuResult" style="margin-top:8px"></div>
+
+            <!-- Student list -->
+            <div style="font-size:13px;font-weight:700;color:var(--txt);margin:14px 0 8px">👨‍🎓 Schüler dieser Klasse</div>
+            <div id="teacherStudentList"></div>
+          </div>
+        </div>
+
+        <!-- Student: class info -->
+        <div id="settStudentInfo" style="display:none">
+          <div class="sect" style="margin-top:14px">Meine Klasse</div>
+          <div class="ig">
+            <div style="font-size:13px;color:var(--dim);margin-bottom:6px">Dein Key ist an folgende Klasse gebunden:</div>
+            <div style="font-family:monospace;font-size:15px;color:var(--txt);font-weight:700" id="stuClassIdDisplay"></div>
+            <div style="font-size:12px;color:var(--dim);margin-top:6px">Features werden von deiner Lehrperson verwaltet.</div>
+          </div>
+        </div>
+
+      </div><!-- end settLicenses -->
+
+    </div><!-- end tabSettings -->
+
+  </div><!-- content -->
+
+  <nav id="nav">
+    <button class="nb active" id="nbRechner" onclick="switchTab('rechner')">
+      <span class="ni">🧮</span>Rechner
+    </button>
+    <button class="nb" id="nbKoord" onclick="switchTab('koordinaten')">
+      <span class="ni">📐</span>Koordinaten
+    </button>
+    <button class="nb" id="nbNotizen" onclick="switchTab('notizen')">
+      <span class="ni">📝</span>Notizen
+    </button>
+    <button class="nb" id="nbKlasse" onclick="switchTab('klasse')">
+      <span class="ni">🎓</span>Formeln +
+    </button>
+    <button class="nb" id="nbBild" onclick="switchTab('bild')">
+      <span class="ni">📷</span>Bild
+    </button>
+    <button class="nb" id="nbAgent" onclick="switchTab('agent')">
+      <span class="ni">🤖</span>Agent
+    </button>
+    <button class="nb" id="nbHandbuch" onclick="switchTab('handbuch')">
+      <span class="ni">📖</span>Handbuch
+    </button>
+    <button class="nb" id="nbSettings" onclick="switchTab('settings')">
+      <span class="ni">⚙️</span>Einstellungen
+    </button>
+  </nav>
+</div><!-- app -->
+
+<script>window._autoLaunch = 'koordinaten';</script>
+<script src="app.js"></script>
+
+<!-- ══════════════════════════════════════════
+     CUSTOM MATH KEYBOARD
+══════════════════════════════════════════ -->
+<div id="mathKbd">
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('7')">7</button>
+    <button class="mk" onclick="mkInsert('8')">8</button>
+    <button class="mk" onclick="mkInsert('9')">9</button>
+    <button class="mk mk-op" onclick="mkInsert('÷')">÷</button>
+    <button class="mk mk-op" onclick="mkInsert('×')">×</button>
+    <button class="mk mk-del" onclick="mkInsert('⌫')">⌫</button>
+  </div>
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('4')">4</button>
+    <button class="mk" onclick="mkInsert('5')">5</button>
+    <button class="mk" onclick="mkInsert('6')">6</button>
+    <button class="mk mk-op" onclick="mkInsert('+')">+</button>
+    <button class="mk mk-op" onclick="mkInsert('-')">−</button>
+    <button class="mk mk-op" onclick="mkInsert('^')">xⁿ</button>
+  </div>
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('1')">1</button>
+    <button class="mk" onclick="mkInsert('2')">2</button>
+    <button class="mk" onclick="mkInsert('3')">3</button>
+    <button class="mk" onclick="mkInsert('(')"> (</button>
+    <button class="mk" onclick="mkInsert(')')">)</button>
+    <button class="mk" onclick="mkInsert('%')">%</button>
+  </div>
+  <div class="mkrow">
+    <button class="mk" onclick="mkInsert('0')">0</button>
+    <button class="mk" onclick="mkInsert('.')">.</button>
+    <button class="mk mk-op mk-eq" onclick="mkInsert('=')"> = </button>
+    <button class="mk mk-frac" onclick="openFracPicker()">½</button>
+    <button class="mk" onclick="mkInsert('√')">√</button>
+    <button class="mk" onclick="mkInsert('π')">π</button>
+    <button class="mk mk-enter" onclick="mkInsert('ENTER')">✓ Fertig</button>
+  </div>
+  <!-- Variables row -->
+  <div class="mkrow" id="mkVarRow" style="border-top:1px solid #2a2a4a;padding-top:5px">
+    <button class="mk" style="background:#2244aa;font-size:14px;font-weight:700" onclick="openVarPicker()">𝑥 Vars</button>
+    <div id="mkVarBtns" style="display:flex;flex:1;gap:5px;flex-wrap:wrap;justify-content:flex-start"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FRACTION PICKER
+══════════════════════════════════════════ -->
+<div id="fracPicker">
+  <h4>Bruch einfügen</h4>
+  <div class="fp-row">
+    <div class="fp-field">
+      <div class="fp-label">Zähler</div>
+      <input class="fp-input" id="fpNum" type="text" inputmode="decimal" placeholder="1" autocomplete="off">
+      <div class="fp-line"></div>
+      <input class="fp-input" id="fpDen" type="text" inputmode="decimal" placeholder="2" autocomplete="off">
+      <div class="fp-label">Nenner</div>
+    </div>
+  </div>
+  <div class="fp-actions">
+    <button class="fp-btn" onclick="closeFracPicker()">Abbrechen</button>
+    <button class="fp-btn ok" onclick="insertFraction()">½ Einfügen</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VARIABLE PICKER
+══════════════════════════════════════════ -->
+<div id="varPicker" style="position:fixed;bottom:0;left:0;right:0;z-index:9020;
+  background:#1a1a2e;border-top:2px solid #2244aa;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));
+  transform:translateY(100%);transition:transform .25s ease">
+  <h4 style="font-size:13px;font-weight:700;color:#aaa;text-align:center;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Variablen</h4>
+  <div id="varPickerList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:160px;overflow-y:auto"></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+    <input id="varPickerName" type="text" placeholder="Name (z.B. a)" maxlength="8"
+      style="width:70px;background:#2a2a4a;border:1px solid #3a3a6a;border-radius:0;color:#fff;font-size:16px;text-align:center;padding:8px;outline:none;font-family:inherit">
+    <span style="color:#888">=</span>
+    <input id="varPickerVal" type="number" placeholder="Wert" step="any"
+      style="flex:1;background:#2a2a4a;border:1px solid #3a3a6a;border-radius:0;color:#fff;font-size:16px;padding:8px;outline:none;font-family:inherit">
+    <button onclick="addKbVar()" style="background:#2244aa;border:none;border-radius:0;color:#fff;font-size:14px;font-weight:700;padding:8px 14px;cursor:pointer;font-family:inherit">+ Hinzufügen</button>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button onclick="closeVarPicker()" style="flex:1;padding:12px;background:#2a2a4a;border:none;border-radius:0;color:#fff;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Schließen</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PREMIUM MODAL
+══════════════════════════════════════════ -->
+<div id="premiumOverlay" onclick="if(event.target===this)hidePremiumModal()">
+  <div id="premiumModal">
+    <div class="prem-crown">👑</div>
+    <div class="prem-title">Become a Premium Member</div>
+    <div class="prem-sub" id="premiumSubText">Schalte alle Pro-Features frei</div>
+    <div class="prem-benefits">
+      <div class="prem-benefit-row">
+        <div class="prem-benefit-icon">🤖</div>
+        <div class="prem-benefit-body">
+          <div class="prem-benefit-title">Unbegrenzte Agent-Aufgaben</div>
+          <div class="prem-benefit-desc" id="premBenefitAgentDesc">Löse beliebig viele Aufgaben auf einmal</div>
+        </div>
+      </div>
+      <div class="prem-benefit-row">
+        <div class="prem-benefit-icon">🧊</div>
+        <div class="prem-benefit-body">
+          <div class="prem-benefit-title">3D-Modelle</div>
+          <div class="prem-benefit-desc">Interaktive 3D-Funktionsvisualisierungen (Paraboloid, Kegel u.v.m.)</div>
+        </div>
+      </div>
+      <div class="prem-benefit-row">
+        <div class="prem-benefit-icon">⭐</div>
+        <div class="prem-benefit-body">
+          <div class="prem-benefit-title">Alle zukünftigen Features</div>
+          <div class="prem-benefit-desc">Du bekommst automatisch alle neuen Pro-Features</div>
+        </div>
+      </div>
+    </div>
+    <button class="prem-join-btn" onclick="showActivateModal()">🚀 Join Now</button>
+    <button class="prem-notnow-btn" onclick="hidePremiumModal()">Not Now</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ACTIVATION MODAL
+══════════════════════════════════════════ -->
+<div id="activateOverlay">
+  <div id="activateModal">
+    <div class="act-icon">🔑</div>
+    <div class="act-title">Activate MathSpaces Pro</div>
+    <div class="act-sub">Gib deinen Aktivierungscode ein, um MathSpaces Pro freizuschalten.</div>
+    <input class="act-input" id="activateCodeInput" type="text" placeholder="Aktivierungscode" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="act-error" id="activateError"></div>
+    <button class="act-confirm-btn" onclick="activatePro()">✅ Aktivieren</button>
+    <button class="act-back-btn" onclick="hideActivateModal()">← Zurück</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LICENSE GATE OVERLAY
+══════════════════════════════════════════ -->
+<div id="licenseGate">
+  <div id="licenseGateModal">
+    <div class="lg-icon">🔑</div>
+    <div class="lg-title">Lizenzschlüssel eingeben</div>
+    <div class="lg-sub">Gib deinen Lizenzschlüssel ein, um alle Features freizuschalten.<br>Ohne Key stehen nur der Grundrechner zur Verfügung.</div>
+    <input class="lg-input" id="licenseKeyInput" type="text" placeholder="z.B. PRO-0000-XXXXXXXX-XXXX"
+      autocorrect="off" autocapitalize="characters" spellcheck="false"
+      oninput="document.getElementById('licenseKeyErr').textContent='';this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')activateLicenseKey()">
+    <div class="lg-err" id="licenseKeyErr"></div>
+    <button class="lg-btn" onclick="activateLicenseKey()">✅ Aktivieren</button>
+    <button class="lg-skip" onclick="closeLicenseGate()">Später – eingeschränkt weiternutzen</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     3D MODEL OVERLAY
+══════════════════════════════════════════ -->
+<div id="model3dOverlay">
+  <div id="model3dBar">
+    <span style="font-size:22px">🧊</span>
+    <span id="model3dTitle">3D-Modell</span>
+    <button onclick="close3DModel()" style="padding:6px 14px;background:#333;border:none;border-radius:0;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto">✕ Schließen</button>
+  </div>
+  <canvas id="model3dCanvas"></canvas>
+  <div id="model3dHint">Ziehe mit dem Finger / der Maus, um das Modell zu drehen</div>
+</div>
+
+</body>
+</html>
