@@ -21,6 +21,18 @@ extension Color {
 
 class AppSettings: ObservableObject {
     @Published var colorSchemeOverride: ColorScheme? = .dark
+    @AppStorage("ms_accent") var accentColorName: String = "Blau"
+
+    var resolvedAccent: Color {
+        switch accentColorName {
+        case "Cyan":   return Color(red: 0,       green: 180/255, blue: 255/255)
+        case "Grün":   return Color(red: 0,       green: 200/255, blue: 100/255)
+        case "Lila":   return Color(red: 160/255, green: 60/255,  blue: 255/255)
+        case "Orange": return Color(red: 255/255, green: 140/255, blue: 0)
+        case "Rot":    return Color(red: 220/255, green: 40/255,  blue: 40/255)
+        default:       return Color(red: 68/255,  green: 102/255, blue: 255/255)  // Blau
+        }
+    }
 }
 
 // MARK: - ContentView
@@ -31,18 +43,22 @@ struct ContentView: View {
     var body: some View {
         TabView {
             CalculatorView()
+                .environmentObject(settings)
                 .tabItem { Label("Rechner",       systemImage: "function") }
             CoordinateView()
+                .environmentObject(settings)
                 .tabItem { Label("Koord.",         systemImage: "chart.line.uptrend.xyaxis") }
             NotesView()
+                .environmentObject(settings)
                 .tabItem { Label("Notizen",        systemImage: "note.text") }
             FormulasView()
+                .environmentObject(settings)
                 .tabItem { Label("Formeln+",       systemImage: "graduationcap.fill") }
             SettingsView()
                 .environmentObject(settings)
                 .tabItem { Label("Einstellungen",  systemImage: "gearshape") }
         }
-        .preferredColorScheme(.dark)
-        .tint(.appAccent)
+        .preferredColorScheme(settings.colorSchemeOverride)
+        .tint(settings.resolvedAccent)
     }
 }

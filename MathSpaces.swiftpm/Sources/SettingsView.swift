@@ -9,11 +9,16 @@ struct SettingsView: View {
             List {
                 // Appearance
                 Section("Erscheinungsbild") {
-                    HStack {
-                        Label("Farbschema", systemImage: "moon.fill")
-                            .foregroundColor(.appText)
-                        Spacer()
-                        Text("Dunkel").foregroundColor(.appDim).font(.system(size: 13))
+                    Button {
+                        settings.colorSchemeOverride = settings.colorSchemeOverride == .dark ? .light : .dark
+                    } label: {
+                        HStack {
+                            Label("Farbschema", systemImage: settings.colorSchemeOverride == .dark ? "moon.fill" : "sun.max.fill")
+                                .foregroundColor(.appText)
+                            Spacer()
+                            Text(settings.colorSchemeOverride == .dark ? "Dunkel" : "Hell")
+                                .foregroundColor(.appDim).font(.system(size: 13))
+                        }
                     }
                     .listRowBackground(Color.appCard)
 
@@ -76,7 +81,6 @@ struct SettingsView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
         .sheet(isPresented: $showAbout) { AboutView() }
     }
 }
@@ -98,6 +102,7 @@ struct FeatureRow: View {
 // MARK: - Accent Colour Picker
 
 struct AccentColourPicker: View {
+    @EnvironmentObject var settings: AppSettings
     let options: [(String, Color)] = [
         ("Blau",   Color(red: 68/255,  green: 102/255, blue: 255/255)),
         ("Cyan",   Color(red: 0,       green: 180/255, blue: 255/255)),
@@ -110,10 +115,17 @@ struct AccentColourPicker: View {
     var body: some View {
         List {
             ForEach(options, id: \.0) { name, color in
-                HStack {
-                    Circle().fill(color).frame(width: 24, height: 24)
-                    Text(name).foregroundColor(.appText)
-                    Spacer()
+                Button {
+                    settings.accentColorName = name
+                } label: {
+                    HStack {
+                        Circle().fill(color).frame(width: 24, height: 24)
+                        Text(name).foregroundColor(.appText)
+                        Spacer()
+                        if settings.accentColorName == name {
+                            Image(systemName: "checkmark").foregroundColor(color)
+                        }
+                    }
                 }
                 .padding(.vertical, 4)
                 .listRowBackground(Color.appCard)
@@ -123,7 +135,7 @@ struct AccentColourPicker: View {
         .scrollContentBackground(.hidden)
         .background(Color.appBg)
         .navigationTitle("Akzentfarbe")
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(settings.colorSchemeOverride)
     }
 }
 
@@ -181,12 +193,6 @@ struct AboutView: View {
                     .background(Color.appCard)
                     .cornerRadius(12)
 
-                    Text("100% Swift – Kein HTML, kein JavaScript")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(.appAccent)
-                        .padding(10)
-                        .background(Color.appAccent.opacity(0.1))
-                        .cornerRadius(8)
                 }
                 .padding(20)
             }
@@ -198,7 +204,6 @@ struct AboutView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 
