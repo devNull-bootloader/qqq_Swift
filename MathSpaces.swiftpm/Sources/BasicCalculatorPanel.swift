@@ -6,7 +6,6 @@ struct BasicCalculatorPanel: View {
     @ObservedObject var model: CalculatorModel
     @Binding var varXStr: String
     @Binding var varYStr: String
-    @FocusState private var keyboardFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -114,42 +113,6 @@ struct BasicCalculatorPanel: View {
             CalcKeypad(model: model)
                 .padding(6)
                 .background(Color.appBg)
-
-            // Hidden TextField for external keyboard input
-            TextField("", text: Binding(
-                get: { model.expression },
-                set: { newValue in
-                    let old = model.expression
-                    if newValue.count > old.count {
-                        let typed = String(newValue.dropFirst(old.count))
-                        for ch in typed {
-                            switch ch {
-                            case "0"..."9", ".", "+", "-", "^":
-                                model.input(String(ch))
-                            case "*":
-                                model.input("×")
-                            case "/":
-                                model.input("÷")
-                            case "(", ")":
-                                model.input("()")
-                            case "\n", "\r":
-                                model.evaluate()
-                            default:
-                                let s = String(ch)
-                                if "xyπ".contains(s) {
-                                    model.input(s)
-                                }
-                            }
-                        }
-                    } else if newValue.count < old.count {
-                        model.backspace()
-                    }
-                }
-            ))
-            .focused($keyboardFocused)
-            .frame(width: 0, height: 0)
-            .opacity(0)
-            .onAppear { keyboardFocused = true }
         }
     }
 }
