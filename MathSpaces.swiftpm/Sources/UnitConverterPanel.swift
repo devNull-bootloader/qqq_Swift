@@ -53,6 +53,7 @@ struct UnitConverterPanel: View {
     @State private var toIdx: Int = 1
     @State private var valueStr: String = ""
     @State private var result: String = "—"
+    @FocusState private var valueFocused: Bool
 
     var cat: UnitCategory { unitCategories[catIdx] }
 
@@ -104,6 +105,8 @@ struct UnitConverterPanel: View {
                         .font(.system(size: 20, design: .monospaced))
                         .padding(10).background(Color.appCard2).cornerRadius(6)
                         .foregroundColor(.appText)
+                        .focused($valueFocused)
+                        .onAppear { valueFocused = true }
                         .onChange(of: valueStr) { _ in convert() }
 
                     Image(systemName: "arrow.down").foregroundColor(.appDim)
