@@ -23,7 +23,7 @@ struct FractionPanel: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     HStack(spacing: 16) {
-                        FractionInput(numerator: $n1, denominator: $d1)
+                        FractionInput(numerator: $n1, denominator: $d1, autoFocus: true)
 
                         // Operator selector
                         VStack(spacing: 4) {
@@ -87,6 +87,8 @@ struct FractionPanel: View {
 struct FractionInput: View {
     @Binding var numerator: String
     @Binding var denominator: String
+    var autoFocus: Bool = false
+    @FocusState private var numFocused: Bool
     var body: some View {
         VStack(spacing: 0) {
             TextField("Zähler", text: $numerator)
@@ -95,6 +97,7 @@ struct FractionInput: View {
                 .font(.system(size: 20, design: .monospaced))
                 .foregroundColor(.appText)
                 .frame(width: 70, height: 38)
+                .focused($numFocused)
             Rectangle().fill(Color.appText).frame(height: 2).frame(width: 70)
             TextField("Nenner", text: $denominator)
                 .keyboardType(.numbersAndPunctuation)
@@ -103,6 +106,7 @@ struct FractionInput: View {
                 .foregroundColor(.appText)
                 .frame(width: 70, height: 38)
         }
+        .onAppear { if autoFocus { numFocused = true } }
     }
 }
 

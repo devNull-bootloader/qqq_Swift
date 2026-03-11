@@ -134,6 +134,7 @@ struct EquationSolverPanel: View {
                         .focused($focused)
                         .submitLabel(.done)
                         .onSubmit { solve() }
+                        .onAppear { focused = true }
                 }
                 .padding()
                 .background(Color.appCard)

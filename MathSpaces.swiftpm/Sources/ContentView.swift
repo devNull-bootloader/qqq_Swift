@@ -39,26 +39,92 @@ class AppSettings: ObservableObject {
 
 struct ContentView: View {
     @StateObject private var settings = AppSettings()
+    @StateObject private var calcModel = CalculatorModel()
+
+    @State private var selectedTab: Int = 0
+    @State private var calcSubTab: Int = 0
+
+    @FocusState private var captureKeyboard: Bool
 
     var body: some View {
-        TabView {
-            CalculatorView()
-                .environmentObject(settings)
-                .tabItem { Label("Rechner",       systemImage: "function") }
-            CoordinateView()
-                .environmentObject(settings)
-                .tabItem { Label("Koord.",         systemImage: "chart.line.uptrend.xyaxis") }
-            NotesView()
-                .environmentObject(settings)
-                .tabItem { Label("Notizen",        systemImage: "note.text") }
-            FormulasView()
-                .environmentObject(settings)
-                .tabItem { Label("Formeln+",       systemImage: "graduationcap.fill") }
-            SettingsView()
-                .environmentObject(settings)
-                .tabItem { Label("Einstellungen",  systemImage: "gearshape") }
+        ZStack {
+            TabView(selection: $selectedTab) {
+                CalculatorView(model: calcModel, subTab: $calcSubTab)
+                    .environmentObject(settings)
+                    .tabItem { Label("Rechner",       systemImage: "function") }
+                    .tag(0)
+                CoordinateView()
+                    .environmentObject(settings)
+                    .tabItem { Label("Koord.",         systemImage: "chart.line.uptrend.xyaxis") }
+                    .tag(1)
+                NotesView()
+                    .environmentObject(settings)
+                    .tabItem { Label("Notizen",        systemImage: "note.text") }
+                    .tag(2)
+                FormulasView()
+                    .environmentObject(settings)
+                    .tabItem { Label("Formeln+",       systemImage: "graduationcap.fill") }
+                    .tag(3)
+                SettingsView()
+                    .environmentObject(settings)
+                    .tabItem { Label("Einstellungen",  systemImage: "gearshape") }
+                    .tag(4)
+            }
+
+            // Global hidden TextField: captures hardware keyboard input
+            // for Calculator's Rechner subtab (custom keypad – no native TextField to focus).
+            TextField("", text: Binding(
+                get: { calcModel.expression },
+                set: { newValue in routeKey(newValue) }
+            ))
+            .focused($captureKeyboard)
+            .frame(width: 0, height: 0)
+            .opacity(0)
+            .allowsHitTesting(false)
         }
         .preferredColorScheme(settings.colorSchemeOverride)
         .tint(settings.resolvedAccent)
+        .onChange(of: selectedTab)  { _ in updateCapture() }
+        .onChange(of: calcSubTab)   { _ in updateCapture() }
+        .onAppear                   { updateCapture() }
+    }
+
+    /// Focus the global capture only when the basic-calculator (custom keypad) is visible.
+    /// All other tab/subtab views use native TextFields / TextEditors which handle
+    /// hardware keyboard input through normal SwiftUI focus themselves.
+    private func updateCapture() {
+        captureKeyboard = (selectedTab == 0 && calcSubTab == 0)
+    }
+
+    /// Route a hardware key event (delivered via the hidden TextField binding) to the
+    /// basic-calculator model.  Called only when captureKeyboard is true.
+    private func routeKey(_ newValue: String) {
+        let old = calcModel.expression
+        if newValue.count > old.count {
+            let typed = String(newValue.dropFirst(old.count))
+            for ch in typed {
+                switch ch {
+                case "0"..."9", ".", "+", "-", "^":
+                    calcModel.input(String(ch))
+                case "*":
+                    calcModel.input("×")
+                case "/":
+                    calcModel.input("÷")
+                case "(", ")":
+                    calcModel.input("()")
+                case "\n", "\r":
+                    calcModel.evaluate()
+                default:
+                    let s = String(ch)
+                    if "xyπ".contains(s) {
+                        calcModel.input(s)
+                    }
+                }
+            }
+        } else if newValue.count < old.count {
+            // Handle single or bulk deletion (e.g. select-all + delete).
+            let deleteCount = old.count - newValue.count
+            for _ in 0..<deleteCount { calcModel.backspace() }
+        }
     }
 }

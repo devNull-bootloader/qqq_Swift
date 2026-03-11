@@ -96,8 +96,8 @@ class CalculatorModel: ObservableObject {
 // MARK: - CalculatorView
 
 struct CalculatorView: View {
-    @StateObject private var model = CalculatorModel()
-    @State private var subTab: Int = 0
+    @ObservedObject var model: CalculatorModel
+    @Binding var subTab: Int
     @State private var varXStr = "0"
     @State private var varYStr = "0"
 
