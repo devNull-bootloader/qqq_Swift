@@ -1,57 +1,48 @@
 import SwiftUI
-import WebKit
 
-struct ContentView: View {
-    var body: some View {
-        WebAppView()
-            .ignoresSafeArea()
-    }
+// MARK: - App Colour Palette
+
+extension Color {
+    static let appBg      = Color(red: 17/255,  green: 17/255,  blue: 17/255)
+    static let appCard    = Color(red: 26/255,  green: 26/255,  blue: 26/255)
+    static let appCard2   = Color(red: 34/255,  green: 34/255,  blue: 34/255)
+    static let appBorder  = Color(red: 51/255,  green: 51/255,  blue: 51/255)
+    static let appText    = Color(red: 232/255, green: 232/255, blue: 232/255)
+    static let appDim     = Color(red: 136/255, green: 136/255, blue: 136/255)
+    static let appAccent  = Color(red: 68/255,  green: 102/255, blue: 255/255)
+    static let opBtn      = Color(red: 40/255,  green: 40/255,  blue: 80/255)
+    static let eqBtn      = Color(red: 0,       green: 85/255,  blue: 204/255)
+    static let clBtn      = Color(red: 153/255, green: 0,       blue: 0)
+    static let secBtn     = Color(red: 42/255,  green: 42/255,  blue: 42/255)
+    static let sciBtn     = Color(red: 30/255,  green: 30/255,  blue: 60/255)
 }
 
-// MARK: - WKWebView wrapper
+// MARK: - App Settings (shared observable state)
 
-struct WebAppView: UIViewRepresentable {
+class AppSettings: ObservableObject {
+    @Published var colorSchemeOverride: ColorScheme? = .dark
+}
 
-    /// Background colour that matches the app's `--bg` CSS variable (#111111).
-    private static let appBackground = UIColor(red: 17/255, green: 17/255, blue: 17/255, alpha: 1.0)
+// MARK: - ContentView
 
-    func makeUIView(context: Context) -> WKWebView {
-        let configuration = WKWebViewConfiguration()
+struct ContentView: View {
+    @StateObject private var settings = AppSettings()
 
-        // Allow inline media playback without requiring a user gesture
-        configuration.allowsInlineMediaPlayback = true
-        configuration.mediaTypesRequiringUserActionForPlayback = []
-
-        // Inject window._autoLaunch = true at document start so the app skips
-        // the PWA install-prompt screen and goes straight to the calculator UI.
-        let autoLaunch = WKUserScript(
-            source: "window._autoLaunch = true;",
-            injectionTime: .atDocumentStart,
-            forMainFrameOnly: true
-        )
-        configuration.userContentController.addUserScript(autoLaunch)
-
-        let webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.scrollView.bounces = false
-        webView.scrollView.showsVerticalScrollIndicator = false
-        webView.scrollView.showsHorizontalScrollIndicator = false
-        webView.isOpaque = true
-        webView.backgroundColor = Self.appBackground
-
-        // Load index.html from the bundled Resources folder
-        if let htmlURL = Bundle.main.url(
-            forResource: "index",
-            withExtension: "html",
-            subdirectory: "Resources"
-        ) {
-            // Grant read access to the entire Resources directory so that
-            // relative imports of app.js, styles.css, icons/, etc. resolve.
-            let resourcesDir = htmlURL.deletingLastPathComponent()
-            webView.loadFileURL(htmlURL, allowingReadAccessTo: resourcesDir)
+    var body: some View {
+        TabView {
+            CalculatorView()
+                .tabItem { Label("Rechner",       systemImage: "function") }
+            CoordinateView()
+                .tabItem { Label("Koord.",         systemImage: "chart.line.uptrend.xyaxis") }
+            NotesView()
+                .tabItem { Label("Notizen",        systemImage: "note.text") }
+            FormulasView()
+                .tabItem { Label("Formeln+",       systemImage: "graduationcap.fill") }
+            SettingsView()
+                .environmentObject(settings)
+                .tabItem { Label("Einstellungen",  systemImage: "gearshape") }
         }
-
-        return webView
+        .preferredColorScheme(.dark)
+        .tint(.appAccent)
     }
-
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
