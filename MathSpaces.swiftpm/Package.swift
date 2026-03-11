@@ -32,10 +32,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "MathSpaces",
-            path: "Sources",
-            resources: [
-                .copy("Resources")
-            ]
+            path: "Sources"
         )
     ]
 )
